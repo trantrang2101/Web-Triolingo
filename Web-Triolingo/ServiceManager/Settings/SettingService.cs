@@ -5,36 +5,24 @@ namespace Web_Triolingo.ServiceManager.Settings
 {
     public class SettingService
     {
-        private readonly ILogger<SettingService> _logger;
-        public SettingService(ILogger<SettingService> logger)
-        {
-            _logger = logger;
-        }
         public static List<SettingDto> GetAllSetting()
         {
-            try
+
+            var settings = DataProvider.Ins.DB.Settings.ToList();
+            List<SettingDto> result = new List<SettingDto>();
+            settings.ForEach(se =>
             {
-                var settings = DataProvider.Ins.DB.Settings.ToList();
-                List<SettingDto> result = new List<SettingDto>();
-                settings.ForEach(se =>
+                result.Add(new SettingDto()
                 {
-                    result.Add(new SettingDto()
-                    {
-                        Id = se.Id,
-                        Name = se.Name,
-                        Value = se.Value,
-                        Note = se.Note,
-                        Status = se.Status,
-                        ParentName = GetParentNameByParentId(se.ParentId)
-                    });
+                    Id = se.Id,
+                    Name = se.Name,
+                    Value = se.Value,
+                    Note = se.Note,
+                    Status = se.Status,
+                    ParentName = GetParentNameByParentId(se.ParentId)
                 });
-                return result;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            
+            });
+            return result;
         }
         public static string GetParentNameByParentId(int? parentId)
         {
