@@ -22,7 +22,15 @@ namespace Web_Triolingo.Pages.Settings
             //{
             //    ListAllSettings = context.Settings.ToList();
             //}
-            ListAllSettings = SettingService.GetAllSetting();
+            try
+            {
+                ListAllSettings = SettingService.GetAllSetting();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
         }
     }
 }
