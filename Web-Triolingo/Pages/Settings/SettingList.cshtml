@@ -2,7 +2,44 @@
 @model Web_Triolingo.Pages.Settings.SettingListModel
 
 <h1>Tao sang roi day</h1>
-<table>
+<div class="btn-group" role="group">
+    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        Setting
+    </button>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#">User Role</a></li>
+        <li><a class="dropdown-item" href="#">Lesson Type</a></li>
+    </ul>
+</div>
+<a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+    Link with href
+</a>
+<button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+    Button with data-bs-target
+</button>
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div>
+            Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
+        </div>
+        <div class="dropdown mt-3">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                Dropdown button
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<table class="table">
     <thead>
         <tr>
             <th>Id</th>
@@ -11,6 +48,7 @@
             <th>Value</th>
             <th>Note</th>
             <th>ParentId</th>
+            <th>Action</th>
         </tr>
 
     </thead>
@@ -20,11 +58,36 @@
             <tr>
                 <td>@item.Id</td>
                 <td>@item.Name</td>
-                <td>@item.Status</td>
+                <td>
+                    @{
+                        if (item.Status == 1)
+                        {
+                            <span class="badge bg-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Deactive</span>
+                        }
+                    }
+                </td>
                 <td>@item.Value</td>
                 <td>@item.Note</td>
                 <td>@item.ParentName</td>
+                <td>
+                    @{
+                        if (item.Status == 1)
+                        {
+                            <a href="#" class="badge bg-danger">Deactive</a>
+                        }
+                        else
+                        {
+                            <a href="#" class="badge bg-success">Active</a>
+                        }
+                    }
+                </td>
             </tr>
         }
     </tbody>
 </table>
+
+
