@@ -1,0 +1,62 @@
+﻿@page "/lessons"
+@model Web_Triolingo.Pages.Lessons.IndexModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Lesson page";
+}
+<h1>This is lesson page</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>UnitId</th>
+            <th>TypeId</th>
+            <th>Description</th>
+            <th>Note</th>
+            <th>Status</th>
+            <th>Options</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ListAllLesson)
+        {
+            <tr>
+                <td>
+                    <p>@item.Id</p>
+                </td>
+                <td>
+                    <p>@item.Name</p>
+                </td>
+                <td>
+                    <p>@item.UnitId</p>
+                </td>
+                <td>
+                    <p>@item.TypeId</p>
+                </td>
+                <td>
+                    <p>@item.Description</p>
+                </td>
+                <td>
+                    <p>@item.Note</p>
+                </td>
+                <td>
+                    <p>@item.Status</p>
+                </td>
+                <td>
+                    <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#panel" aria-controls="offcanvasRight">Add</button>
+                    <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#panel" aria-controls="offcanvasRight">Update</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="panel" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasRightLabel">Offcanvas right</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        ...
+    </div>
+</div>
