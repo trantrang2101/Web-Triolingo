@@ -77,11 +77,17 @@
                     @{
                         if (item.Status == 1)
                         {
-                            <a href="#" class="badge bg-danger">Deactive</a>
+                            <form method="post">
+                                <input type="hidden" asp-for="@item.Id" />
+                                <input class="btn bg-danger" type="submit" value="Deactive" />
+                            </form>
                         }
                         else
                         {
-                            <a href="#" class="badge bg-success">Active</a>
+                            <form method="post">
+                                <input type="hidden" asp-for="@item.Id" />
+                                <input class="btn bg-success" type="submit" value="Active" />
+                            </form>
                         }
                     }
                 </td>

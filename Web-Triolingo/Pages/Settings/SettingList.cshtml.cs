@@ -46,5 +46,36 @@ namespace Web_Triolingo.Pages.Settings
                 throw;
             }
         }
+        public IActionResult OnPost(int? id)
+        {
+            try
+            {
+                var setting = _settingService.GetSettingById(id).Result;
+                bool check = true;
+                if (setting.Status == 1)
+                {
+                    check = _settingService.DeactiveSetting(id).Result;
+                    if (check)
+                    {
+                        return RedirectToPage("./SettingList");
+                    }
+                }
+                else
+                {
+                    check = _settingService.ActiveSetting(id).Result;
+                    if (check)
+                    {
+                        return RedirectToPage("./SettingList");
+                    }
+                }
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+
+        }
     }
 }

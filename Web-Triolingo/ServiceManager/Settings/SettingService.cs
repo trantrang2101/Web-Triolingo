@@ -27,9 +27,41 @@ namespace Web_Triolingo.ServiceManager.Settings
             return result;
         }
 
-        public async Task<bool> DeactiveSetting(int settingId)
+        public async Task<bool> DeactiveSetting(int? settingId)
         {
-            return true;
+            var settingg = await DataProvider.Ins.DB.Settings.Where(x => x.Id == settingId).FirstOrDefaultAsync();
+            if (settingg != null)
+            {
+                settingg.Status = 0;
+                await DataProvider.Ins.DB.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+        public async Task<bool> ActiveSetting(int? settingId)
+        {
+            var settingg = await DataProvider.Ins.DB.Settings.Where(x => x.Id == settingId).FirstOrDefaultAsync();
+            if (settingg != null)
+            {
+                settingg.Status = 1;
+                await DataProvider.Ins.DB.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+        public async Task<SettingDto> GetSettingById(int? id)
+        {
+            var settings = await DataProvider.Ins.DB.Settings.Where(x => x.Id == id).FirstOrDefaultAsync();
+            var result = new SettingDto()
+            {
+                Id = Convert.ToInt32(id),
+                Value = settings.Value,
+                Name = settings.Name,
+                ParentName = GetParentNameByParentId(settings.ParentId),
+                Note = settings.Note,
+                Status = settings.Status,
+            };
+            return result;
         }
 
         #region private method
@@ -48,6 +80,7 @@ namespace Web_Triolingo.ServiceManager.Settings
             }
             return true;
         }
+
         #endregion
     }
 }
