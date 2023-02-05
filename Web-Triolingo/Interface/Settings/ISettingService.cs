@@ -6,6 +6,8 @@ namespace Web_Triolingo.Interface.Settings
     public interface ISettingService
     {
         Task<List<SettingDto>> GetAllSetting();
-        Task<bool> DeactiveSetting(int settingId);
+        Task<bool> DeactiveSetting(int? settingId);
+        Task<bool> ActiveSetting(int? settingId);
+        Task<SettingDto> GetSettingById(int? id);
     }
 }
