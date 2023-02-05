@@ -1,6 +1,8 @@
 
+using Web_Triolingo.Interface.Lessons;
 using Web_Triolingo.Interface.Settings;
 using Web_Triolingo.Logger;
+using Web_Triolingo.ServiceManager.Lessons;
 using Web_Triolingo.ServiceManager.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,7 @@ builder.Services.AddLogging(builder =>
     builder.AddConsole();
 });
 builder.Services.AddSingleton<ISettingService, SettingService>();
+builder.Services.AddSingleton<ILessonService, LessonService>();
 
 var app = builder.Build();
 
