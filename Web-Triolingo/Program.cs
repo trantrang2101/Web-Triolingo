@@ -15,8 +15,9 @@ builder.Services.AddLogging(builder =>
     builder.AddProvider(new Log4NetManager());
     builder.AddConsole();
 });
-builder.Services.AddSingleton<ISettingService, SettingService>();
-builder.Services.AddSingleton<ILessonService, LessonService>();
+builder.Services.AddTransient<ISettingService, SettingService>();
+builder.Services.AddTransient<ILessonService, LessonService>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
