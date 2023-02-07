@@ -6,7 +6,7 @@
     <title>@ViewData["Title"] - Web_Triolingo</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Web_Triolingo.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Head", required: false)
 </head>
 <body>
     <header>

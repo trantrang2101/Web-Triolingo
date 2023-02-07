@@ -1,0 +1,41 @@
+﻿
+
+#login {
+    height: 100%;
+}
+
+.offcanvas-body {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.formLogin {
+    width: 375px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+    .formLogin input {
+        background: #f7f7f7;
+        border: 2px solid #e5e5e5;
+        border-radius: 16px;
+        line-height: 27px;
+        padding: 8px 16px;
+    }
+
+        .formLogin input:focus {
+            background: #f7f7f7;
+        }
+
+.title {
+    text-align: center;
+}
+
+#loginbtn {
+    width: 100%;
+    border-radius: 16px;
+    line-height: 27px;
+    padding: 8px 16px;
+}
