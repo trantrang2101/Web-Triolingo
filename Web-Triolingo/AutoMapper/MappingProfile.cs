@@ -9,6 +9,8 @@ namespace Web_Triolingo.AutoMapper
         public MappingProfile()
         {
             CreateMap<Setting, SettingDto>();
+            CreateMap<Lesson, LessonDto>();
+            CreateMap<User, UserDto>();
         }
     }
 }

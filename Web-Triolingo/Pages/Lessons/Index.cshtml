@@ -51,12 +51,22 @@
         }
     </tbody>
 </table>
-<div class="offcanvas offcanvas-end" tabindex="-1" id="panel" aria-labelledby="offcanvasRightLabel">
+<div class="offcanvas offcanvas-end" tabindex="-1" id="panel">
     <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasRightLabel">Offcanvas right</h5>
+        <h5 class="offcanvas-title">Offcanvas right</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
         ...
     </div>
 </div>
+
+<partial name="Login" />
+
+@section Head{
+    <link rel="stylesheet" href="~/css/Lessons/Lessons.css" />
+    <link rel="stylesheet" href="~/css/Login/Login.css" />
+}
+@section Scripts{
+    <script src="~/js/Login/Login.js" ></script>
+}
