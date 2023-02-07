@@ -1,63 +1,70 @@
 ﻿@page
 @model Web_Triolingo.Pages.Settings.SettingListModel
 
-<h1>Tao sang roi day</h1>
-<div class="btn-group" role="group">
-    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-        Setting
-    </button>
-    <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#">User Role</a></li>
-        <li><a class="dropdown-item" href="#">Lesson Type</a></li>
-    </ul>
-</div>
-<a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
-    Link with href
-</a>
-<button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
-    Button with data-bs-target
-</button>
+<h1>Setting Managerment</h1>
 
-<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        <div>
-            Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
-        </div>
-        <div class="dropdown mt-3">
-            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                Dropdown button
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-        </div>
-    </div>
+<div class="">
+    <button type="button" class="btn btn-secondary">Edit</button>
+    <button type="button" class="btn btn-secondary">Delete</button>
 </div>
+<table>
+    <tr id="rowToClick"><td>ClickMe</td></tr>
+    <tr id="Tr1"><td>Toggled</td></tr>
+    <tr id="Tr2"><td>Toggled</td></tr>
+    <tr id="Tr3"><td>Toggled</td></tr>
+    <tr id="Tr4"><td>Toggled</td></tr>
+    <tr id="Tr5"><td>Toggled</td></tr>
+    <tr id="rowToClick"><td>ClickMe</td></tr>
+    <tr id="Tr6"><td>Toggled</td></tr>
+    <tr id="Tr7"><td>Toggled</td></tr>
+    <tr id="Tr8"><td>Toggled</td></tr>
+    <tr id="Tr9"><td>Toggled</td></tr>
+    <tr id="Tr10"><td>Toggled</td></tr>
+</table>
 <table class="table">
     <thead>
         <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Value</th>
-            <th>Note</th>
-            <th>ParentId</th>
-            <th>Action</th>
+            <th>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        All
+                    </label>
+                </div>
+            </th>
+            <th>Tên</th>
+            <th>Trạng thái</th>
+            <th>Giá trị</th>
+            <th>Ghi chú</th>
+            <th>Sửa trạng thái</th>
         </tr>
 
     </thead>
     <tbody>
+        @{
+            int count = 1;
+        }
         @foreach (var item in Model.ListAllSettings)
         {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.Name</td>
+            <tr class="dropdown">
+                <td>
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        @count
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </td>
+                <td>
+                    @item.Name
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </td>
                 <td>
                     @{
                         if (item.Status == 1)
@@ -72,7 +79,6 @@
                 </td>
                 <td>@item.Value</td>
                 <td>@item.Note</td>
-                <td>@item.ParentName</td>
                 <td>
                     @{
                         if (item.Status == 1)
@@ -92,8 +98,21 @@
                     }
                 </td>
             </tr>
+            count++;
         }
     </tbody>
 </table>
 
+<script type="text/javascript">
 
+    $(document).ready(function () {
+        $('#rowToClick').click(function () {
+            $(this).nextAll('tr').each(function () {
+                if ($(this).is('#rowToClick')) {
+                    return false;
+                }
+                $(this).toggle();
+            });
+        });
+    });
+</script>
