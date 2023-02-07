@@ -19,7 +19,7 @@ namespace Web_Triolingo.Pages.Settings
             _settingService = settingService;
         }
         public List<SettingDto> ListAllSettings { get; set; }
-        public void OnGet()
+        public async Task OnGetAsync()
         {
             //using (var context = new TriolingoDBContext())
             //{
@@ -27,7 +27,7 @@ namespace Web_Triolingo.Pages.Settings
             //}
             try
             {
-                ListAllSettings = _settingService.GetAllSetting().Result;
+                ListAllSettings = await _settingService.GetSettingsNoParentId();
                 //using (var context = new TriolingoDBContext())
                 //{
                 //    var result = context.Settings.ToList();

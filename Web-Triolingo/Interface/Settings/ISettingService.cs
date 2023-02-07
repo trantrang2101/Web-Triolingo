@@ -10,5 +10,6 @@ namespace Web_Triolingo.Interface.Settings
         Task<bool> ActiveSetting(int? settingId);
         Task<SettingDto> GetSettingById(int? id);
         Task<List<SettingDto>> GetSettingByParentId(int settingId);
+        Task<List<SettingDto>> GetSettingsNoParentId();
     }
 }

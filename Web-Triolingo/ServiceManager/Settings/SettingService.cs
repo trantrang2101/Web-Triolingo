@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 using Web_Triolingo.DBContext;
 using Web_Triolingo.Interface.Settings;
 using Web_Triolingo.ModelDto;
@@ -14,9 +15,9 @@ namespace Web_Triolingo.ServiceManager.Settings
             _mapper = mapper;
         }
 
+
         public async Task<List<SettingDto>> GetAllSetting()
         {
-
             var settings = await DataProvider.Ins.DB.Settings.ToListAsync();
             var result = _mapper.Map<List<SettingDto>>(settings);
             return result;
@@ -58,6 +59,13 @@ namespace Web_Triolingo.ServiceManager.Settings
             return result;
         }
 
+        public async Task<List<SettingDto>> GetSettingsNoParentId()
+        {
+            var settings = await DataProvider.Ins.DB.Settings.Where(x => x.ParentId == null).ToListAsync();
+            var result = _mapper.Map<List<SettingDto>>(settings);
+            return result;
+        }
+
         #region private method
 
         private bool IsDuplicateSetting(SettingDto item)
@@ -70,7 +78,7 @@ namespace Web_Triolingo.ServiceManager.Settings
                 return false;
             }
             return true;
-        }
+        }        
 
         #endregion
     }
