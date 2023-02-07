@@ -19,6 +19,7 @@ namespace Web_Triolingo.Pages.Settings
             _settingService = settingService;
         }
         public List<SettingDto> ListAllSettings { get; set; }
+        public int? Id { get; set; }
         public async Task OnGetAsync()
         {
             //using (var context = new TriolingoDBContext())
@@ -50,7 +51,8 @@ namespace Web_Triolingo.Pages.Settings
         {
             try
             {
-                var setting = _settingService.GetSettingById(id).Result;
+                Id = id;
+                var setting = _settingService.GetSettingById(Id).Result;
                 bool check = true;
                 if (setting.Status == 1)
                 {

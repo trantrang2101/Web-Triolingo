@@ -41,6 +41,10 @@ namespace Web_Triolingo.ServiceManager.Settings
             }
             return false;
         }
+        public async Task<bool> AddNewSetting(SettingDto setting)
+        {
+            throw new NotImplementedException();
+        }
         public async Task<bool> ActiveSetting(int? settingId)
         {
             var settingg = await DataProvider.Ins.DB.Settings.Where(x => x.Id == settingId).FirstOrDefaultAsync();
@@ -78,8 +82,8 @@ namespace Web_Triolingo.ServiceManager.Settings
                 return false;
             }
             return true;
-        }        
-
+        }
+        
         #endregion
     }
 }
