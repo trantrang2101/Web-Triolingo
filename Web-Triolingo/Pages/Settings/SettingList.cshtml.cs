@@ -19,27 +19,12 @@ namespace Web_Triolingo.Pages.Settings
             _settingService = settingService;
         }
         public List<SettingDto> ListAllSettings { get; set; }
-        public int? Id { get; set; }
+        public List<SettingDto> AllSettingsByParent { get; set; }
         public async Task OnGetAsync()
         {
-            //using (var context = new TriolingoDBContext())
-            //{
-            //    ListAllSettings = context.Settings.ToList();
-            //}
             try
             {
                 ListAllSettings = await _settingService.GetSettingsNoParentId();
-                //using (var context = new TriolingoDBContext())
-                //{
-                //    var result = context.Settings.ToList();
-                //    result.ForEach(setting =>
-                //    {
-                //        ListAllSettings.Add(new SettingDto()
-                //        {
-
-                //        });
-                //    });
-                //}
             }
             catch (Exception ex)
             {
@@ -47,12 +32,24 @@ namespace Web_Triolingo.Pages.Settings
                 throw;
             }
         }
-        public IActionResult OnPost(int? id)
+        public IActionResult OnGetGetChild(int id)
         {
             try
             {
-                Id = id;
-                var setting = _settingService.GetSettingById(Id).Result;
+                AllSettingsByParent = _settingService.GetSettingByParentId(id).Result;
+                return RedirectToAction("SettingList");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        public async Task<IActionResult> OnPostAsync(int? id)
+        {
+            try
+            {
+                var setting = await _settingService.GetSettingById(id);
                 bool check = true;
                 if (setting.Status == 1)
                 {
