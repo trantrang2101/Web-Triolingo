@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json;
 using Web_Triolingo.Interface.Lessons;
 using Web_Triolingo.Interface.User;
 using Web_Triolingo.ModelDto;
@@ -12,15 +13,25 @@ namespace Web_Triolingo.Pages.Lessons
         private readonly ILogger<IndexModel> _logger;
         private readonly ILessonService _lessonService;
         private readonly IUserService _userService;
-        public IndexModel(ILogger<IndexModel> logger, ILessonService lessonService, IUserService userService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public IndexModel(ILogger<IndexModel> logger, ILessonService lessonService, IUserService userService, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _lessonService = lessonService;
             _userService = userService;
+            _httpContextAccessor = httpContextAccessor;
         }
         public List<LessonDto> ListAllLesson { get; set; }
         public void OnGet()
         {
+            //Get session
+            var objString = HttpContext.Session.GetString("user");
+            if (objString != null)
+            {
+                var obj = JsonConvert.DeserializeObject<UserDto>(objString);
+                ViewData["Name"] = obj.FullName;
+            }
+
             try
             {
                 ListAllLesson = _lessonService.GetAllLesson().Result;
@@ -32,16 +43,19 @@ namespace Web_Triolingo.Pages.Lessons
             }
         }
 
-        public IActionResult OnPost(UserLoginDto userLogin)
+        public ActionResult OnPostLogin(UserLoginDto userLogin)
         {
             try
             {
                 var user = _userService.Login(userLogin).Result;
                 if (user != null)
                 {
-                    return RedirectToPage("./SettingList");
+                    //Set session
+                    string jsonStr = JsonConvert.SerializeObject(user);
+                    HttpContext.Session.SetString("user", jsonStr);
+                    return RedirectToAction("Index");
                 }
-                return RedirectToPage("../Settings/SettingList");
+                return Content("Email or Password is incorrect");
             }
             catch (Exception ex)
             {
