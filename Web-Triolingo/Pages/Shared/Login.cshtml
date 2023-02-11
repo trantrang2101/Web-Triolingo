@@ -6,15 +6,40 @@
         <button type="button" class="btn btn-outline-primary" asp-page="Settings/SettingList">Đăng kí</button>
     </div>
     <div class="offcanvas-body">
-        <form class="formLogin" method="post" >
+        <form class="formLogin" id="formLogin" method="post" asp-page-handler="Login">
             <h3 class="title">Đăng nhập</h3>
             <div class="form-group">
-                <input class="form-control login-input" placeholder="Nhập Email" />
+                <input name="Email" class="form-control login-input" placeholder="Nhập Email" />
             </div>
             <div class="form-group">
-                <input class="form-control login-input" placeholder="Mật khẩu" />
+                <input name="Password" class="form-control login-input" placeholder="Mật khẩu" />
             </div>
-            <button class="btn btn-primary" id="loginbtn" onclick="test()" type="submit">Đăng nhập</button>
+            <button class="btn btn-primary" id="loginbtn" type="button">Đăng nhập</button>
         </form>
+
+        <div class="policy">
+            <span>
+                Khi đăng ký trên Duolingo, bạn đã đồng ý với
+                <a href="https://www.duolingo.com/terms?wantsPlainInfo=1"><b>Các chính sách</b></a>
+                và
+                <a href="https://www.duolingo.com/privacy?wantsPlainInfo=1"><b>Chính sách bảo mật</b></a>
+            </span>
+        </div>
+        @if (ViewData["Name"] != null)
+        {
+            <script>
+                window.onload = function () {
+                    alert('Hello @ViewData["Name"]')
+                }
+            </script>
+        }@if (ViewData["Name"] == null)
+        {
+            <script>
+                window.onload = function () {
+                    $('#login').addClass('show')
+                }
+            </script>
+        }
     </div>
 </div>
+
