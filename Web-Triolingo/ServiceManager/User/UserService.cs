@@ -20,15 +20,31 @@ namespace Web_Triolingo.ServiceManager.User
             var result = _mapper.Map<UserDto>(userLoged);
             return result;
         }
-        public async void Regis(UserRegisDto user)
+        public async Task<UserDto> FindExistEmail(string email)
         {
-            Web_Triolingo.Models.User newUser = new Web_Triolingo.Models.User()
+            var userLoged = await DataProvider.Ins.DB.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
+            var result = _mapper.Map<UserDto>(userLoged);
+            return result;
+        }
+        public async Task<bool> Regis(UserRegisDto user)
+        {
+            var check = FindExistEmail(user.Email);
+            if (check == null)
             {
-                Email= user.Email,
-                Password= user.Password,
-                FullName= user.FullName,
-            };
-            DataProvider.Ins.DB.Users.Add(newUser);
+                Web_Triolingo.Models.User newUser = new Web_Triolingo.Models.User()
+                {
+                    Email= user.Email,
+                    Password= user.Password,
+                    FullName= user.FullName,
+                };
+                await DataProvider.Ins.DB.Users.AddAsync(newUser);
+                await DataProvider.Ins.DB.SaveChangesAsync();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
