@@ -21,6 +21,10 @@ builder.Services.AddTransient<ISettingService, SettingService>();
 builder.Services.AddTransient<ILessonService, LessonService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromMinutes(60);//You can set Time   
+});
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -32,6 +36,8 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 
