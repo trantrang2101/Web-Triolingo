@@ -22,7 +22,7 @@ namespace Web_Triolingo.Pages.Lessons
             _httpContextAccessor = httpContextAccessor;
         }
         public List<LessonDto> ListAllLesson { get; set; }
-        public void OnGet()
+        public void OnGet(string loginError, string regisError)
         {
             //Get session
             var objString = HttpContext.Session.GetString("user");
@@ -31,7 +31,8 @@ namespace Web_Triolingo.Pages.Lessons
                 var obj = JsonConvert.DeserializeObject<UserDto>(objString);
                 ViewData["Name"] = obj.FullName;
             }
-
+            ViewData["LoginError"] = loginError;
+            ViewData["RegisError"] = regisError;
             try
             {
                 ListAllLesson = _lessonService.GetAllLesson().Result;
@@ -55,7 +56,11 @@ namespace Web_Triolingo.Pages.Lessons
                     HttpContext.Session.SetString("user", jsonStr);
                     return RedirectToAction("Index");
                 }
-                return Content("Email or Password is incorrect");
+                else
+                {
+                    ViewData["Error"] = "Email or Password is incorrect";
+                    return RedirectToAction("Index", new { loginError = ViewData["Error"] });
+                }
             }
             catch (Exception ex)
             {
@@ -68,7 +73,15 @@ namespace Web_Triolingo.Pages.Lessons
             try
             {
                 var user = _userService.Regis(userRegis).Result;
-                return RedirectToAction("Index");
+                if (user)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ViewData["Error"] = "This email is already in use";
+                    return RedirectToAction("Index", new { regisError = ViewData["Error"] });
+                }
             }
             catch (Exception ex)
             {
