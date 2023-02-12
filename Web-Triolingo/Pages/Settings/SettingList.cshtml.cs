@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Web_Triolingo.DBContext;
 using Web_Triolingo.Interface.Settings;
 using Web_Triolingo.ModelDto;
 using Web_Triolingo.Models;
 using Web_Triolingo.ServiceManager.Settings;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Newtonsoft.Json;
 
 namespace Web_Triolingo.Pages.Settings
 {
@@ -20,11 +21,13 @@ namespace Web_Triolingo.Pages.Settings
         }
         public List<SettingDto> ListAllSettings { get; set; }
         public List<SettingDto> AllSettingsByParent { get; set; }
-        public async Task OnGetAsync()
+        [BindProperty]
+        public SettingDto SettingAdd { get; set; }
+        public void OnGet()
         {
             try
             {
-                ListAllSettings = await _settingService.GetSettingsNoParentId();
+                ListAllSettings = _settingService.GetSettingsNoParentId().Result;
             }
             catch (Exception ex)
             {
@@ -32,12 +35,37 @@ namespace Web_Triolingo.Pages.Settings
                 throw;
             }
         }
-        public IActionResult OnGetGetChild(int id)
+        public JsonResult OnPostGetChild(int? id)
         {
             try
             {
                 AllSettingsByParent = _settingService.GetSettingByParentId(id).Result;
-                return RedirectToAction("SettingList");
+                ListAllSettings = _settingService.GetSettingsNoParentId().Result;
+                //return RedirectToAction("SettingList");
+                return new JsonResult(AllSettingsByParent, new JsonSerializerSettings
+                {
+                    Formatting = Formatting.Indented
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        public async Task<IActionResult> OnPostAdd()
+        {
+            try
+            {
+                if (await _settingService.AddNewSetting(SettingAdd))
+                {
+                    ListAllSettings = _settingService.GetSettingsNoParentId().Result;
+                    return RedirectToAction("SettingList");
+                }
+                else
+                {
+                    return BadRequest(ModelState);
+                }
             }
             catch (Exception ex)
             {

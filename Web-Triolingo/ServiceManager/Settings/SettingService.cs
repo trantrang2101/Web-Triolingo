@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Web_Triolingo.DBContext;
 using Web_Triolingo.Interface.Settings;
 using Web_Triolingo.ModelDto;
+using Web_Triolingo.Models;
 
 namespace Web_Triolingo.ServiceManager.Settings
 {
@@ -23,7 +24,7 @@ namespace Web_Triolingo.ServiceManager.Settings
             return result;
         }
 
-        public async Task<List<SettingDto>> GetSettingByParentId(int settingId)
+        public async Task<List<SettingDto>> GetSettingByParentId(int? settingId)
         {
             var settings = await DataProvider.Ins.DB.Settings.Where(x => x.ParentId == settingId).ToListAsync();
             var result = _mapper.Map<List<SettingDto>>(settings);
@@ -43,7 +44,17 @@ namespace Web_Triolingo.ServiceManager.Settings
         }
         public async Task<bool> AddNewSetting(SettingDto setting)
         {
-            throw new NotImplementedException();
+            Setting set = new Setting()
+            {
+                Name = setting.Name,
+                Status = 1,
+                Note = setting.Note,
+                Value = setting.Value,
+                ParentId = setting.ParentId,
+            };
+            await DataProvider.Ins.DB.Settings.AddAsync(set);
+            await DataProvider.Ins.DB.SaveChangesAsync();
+            return true;
         }
         public async Task<bool> ActiveSetting(int? settingId)
         {
@@ -83,7 +94,7 @@ namespace Web_Triolingo.ServiceManager.Settings
             }
             return true;
         }
-        
+
         #endregion
     }
 }
