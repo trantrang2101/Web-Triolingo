@@ -63,5 +63,18 @@ namespace Web_Triolingo.Pages.Lessons
                 throw;
             }
         }
+        public ActionResult OnPostRegis(UserRegisDto userRegis)
+        {
+            try
+            {
+                var user = _userService.Regis(userRegis).Result;
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
     }
 }
