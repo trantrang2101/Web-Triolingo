@@ -1,7 +1,8 @@
 ﻿@page
+@addTagHelper *, Microsoft.AspNetCore.MVC.TagHelpers
 @model Web_Triolingo.Pages.Settings.SettingListModel
 
-<h1>Setting Managerment</h1>
+<h1>Quản lý cài đặt</h1>
 
 <div class="">
     <button type="button" class="btn btn-secondary">Xóa</button>
@@ -15,55 +16,37 @@
         </div>
         <div class="offcanvas-body">
             <div>
-                <form>
+                <form asp-page-handler="add" method="post">
                     <div class="form-group">
                         <label for="email">Tên</label>
-                        <input type="email" class="form-control" id="email" placeholder="nhập tên" aria-describedby="emailHelp">
+                        <input type="text" required class="form-control" asp-for="SettingAdd.Name" id="name" placeholder="nhập tên" aria-describedby="emailHelp">
                     </div>
                     <div class="form-group">
-                        <label for="password">Giá trị</label>
-                        <input type="password" class="form-control" id="password" placeholder="nhập giá trị">
+                        <label for="value">Giá trị</label>
+                        <input type="text" required class="form-control" asp-for="SettingAdd.Value" id="value" placeholder="nhập giá trị">
                     </div>
                     <div class="form-group">
-                        <label for="password">Ghi chú</label>
-                        <input type="password" class="form-control" id="password" placeholder="nhập ghi chú">
+                        <label for="note">Ghi chú</label>
+                        <input type="text" class="form-control" id="note" asp-for="SettingAdd.Note" placeholder="nhập ghi chú">
                     </div>
+
+                    <div class="form-check">
+                        <label for="chkShowSelect">Có phải cài đặt cha không?</label>
+                        <input id="chkShowSelect" class="form-check-input" type="checkbox">
+                    </div>
+                    <br />
+                    <select class="form-select" asp-for="SettingAdd.ParentId" id="selOption" style="display: none;">
+                        @{
+                            <option selected value="">None</option>
+                            foreach (var item in Model.ListAllSettings)
+                            {
+                                <option id="@item.Id" value="@item.Id">@item.Name</option>
+                            }
+                        }
+                    </select>
+                    <br />
                     <button type="submit" class="btn btn-primary">Thêm</button>
                 </form>
-            </div>
-            <div class="dropdown mt-3">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
-                    Dropdown button
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasExample1" role="button" aria-controls="offcanvasExample1">
-        Edit setting
-    </a>
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample1" aria-labelledby="offcanvasExampleLabel1">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <div>
-                cai nay edit
-            </div>
-            <div class="dropdown mt-3">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
-                    Dropdown button
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                </ul>
             </div>
         </div>
     </div>
@@ -71,11 +54,12 @@
 <table class="table">
     <thead>
         <tr>
+            <td>No</td>
             <th>Tên</th>
             <th>Trạng thái</th>
             <th>Giá trị</th>
             <th>Ghi chú</th>
-            <th>Sửa trạng thái</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -88,9 +72,9 @@
 
                 <tr class="accoordion">
                     <td>
-                        <form method="get" asp-page-handler="GetChild">
+                        <form method="post" asp-page-handler="getchild">
                             <input type="hidden" name="Id" value="@item.Id" />
-                            <input class="btn btn-primary" type="submit" value="@count" />
+                            <input type="submit" onclick="TestAjax()" value="@count" />
                         </form>
                     </td>
                     <td>@item.Name</td>
@@ -124,13 +108,51 @@
                                     <input class="btn bg-success" type="submit" value="Active" />
                                 </form>
                             }
+                            <a class="material-symbols-outlined" data-bs-toggle="modal" data-bs-target="#exampleModal" style="text-decoration: none; cursor: pointer;">
+                                edit
+                            </a>
+                            //<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+                            //    <div class="offcanvas-header">
+                            //        <div class="offcanvas-body">
+                            //            <div>
+                            //                Edit setting
+                            //            </div>
+                            //            <form>
+                            //                <div class="form-group">
+                            //                    <label for="email">Tên</label>
+                            //                    <input type="email" class="form-control" id="email" placeholder="nhập tên" aria-describedby="emailHelp">
+                            //                </div>
+                            //                <div class="form-group">
+                            //                    <label for="password">Giá trị</label>
+                            //                    <input type="password" class="form-control" id="password" placeholder="nhập giá trị">
+                            //                </div>
+                            //                <div class="form-group">
+                            //                    <label for="password">Ghi chú</label>
+                            //                    <input type="password" class="form-control" id="password" placeholder="nhập ghi chú">
+                            //                </div>
+
+                            //                <div class="form-check">
+                            //                    <label for="chkShowSelect">Có phải cài đặt cha không?</label>
+                            //                    <input id="chkShowSelect" class="form-check-input" type="checkbox">
+                            //                </div>
+                            //                <br />
+                            //                <select class="form-select" id="selOption" style="display: none;">
+                            //                    <option>@item.Name</option>
+                            //                </select>
+                            //                <br />
+                            //                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                            //            </form>
+                            //        </div>
+                            //    </div>
+                            //</div>
                         }
                     </td>
                 </tr>
+
+                count++;
                 if (Model.AllSettingsByParent != null && Model.AllSettingsByParent.Any())
                 {
                     <tr class="panel">
-
                         <td>
                             <table>
                                 @{
@@ -173,22 +195,68 @@
                                                 }
                                             </td>
                                         </tr>
-                                        count++;
+                                        count2++;
                                     }
                                 }
                             </table>
                         </td>
-
-
                     </tr>
                 }
             }
         }
     </tbody>
 </table>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Sửa cài đặt</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="email">Tên</label>
+                        <input type="email" class="form-control" id="email" placeholder="nhập tên" aria-describedby="emailHelp">
+
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Giá trị</label>
+                        <input type="password" class="form-control" id="password" placeholder="nhập giá trị">
+
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Ghi chú</label>
+                        <input type="password" class="form-control" id="password" placeholder="nhập ghi chú">
+
+                    </div>
+
+                    <div class="form-check">
+                        <label for="chkShowSelect">Có phải cài đặt cha không?</label>
+                        <input id="chkShowSelect" class="form-check-input" type="checkbox">
+
+                    </div>
+                    <br />
+                    <select class="form-select" id="selOption" style="display: none;">
+
+                        <option>222</option>
+
+                    </select>
+                    <br />
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 @section Head{
     <link rel="stylesheet" href="~/css/Settings/SettingStyle.css" />
 }
-@section Scripts{
-    <script src="~/js/Settings/Settings.js"></script>
+@section scripts{
+    <script src="~/js/settings/settings.js"></script>
 }
