@@ -3,7 +3,8 @@
 <div class="offcanvas offcanvas-bottom" id="login">
     <div class="offcanvas-header">
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        <button type="button" class="btn btn-outline-primary" asp-page="Settings/SettingList">Đăng kí</button>
+        <button type="button" class="btn btn-outline-primary" id="changeRegis" >Đăng kí</button>
+        <button type="button" class="btn btn-outline-primary" id="changeLogin" >Đăng nhập</button>
     </div>
     <div class="offcanvas-body">
         <form class="formLogin" id="formLogin" method="post" asp-page-handler="Login">
@@ -12,11 +13,26 @@
                 <input name="Email" class="form-control login-input" placeholder="Nhập Email" />
             </div>
             <div class="form-group">
-                <input name="Password" class="form-control login-input" placeholder="Mật khẩu" />
+                <input name="Password" type="password" class="form-control login-input" placeholder="Mật khẩu" />
             </div>
-            <button class="btn btn-primary" id="loginbtn" type="button">Đăng nhập</button>
+            <button class="btn btn-primary submitbtn" id="loginbtn" type="button">Đăng nhập</button>
         </form>
-
+        <form class="formLogin" id="formRegis" method="post" asp-page-handler="Regis">
+            <h3 class="title">Tạo hồ sơ</h3>
+            <div class="form-group">
+                <input name="Age" class="form-control login-input" placeholder="Nhập Tuổi" />
+            </div>
+            <div class="form-group">
+                <input name="Name" class="form-control login-input" placeholder="Nhập Tên (tùy chọn)" />
+            </div>
+            <div class="form-group">
+                <input name="Email" class="form-control login-input" placeholder="Nhập Email" />
+            </div>
+            <div class="form-group">
+                <input name="Password" type="password" class="form-control login-input" placeholder="Mật khẩu" />
+            </div>
+            <button class="btn btn-primary submitbtn" id="regisbtn" type="button">Tạo tài khoản</button>
+        </form>
         <div class="policy">
             <span>
                 Khi đăng ký trên Duolingo, bạn đã đồng ý với
@@ -25,21 +41,22 @@
                 <a href="https://www.duolingo.com/privacy?wantsPlainInfo=1"><b>Chính sách bảo mật</b></a>
             </span>
         </div>
-        @if (ViewData["Name"] != null)
-        {
-            <script>
-                window.onload = function () {
-                    alert('Hello @ViewData["Name"]')
-                }
-            </script>
-        }@if (ViewData["Name"] == null)
-        {
-            <script>
-                window.onload = function () {
-                    $('#login').addClass('show')
-                }
-            </script>
-        }
     </div>
 </div>
 
+
+@if (ViewData["Name"] != null)
+{
+    <script>
+        window.onload = function () {
+            alert('Hello @ViewData["Name"]')
+        }
+    </script>
+}@if (ViewData["Name"] == null)
+{
+    <script>
+        window.onload = function () {
+            $('#login').addClass('show')
+        }
+    </script>
+}

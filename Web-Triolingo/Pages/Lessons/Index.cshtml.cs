@@ -63,5 +63,25 @@ namespace Web_Triolingo.Pages.Lessons
                 throw;
             }
         }
+        public ActionResult OnPostRegis(UserLoginDto userLogin)
+        {
+            try
+            {
+                var user = _userService.Login(userLogin).Result;
+                if (user != null)
+                {
+                    //Set session
+                    string jsonStr = JsonConvert.SerializeObject(user);
+                    HttpContext.Session.SetString("user", jsonStr);
+                    return RedirectToAction("Index");
+                }
+                return Content("Email or Password is incorrect");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
     }
 }

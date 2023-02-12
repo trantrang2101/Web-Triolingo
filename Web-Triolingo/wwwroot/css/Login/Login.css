@@ -46,7 +46,7 @@ button {
     box-shadow: rgba(24, 153, 214, 0.25) 0px 7px 14px, rgba(24, 153, 214, 0.22) 0px 10px 10px;
 }
 
-#loginbtn {
+.submitbtn {
     width: 100%;
     background: rgb(28, 176, 246);
     border: none;
