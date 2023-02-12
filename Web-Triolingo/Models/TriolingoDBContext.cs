@@ -41,8 +41,6 @@ namespace Web_Triolingo.Models
             {
                 entity.ToTable("Course");
 
-                entity.Property(e => e.Description).HasMaxLength(150);
-
                 entity.Property(e => e.Name).HasMaxLength(150);
             });
 

@@ -1,8 +1,10 @@
 
+using Web_Triolingo.Interface.Courses;
 using Web_Triolingo.Interface.Lessons;
 using Web_Triolingo.Interface.Settings;
 using Web_Triolingo.Interface.User;
 using Web_Triolingo.Logger;
+using Web_Triolingo.ServiceManager.Courses;
 using Web_Triolingo.ServiceManager.Lessons;
 using Web_Triolingo.ServiceManager.Settings;
 using Web_Triolingo.ServiceManager.User;
@@ -17,6 +19,7 @@ builder.Services.AddLogging(builder =>
     builder.AddProvider(new Log4NetManager());
     builder.AddConsole();
 });
+builder.Services.AddTransient<ICourseService, CoursesService>();
 builder.Services.AddTransient<ISettingService, SettingService>();
 builder.Services.AddTransient<ILessonService, LessonService>();
 builder.Services.AddTransient<IUserService, UserService>();

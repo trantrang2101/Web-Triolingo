@@ -35,12 +35,6 @@
             gap: 30px;
         }
 
-        .container {
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
-
         .side-bar {
             margin: 24px;
             width: 224px;
@@ -82,7 +76,6 @@
     </style>
 </head>
 <body>
-    <div style="max-width: 1328px; margin: auto;">
         <header>
             <nav class="navbar navbar-expand-lg bg-light">
                 <div class="container-fluid">
@@ -115,7 +108,7 @@
 
         </header>
 
-        <div class="container">
+        <div class="d-flex">
             <nav class="side-bar" id="side-bar">
                 <ul>
                     <li data-item="1" class="side-item item1 active">
@@ -126,9 +119,10 @@
                     <li data-item="2" class="side-item item2">Cửa hàng</li>
                     <li data-item="3" class="side-item item3">Schools</li>
                     <li data-item="4" class="side-item item4"><a style="text-decoration: none" asp-page="/Settings/SettingList">Quản lý cài đặt</a></li>
+                    <li data-item="5" class="side-item item4"><a style="text-decoration: none" asp-page="/Courses/CourseList">Quản lý khóa học</a></li>
                 </ul>
             </nav>
-            <main role="main" class="pb-3">
+            <main role="main" class="m-3">
                 @RenderBody()
             </main>
         </div>
@@ -138,7 +132,6 @@
                 @await RenderSectionAsync("Noidungfooter", required: false)
             </div>
         </footer>
-    </div>
     <div class="loading" id="loading">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
@@ -149,6 +142,12 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/ckeditor5-build-classic/ckeditor.js"></script>
+    <script src="~/lib/ckeditor5-build-classic/translations/vi.js"></script>
+    <link href="~/lib/fontawesome-free/css/all.css" rel="stylesheet" />
+    <link href="~/lib/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <script src="~/lib/fontawesome-free/js/all.js"></script>
+    <script src="~/lib/fontawesome-free/js/all.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <script>
         (function () {

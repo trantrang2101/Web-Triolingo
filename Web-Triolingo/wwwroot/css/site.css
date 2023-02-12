@@ -16,3 +16,9 @@ html {
 body {
   margin-bottom: 60px;
 }
+.boxscroll{
+    overflow-y:auto;
+}
+.tr-selected {
+    background: #e6f1f7 !important
+}
