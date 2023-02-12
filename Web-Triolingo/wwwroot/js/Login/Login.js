@@ -43,7 +43,11 @@
     $("#formRegis").validate({
         rules: {
             Age: {
+                required: true,
                 number: true
+            },
+            FullName: {
+                required: true,
             },
             Email: {
                 required: true,
@@ -56,7 +60,11 @@
         errorClass: "text-danger",
         messages: {
             Age: {
+                required: "This field is required.",
                 number: "Please enter your age."
+            },
+            FullName: {
+                required: "This field is required.",
             },
             Email: {
                 required: "This field is required.",
