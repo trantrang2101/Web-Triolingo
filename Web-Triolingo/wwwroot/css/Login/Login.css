@@ -39,13 +39,6 @@
     color: rgb(60, 60, 60)
 }
 
-button {
-    border-radius: 16px;
-    line-height: 27px;
-    padding: 8px 16px;
-    box-shadow: rgba(24, 153, 214, 0.25) 0px 7px 14px, rgba(24, 153, 214, 0.22) 0px 10px 10px;
-}
-
 .submitbtn {
     width: 100%;
     background: rgb(28, 176, 246);
@@ -53,6 +46,10 @@ button {
     padding: 13px;
     letter-spacing: 0.8px;
     border-radius: 16px;
+    border-radius: 16px;
+    line-height: 27px;
+    padding: 8px 16px;
+    box-shadow: rgba(24, 153, 214, 0.25) 0px 7px 14px, rgba(24, 153, 214, 0.22) 0px 10px 10px;
 }
 
 .policy {

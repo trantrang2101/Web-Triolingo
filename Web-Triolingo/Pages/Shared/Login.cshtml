@@ -3,8 +3,8 @@
 <div class="offcanvas offcanvas-bottom" id="login">
     <div class="offcanvas-header">
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        <button type="button" class="btn btn-outline-primary" id="changeRegis" >Đăng kí</button>
-        <button type="button" class="btn btn-outline-primary" id="changeLogin" >Đăng nhập</button>
+        <button type="button" class="btn btn-outline-primary" id="changeRegis">Đăng kí</button>
+        <button type="button" class="btn btn-outline-primary" id="changeLogin">Đăng nhập</button>
     </div>
     <div class="offcanvas-body">
         <form class="formLogin" id="formLogin" method="post" asp-page-handler="Login">
@@ -15,6 +15,7 @@
             <div class="form-group">
                 <input name="Password" type="password" class="form-control login-input" placeholder="Mật khẩu" />
             </div>
+            <label class="text-danger">@ViewData["LoginError"]</label>
             <button class="btn btn-primary submitbtn" id="loginbtn" type="button">Đăng nhập</button>
         </form>
         <form class="formLogin" id="formRegis" method="post" asp-page-handler="Regis">
@@ -31,6 +32,7 @@
             <div class="form-group">
                 <input name="Password" type="password" class="form-control login-input" placeholder="Mật khẩu" />
             </div>
+            <label class="text-danger">@ViewData["RegisError"]</label>
             <button class="btn btn-primary submitbtn" id="regisbtn" type="button">Tạo tài khoản</button>
         </form>
         <div class="policy">
@@ -57,6 +59,18 @@
     <script>
         window.onload = function () {
             $('#login').addClass('show')
+        }
+    </script>
+}
+@if (ViewData["RegisError"] != null)
+{
+    <script>
+        window.onload = function () {
+            $('#login').addClass('show')
+            $('#changeRegis').hide()
+            $('#changeLogin').show()
+            $('#formLogin').hide()
+            $('#formRegis').show()
         }
     </script>
 }

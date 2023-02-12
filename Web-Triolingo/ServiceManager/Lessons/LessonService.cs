@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Web_Triolingo.DBContext;
 using Web_Triolingo.Interface.Lessons;
 using Web_Triolingo.ModelDto;
+using Web_Triolingo.Models;
 
 namespace Web_Triolingo.ServiceManager.Lessons
 {
@@ -15,10 +16,17 @@ namespace Web_Triolingo.ServiceManager.Lessons
         }
         public async Task<List<LessonDto>> GetAllLesson()
         {
-            var lessons = await DataProvider.Ins.DB.Lessons.ToListAsync();
-            var result = _mapper.Map<List<LessonDto>>(lessons);
+            using (var context = new TriolingoDBContext())
+            {
+                var lessons = await context.Lessons.ToListAsync();
+                var result = _mapper.Map<List<LessonDto>>(lessons);
 
-            return result;
+                return result;
+            }
+            //var lessons = await DataProvider.Ins.DB.Lessons.ToListAsync();
+            //var result = _mapper.Map<List<LessonDto>>(lessons);
+
+            //return result;
         }
     }
 }

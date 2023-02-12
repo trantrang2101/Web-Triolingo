@@ -37,8 +37,11 @@ namespace Web_Triolingo.ServiceManager.User
                     Password= user.Password,
                     FullName= user.FullName,
                 };
-                await DataProvider.Ins.DB.Users.AddAsync(newUser);
-                await DataProvider.Ins.DB.SaveChangesAsync();
+                using (var context = new TriolingoDBContext())
+                {
+                    await context.AddAsync(newUser);
+                    await context.SaveChangesAsync();
+                }
                 return true;
             }
             else
