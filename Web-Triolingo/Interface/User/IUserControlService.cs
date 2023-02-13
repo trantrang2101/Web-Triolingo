@@ -6,6 +6,7 @@ namespace Web_Triolingo.Interface.User
     {
         Task<List<UserDto>> GetUsers();
         Task<UserDto> GetUser(int id);
+        List<UserDto> GetUsers(string email);
         Task<UserDto> GetUser(string email);
         Task<bool> UpdateUser(UserDto updateVal);
         Task<bool> SwitchStatus(int id);

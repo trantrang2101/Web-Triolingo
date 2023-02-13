@@ -25,7 +25,8 @@ namespace Web_Triolingo.ServiceManager.User
                 Status = newUser.Status,
                 Note = newUser.Note,
             };
-            return await DataProvider.Ins.DB.SaveChangesAsync() > 0;
+            DataProvider.Ins.DB.Add(newInstance);
+			return await DataProvider.Ins.DB.SaveChangesAsync() > 0;
         }
 
         public async Task<List<UserDto>> GetUsers()
@@ -69,7 +70,7 @@ namespace Web_Triolingo.ServiceManager.User
                 // if Status 0 => 1
                 // if Status 1 => 0
                 user.Status = 1 - user.Status;
-                DataProvider.Ins.DB.Update(user);
+                DataProvider.Ins.DB.Users.Update(user);
                 int updated = await DataProvider.Ins.DB.SaveChangesAsync();
                 return updated > 0;
             }
@@ -81,12 +82,42 @@ namespace Web_Triolingo.ServiceManager.User
             var user = await DataProvider.Ins.DB.Users.Where(user => user.Id == updateVal.Id).FirstOrDefaultAsync();
             if (user != null)
             {
-                user = _mapper.Map<Model.User>(updateVal);
-                DataProvider.Ins.DB.Update(user);
+                if (!user.Email.Equals(updateVal.Email))
+                {
+                    user.Email = updateVal.Email;
+                }
+                if (!user.FullName.Equals(updateVal.FullName))
+                {
+                    user.FullName = updateVal.FullName;
+                }
+                if (!user.Password.Equals(updateVal.Password))
+                {
+                    user.Password = updateVal.Password;
+                }
+                if (user.Status != updateVal.Status)
+                {
+                    user.Status = updateVal.Status;
+                }
+                if (!string.Equals(user.Note, updateVal.Note))
+                {
+                    user.Note = updateVal.Note;
+                }
+				if (!string.Equals(user.AvatarUrl, updateVal.AvatarUrl))
+				{
+					user.AvatarUrl = updateVal.AvatarUrl;
+				}
+				DataProvider.Ins.DB.Users.Update(user);
                 int updated = await DataProvider.Ins.DB.SaveChangesAsync();
                 return updated > 0;
             }
             return true;
         }
-    }
+
+		public List<UserDto> GetUsers(string email)
+		{
+			var users = DataProvider.Ins.DB.Users.Where(user => user.Email.Equals(email));
+			var mapped = _mapper.Map<List<UserDto>>(users);
+			return mapped;
+		}
+	}
 }
