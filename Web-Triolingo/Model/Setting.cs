@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Web_Triolingo.Models
+namespace Web_Triolingo.Model
 {
     public partial class Setting
     {
         public Setting()
         {
             InverseParent = new HashSet<Setting>();
-            Lessons = new HashSet<Lesson>();
+            Questions = new HashSet<Question>();
             UserRoles = new HashSet<UserRole>();
         }
 
@@ -21,7 +21,7 @@ namespace Web_Triolingo.Models
 
         public virtual Setting? Parent { get; set; }
         public virtual ICollection<Setting> InverseParent { get; set; }
-        public virtual ICollection<Lesson> Lessons { get; set; }
+        public virtual ICollection<Question> Questions { get; set; }
         public virtual ICollection<UserRole> UserRoles { get; set; }
     }
 }

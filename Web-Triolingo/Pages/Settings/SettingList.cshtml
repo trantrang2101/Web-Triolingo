@@ -214,7 +214,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form>
+                <form method="post" asp-page-handler="edit">
+                    <input type="hidden" name="" value="" />
                     <div class="form-group">
                         <label for="email">Tên</label>
                         <input type="email" class="form-control" id="email" placeholder="nhập tên" aria-describedby="emailHelp">
