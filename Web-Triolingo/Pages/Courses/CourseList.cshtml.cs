@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Web_Triolingo.Common;
 using Web_Triolingo.Interface.Courses;
 using Web_Triolingo.Interface.Settings;
-using Web_Triolingo.Models;
+using Web_Triolingo.Model;
 using Web_Triolingo.Pages.Settings;
 using Web_Triolingo.ServiceManager.Courses;
 using Web_Triolingo.ServiceManager.Settings;

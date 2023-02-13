@@ -6,7 +6,7 @@ using Web_Triolingo.Common;
 using Web_Triolingo.DBContext;
 using Web_Triolingo.Interface.Courses;
 using Web_Triolingo.ModelDto;
-using Web_Triolingo.Models;
+using Web_Triolingo.Model;
 
 namespace Web_Triolingo.ServiceManager.Courses
 {
