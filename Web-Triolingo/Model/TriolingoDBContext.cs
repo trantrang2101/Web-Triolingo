@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace Web_Triolingo.Models
+namespace Web_Triolingo.Model
 {
     public partial class TriolingoDBContext : DbContext
     {
@@ -16,8 +16,10 @@ namespace Web_Triolingo.Models
         {
         }
 
+        public virtual DbSet<Answer> Answers { get; set; } = null!;
         public virtual DbSet<Course> Courses { get; set; } = null!;
         public virtual DbSet<Lesson> Lessons { get; set; } = null!;
+        public virtual DbSet<Question> Questions { get; set; } = null!;
         public virtual DbSet<Setting> Settings { get; set; } = null!;
         public virtual DbSet<StudentCourse> StudentCourses { get; set; } = null!;
         public virtual DbSet<StudentLesson> StudentLessons { get; set; } = null!;
@@ -37,11 +39,34 @@ namespace Web_Triolingo.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Answer>(entity =>
+            {
+                entity.ToTable("Answer");
+
+                entity.Property(e => e.Answer1).HasColumnName("answer");
+
+                entity.Property(e => e.IsCorrect).HasColumnName("isCorrect");
+
+                entity.Property(e => e.QuestionId).HasColumnName("questionId");
+
+                entity.Property(e => e.Status)
+                    .HasColumnName("status")
+                    .HasDefaultValueSql("((1))");
+
+                entity.HasOne(d => d.Question)
+                    .WithMany(p => p.Answers)
+                    .HasForeignKey(d => d.QuestionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Answer__question__5BE2A6F2");
+            });
+
             modelBuilder.Entity<Course>(entity =>
             {
                 entity.ToTable("Course");
 
                 entity.Property(e => e.Name).HasMaxLength(150);
+
+                entity.Property(e => e.Status).HasDefaultValueSql("((1))");
             });
 
             modelBuilder.Entity<Lesson>(entity =>
@@ -52,11 +77,7 @@ namespace Web_Triolingo.Models
 
                 entity.Property(e => e.Name).HasMaxLength(150);
 
-                entity.HasOne(d => d.Type)
-                    .WithMany(p => p.Lessons)
-                    .HasForeignKey(d => d.TypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Lesson_Setting");
+                entity.Property(e => e.Status).HasDefaultValueSql("((1))");
 
                 entity.HasOne(d => d.Unit)
                     .WithMany(p => p.Lessons)
@@ -65,11 +86,48 @@ namespace Web_Triolingo.Models
                     .HasConstraintName("FK_Lesson_Unit");
             });
 
+            modelBuilder.Entity<Question>(entity =>
+            {
+                entity.ToTable("Question");
+
+                entity.Property(e => e.File).HasColumnName("file");
+
+                entity.Property(e => e.LessonId).HasColumnName("lessonId");
+
+                entity.Property(e => e.Mark)
+                    .HasColumnName("mark")
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.Question1)
+                    .HasMaxLength(150)
+                    .HasColumnName("Question");
+
+                entity.Property(e => e.Status)
+                    .HasColumnName("status")
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.TypeId).HasColumnName("typeId");
+
+                entity.HasOne(d => d.Lesson)
+                    .WithMany(p => p.Questions)
+                    .HasForeignKey(d => d.LessonId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Question__lesson__571DF1D5");
+
+                entity.HasOne(d => d.Type)
+                    .WithMany(p => p.Questions)
+                    .HasForeignKey(d => d.TypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Question__typeId__5629CD9C");
+            });
+
             modelBuilder.Entity<Setting>(entity =>
             {
                 entity.ToTable("Setting");
 
                 entity.Property(e => e.Name).HasMaxLength(150);
+
+                entity.Property(e => e.Status).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.Value).HasMaxLength(250);
 
@@ -123,6 +181,8 @@ namespace Web_Triolingo.Models
 
                 entity.Property(e => e.Name).HasMaxLength(150);
 
+                entity.Property(e => e.Status).HasDefaultValueSql("((1))");
+
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Units)
                     .HasForeignKey(d => d.CourseId)
@@ -141,6 +201,8 @@ namespace Web_Triolingo.Models
                 entity.Property(e => e.FullName).HasMaxLength(150);
 
                 entity.Property(e => e.Password).HasMaxLength(150);
+
+                entity.Property(e => e.Status).HasDefaultValueSql("((1))");
             });
 
             modelBuilder.Entity<UserRole>(entity =>

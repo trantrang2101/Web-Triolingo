@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Web_Triolingo.Models
+namespace Web_Triolingo.Model
 {
     public partial class User
     {

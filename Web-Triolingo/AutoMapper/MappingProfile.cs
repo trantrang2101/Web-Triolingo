@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Web_Triolingo.ModelDto;
-using Web_Triolingo.Models;
+using Web_Triolingo.Model;
 
 namespace Web_Triolingo.AutoMapper
 {

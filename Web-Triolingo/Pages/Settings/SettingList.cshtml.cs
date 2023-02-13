@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Web_Triolingo.Interface.Settings;
 using Web_Triolingo.ModelDto;
-using Web_Triolingo.Models;
+using Web_Triolingo.Model;
 using Web_Triolingo.ServiceManager.Settings;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Newtonsoft.Json;
@@ -70,6 +70,23 @@ namespace Web_Triolingo.Pages.Settings
             catch (Exception ex)
             {
                 _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+
+        public async Task<IActionResult> OnPostEdit()
+        {
+            try
+            {
+                var oldEntity = await _settingService.GetSettingById(SettingAdd.Id);
+                if (oldEntity != null)
+                    ViewData["OldEntity"] = oldEntity;
+                
+                return RedirectToAction("SettingList");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.ToString());
                 throw;
             }
         }
