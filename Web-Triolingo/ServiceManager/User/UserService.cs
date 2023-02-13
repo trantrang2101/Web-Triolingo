@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Web_Triolingo.DBContext;
 using Web_Triolingo.Interface.User;
 using Web_Triolingo.ModelDto;
-using Web_Triolingo.Models;
+using Web_Triolingo.Model;
 
 namespace Web_Triolingo.ServiceManager.User
 {
@@ -31,7 +31,7 @@ namespace Web_Triolingo.ServiceManager.User
             var check = FindExistEmail(user.Email);
             if (check == null)
             {
-                Web_Triolingo.Models.User newUser = new Web_Triolingo.Models.User()
+                Web_Triolingo.Model.User newUser = new Web_Triolingo.Model.User()
                 {
                     Email= user.Email,
                     Password= user.Password,
