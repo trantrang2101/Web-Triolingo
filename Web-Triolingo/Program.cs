@@ -22,6 +22,7 @@ builder.Services.AddLogging(builder =>
 builder.Services.AddTransient<ICourseService, CoursesService>();
 builder.Services.AddTransient<ISettingService, SettingService>();
 builder.Services.AddTransient<ILessonService, LessonService>();
+builder.Services.AddTransient<IUserControlService, UserControlService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddSession(options => {

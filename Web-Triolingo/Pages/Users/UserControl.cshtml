@@ -1,0 +1,68 @@
+﻿@page
+@model Web_Triolingo.Pages.Users.UserControlModel
+@{
+}
+
+<script>
+    function chgStatus(id, obj) {
+        $.ajax({
+            url: '?handler=ChgStatus&id=' + id,
+            success: function (data) {
+                if (data === "1") {
+                    $(obj).removeClass("btn-secondary");
+                    $(obj).addClass("btn-success");
+                    $(obj).html("Activated");
+                }
+                else {
+                    $(obj).addClass("btn-secondary");
+                    $(obj).removeClass("btn-success");
+                    $(obj).html("Deactivated");
+                }
+            },
+            error: function (error) {
+                alert("Error: " + error);
+            }
+        })
+    }
+</script>
+<h1 class="mb-3">List of Users</h1>
+@if (Model._cacheUsers != null && Model._cacheUsers.Any())
+{
+	<table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Password</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model._cacheUsers)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.FullName</td>
+                    <td>@user.Email</td>
+                    <td>@user.Password</td>
+                    <td>
+                        <i class="m-2">View</i>
+                        @if (user.Status == 1)
+                        {
+                            <button type="button" class="btn btn-success" onclick="chgStatus(@user.Id, $(this))">Actived</button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-secondary" onclick="chgStatus(@user.Id, $(this))">Deactived</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+	</table>
+}
+else
+{
+	<p><i>No record of user in database!</i></p>
+}
