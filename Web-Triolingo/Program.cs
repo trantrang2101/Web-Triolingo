@@ -19,7 +19,7 @@ builder.Services.AddLogging(builder =>
     builder.AddProvider(new Log4NetManager());
     builder.AddConsole();
 });
-builder.Services.AddTransient<ICourseService, CoursesService>();
+builder.Services.AddTransient<ICourseService, QuestionService>();
 builder.Services.AddTransient<ISettingService, SettingService>();
 builder.Services.AddTransient<ILessonService, LessonService>();
 builder.Services.AddTransient<IUserService, UserService>();
