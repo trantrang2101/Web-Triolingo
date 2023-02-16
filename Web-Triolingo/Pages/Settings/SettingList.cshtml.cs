@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Web_Triolingo.Interface.Settings;
@@ -57,16 +57,16 @@ namespace Web_Triolingo.Pages.Settings
         {
             try
             {
-                if (await _settingService.AddNewSetting(SettingAdd))
-                {
-                    ListAllSettings = _settingService.GetSettingsNoParentId().Result;
-                    return RedirectToAction("SettingList");
+                    if (await _settingService.AddNewSetting(SettingAdd))
+                    {
+                        ListAllSettings = _settingService.GetSettingsNoParentId().Result;
+                        return RedirectToAction("SettingList");
+                    }
+                    else
+                    {
+                        return BadRequest(ModelState);
+                    }
                 }
-                else
-                {
-                    return BadRequest(ModelState);
-                }
-            }
             catch (Exception ex)
             {
                 _logger.LogError(ex.ToString());
@@ -74,7 +74,7 @@ namespace Web_Triolingo.Pages.Settings
             }
         }
 
-        public async Task<IActionResult> OnPostEdit()
+        public async Task<IActionResult> OnPostEdit(int? id)
         {
             try
             {

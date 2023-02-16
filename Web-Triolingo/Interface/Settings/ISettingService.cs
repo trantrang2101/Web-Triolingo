@@ -13,5 +13,6 @@ namespace Web_Triolingo.Interface.Settings
         Task<List<SettingDto>> GetSettingsNoParentId();
         Task<bool> AddNewSetting(SettingDto setting);
         Task<bool> EditSetting(SettingDto setting);
+        bool IsDuplicateSetting(SettingDto item);
     }
 }
