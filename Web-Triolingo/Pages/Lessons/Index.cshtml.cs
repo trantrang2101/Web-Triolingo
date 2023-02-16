@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Web_Triolingo.Interface.Lessons;
 using Web_Triolingo.Interface.User;
+using Web_Triolingo.Model;
 using Web_Triolingo.ModelDto;
 using Web_Triolingo.Pages.Settings;
 
@@ -21,8 +22,8 @@ namespace Web_Triolingo.Pages.Lessons
             _userService = userService;
             _httpContextAccessor = httpContextAccessor;
         }
-        public List<LessonDto> ListAllLesson { get; set; }
-        public LessonDto Lesson { get; set; }
+        public List<Lesson> ListAllLesson { get; set; }
+        public Lesson Lesson { get; set; }
         public void OnGet(string loginError, string regisError)
         {
             //Get session
@@ -36,7 +37,7 @@ namespace Web_Triolingo.Pages.Lessons
             ViewData["RegisError"] = regisError;
             try
             {
-                ListAllLesson = _lessonService.GetAllLessonDTO().Result;
+                ListAllLesson = _lessonService.GetAllLesson().Result;
             }
             catch (Exception ex)
             {

@@ -1,12 +1,12 @@
 using Web_Triolingo.ModelDto;
-using Web_Triolingo.Models;
+using Web_Triolingo.Model;
 
 namespace Web_Triolingo.Interface.Lessons
 {
     public interface ILessonService
     {
-        Task<List<LessonDto>> GetAllLesson();
-        Task<LessonDto> GetLessonById(int id);
+        Task<List<Lesson>> GetAllLesson();
+        Task<Lesson> GetLessonById(int id);
         Task<bool> AddLesson(LessonDto lesson);
         Task<bool> UpdateLesson(LessonDto lesson);
         Task<bool> DeleteLesson(int id);

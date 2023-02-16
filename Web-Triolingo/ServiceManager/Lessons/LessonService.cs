@@ -21,22 +21,22 @@ namespace Web_Triolingo.ServiceManager.Lessons
             return result;
         }
 
-        public async Task<List<LessonDto>> GetAllLesson()
+        public async Task<List<Lesson>> GetAllLesson()
         {
             using (var context = new TriolingoDBContext())
             {
                 var lessons = await context.Lessons.Where(x => x.Status == 1).ToListAsync();
-                var result = _mapper.Map<List<LessonDto>>(lessons);
+                var result = _mapper.Map<List<Lesson>>(lessons);
 
                 return result;
             }
         }
-        public async Task<LessonDto> GetLessonById(int id)
+        public async Task<Lesson> GetLessonById(int id)
         {
             using (var context = new TriolingoDBContext())
             {
                 var lessons = await context.Lessons.Where(x => x.Status == 1 && x.Id == id).FirstOrDefaultAsync();
-                var result = _mapper.Map<LessonDto>(lessons);
+                var result = _mapper.Map<Lesson>(lessons);
                 return result;
             }
         }
@@ -46,14 +46,13 @@ namespace Web_Triolingo.ServiceManager.Lessons
             var check = FindExistLesson(lesson.Name);
             if (check != null)
             {
-                Web_Triolingo.Models.Lesson newUser = new Web_Triolingo.Models.Lesson()
+                Lesson newUser = new Lesson()
                 {
                     Name= lesson.Name,
                     Status = 1,
                     Note = lesson.Note,
                     Description = lesson.Description,
                     UnitId = lesson.UnitId,
-                    TypeId = lesson.TypeId,
                 };
                 using (var context = new TriolingoDBContext())
                 {
@@ -77,7 +76,6 @@ namespace Web_Triolingo.ServiceManager.Lessons
                     lessons.Note= lesson.Note;
                     lessons.Description= lesson.Description;
                     lessons.UnitId= lesson.UnitId;
-                    lessons.TypeId= lesson.TypeId;
                     //await context.Update(lessons);
                     await context.SaveChangesAsync();
                     return true;
