@@ -37,7 +37,7 @@ namespace Web_Triolingo.Pages.QnA
             this.lessonService = lessonService;
             this.unitService = unitService;
         }
-        public void OnGet(int?id)
+        public void OnGet(int id)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace Web_Triolingo.Pages.QnA
                 throw;
             }
         }
-        public void OnPostLesson(int? id)
+        public void OnPostLesson(int id)
         {
             try
             {
