@@ -14,7 +14,22 @@ namespace Web_Triolingo.ServiceManager.Lessons
         {
             _mapper = mapper;
         }
-        public async Task<List<LessonDto>> GetAllLesson()
+
+        public async Task<List<Lesson>> GetAllLesson()
+        {
+            var courses = await DataProvider.Ins.DB.Lessons.ToListAsync();
+            var result = _mapper.Map<List<Lesson>>(courses);
+            return result;
+        }
+
+        public async Task<Lesson> GetLessonById(int? id)
+        {
+            var course = await DataProvider.Ins.DB.Lessons.Where(x => x.Id == id).FirstOrDefaultAsync();
+            var result = _mapper.Map<Lesson>(course);
+            return result;
+        }
+
+        public async Task<List<LessonDto>> GetAllLessonDTO()
         {
             using (var context = new TriolingoDBContext())
             {

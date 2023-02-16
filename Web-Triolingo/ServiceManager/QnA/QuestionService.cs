@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Text.Json.Serialization;
-using Web_Triolingo.Common;
 using Web_Triolingo.DBContext;
-using Web_Triolingo.ModelDto;
 using Web_Triolingo.Model;
 using Web_Triolingo.Interface.QnA;
 
@@ -25,9 +21,9 @@ namespace Web_Triolingo.ServiceManager.QnA
             return true;
         }
 
-        public async Task<bool> EditQuestion(Question Question)
+        public async Task<bool> EditQuestion(Question course)
         {
-            var getQuestion = await DataProvider.Ins.DB.Questions.Where(x => x.Id == Question.Id).FirstOrDefaultAsync();
+            var getQuestion = await DataProvider.Ins.DB.Questions.Where(x => x.Id == course.Id).FirstOrDefaultAsync();
             if (getQuestion != null)
             {
                 await DataProvider.Ins.DB.SaveChangesAsync();
@@ -36,17 +32,17 @@ namespace Web_Triolingo.ServiceManager.QnA
             return false;
         }
 
-        public async Task<List<Question>> GetAllQuestion(int? lessonId)
+        public async Task<List<Question>> GetAllQuestions()
         {
-            var Questions = await DataProvider.Ins.DB.Questions.Where(x => x.LessonId == lessonId).ToListAsync();
-            var result = _mapper.Map<List<Question>>(Questions);
+            var courses = await DataProvider.Ins.DB.Questions.ToListAsync();
+            var result = _mapper.Map<List<Question>>(courses);
             return result;
         }
 
         public async Task<Question> GetQuestionById(int? id)
         {
-            var Question = await DataProvider.Ins.DB.Questions.Where(x => x.Id == id).FirstOrDefaultAsync();
-            var result = _mapper.Map<Question>(Question);
+            var course = await DataProvider.Ins.DB.Questions.Where(x => x.Id == id).FirstOrDefaultAsync();
+            var result = _mapper.Map<Question>(course);
             return result;
         }
     }

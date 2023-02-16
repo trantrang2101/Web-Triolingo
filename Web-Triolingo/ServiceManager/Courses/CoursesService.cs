@@ -10,10 +10,10 @@ using Web_Triolingo.Model;
 
 namespace Web_Triolingo.ServiceManager.Courses
 {
-    public class QuestionService : ICourseService
+    public class CourseService : ICourseService
     {
         private readonly IMapper _mapper;
-        public QuestionService(IMapper mapper)
+        public CourseService(IMapper mapper)
         {
             _mapper = mapper;
         }
