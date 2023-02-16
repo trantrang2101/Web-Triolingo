@@ -39,6 +39,28 @@
     color: rgb(60, 60, 60)
 }
 
+.form-group {
+    position: relative;
+}
+
+.forgot {
+    position: absolute;
+    right: 15px;
+    top: 25%;
+    position: absolute;
+    right: 15px;
+    color: #afafaf;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+}
+
+    .forgot:hover {
+        color: #777;
+    }
+
 .submitbtn {
     width: 100%;
     background: rgb(28, 176, 246);
