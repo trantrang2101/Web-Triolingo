@@ -81,7 +81,7 @@
                                 <td>
                                     <form method="post" asp-page-handler="getchild">
                                         <input type="hidden" name="Id" value="@item.Id" />
-                                        <input type="submit" class="btn btn-primary" onclick="TestAjax()" value="@count" />
+                                        <input type="submit" class="btn btn-primary" value="@count" />
                                     </form>
                                 </td>
                                 <td>@item.Name</td>
@@ -120,7 +120,7 @@
                             </tr>
 
                             count++;
-                            if (Model.AllSettingsByParent != null && Model.AllSettingsByParent.Any())
+                            if (ViewData["Id"] != null && Model.AllSettingsByParent != null && item.Id == (int)ViewData["Id"])
                             {
                                 <tr class="panel">
                                     <td>

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using Web_Triolingo.DBContext;
 using Web_Triolingo.Interface.Settings;
 using Web_Triolingo.ModelDto;
@@ -17,16 +16,16 @@ namespace Web_Triolingo.ServiceManager.Settings
         }
 
 
-        public async Task<List<SettingDto>> GetAllSetting()
+        public List<SettingDto> GetAllSetting()
         {
-            var settings = await DataProvider.Ins.DB.Settings.ToListAsync();
+            var settings = DataProvider.Ins.DB.Settings.ToList();
             var result = _mapper.Map<List<SettingDto>>(settings);
             return result;
         }
 
-        public async Task<List<SettingDto>> GetSettingByParentId(int? settingId)
+        public List<SettingDto> GetSettingByParentId(int? settingId)
         {
-            var settings = await DataProvider.Ins.DB.Settings.Where(x => x.ParentId == settingId).ToListAsync();
+            var settings = DataProvider.Ins.DB.Settings.Where(x => x.ParentId == settingId).ToList();
             var result = _mapper.Map<List<SettingDto>>(settings);
             return result;
         }
@@ -90,9 +89,9 @@ namespace Web_Triolingo.ServiceManager.Settings
             return result;
         }
 
-        public async Task<List<SettingDto>> GetSettingsNoParentId()
+        public List<SettingDto> GetSettingsNoParentId()
         {
-            var settings = await DataProvider.Ins.DB.Settings.Where(x => x.ParentId == null).ToListAsync();
+            var settings = DataProvider.Ins.DB.Settings.Where(x => x.ParentId == null).ToList();
             var result = _mapper.Map<List<SettingDto>>(settings);
             return result;
         }

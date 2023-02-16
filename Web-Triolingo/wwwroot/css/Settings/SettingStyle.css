@@ -17,12 +17,12 @@
     }
 
 .panel {
-    display: none;
-}
-
-.panel-active {
     display: contents;
 }
+
+/*.panel-active {
+    display: contents;
+}*/
 
     .panel-active td {
         padding-left: 10px;
