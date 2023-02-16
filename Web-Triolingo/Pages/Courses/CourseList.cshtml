@@ -27,7 +27,7 @@
                                     foreach (var item in Model.List)
                                     {
 
-                                        <tr onclick="document.getElementById('@("onClick"+count)').click()" class="@(Model.GetCourse!=null&&(item.Id==Model.GetCourse.Id)?"tr-selected":"")">
+                                        <tr onclick="document.getElementById('@("onClick"+count)').click()" class="@(Model.course!=null&&(item.Id==Model.course.Id)?"tr-selected":"")">
                                             <td>@count
                                                 <form method="post" hidden asp-page-handler="edit">
                                                     <input type="number" name="Id" value="@item.Id" />
@@ -100,33 +100,36 @@
                     <div class="mb-3 row">
                         <label for="name" class="col-sm-2 col-form-label">Tên<span class="text-danger">*</span></label>
                         <div class="col-sm-10">
-                            <input type="number" hidden asp-for="GetCourse.Id" />
-                            <input asp-for="GetCourse.Name" type="text" class="form-control" id="name">
+                            <input type="number" hidden asp-for="course.Id" />
+                            <input asp-for="course.Name" type="text" class="form-control" id="name">
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label for="editor" class="col-sm-2 col-form-label">Mô tả<span class="text-danger">*</span></label>
                         <div class="col-sm-10">
-                            <textarea id="editor" asp-for="GetCourse.Description"></textarea>
+                            <textarea id="editor" asp-for="course.Description"></textarea>
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label for="note" class="col-sm-2 col-form-label">Ghi chú</label>
                         <div class="col-sm-10">
-                            <textarea class="form-control w-100" id="note" asp-for="GetCourse.Note"></textarea>
+                            <textarea class="form-control w-100" id="note" asp-for="course.Note"></textarea>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary px-3" hidden id="saveBtn">Lưu</button>
                 </form>
-                <div class="row card-footer border-0 bg-transparent justify-content-between align-content-center row-cols-md-4 row-cols-2">
+                <div class="row card-footer border-0 bg-transparent justify-content-between align-content-center row-cols-md-5 row-cols-3">
                     <div class="col">
                         <form method="post" asp-page-handler="add">
                             <button type="button" class="btn btn-primary px-3">Thêm</button>
                         </form>
                     </div>
                     <div class="col"><button type="button" class="btn btn-primary px-3" id="fakeSaveBtn">Lưu</button></div>
-                <div class="col"><button type="button" class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
-                    <div class="col"><button type="button" class="btn btn-primary px-3">Import</button></div>
+                    <div class="col"><button type="button" class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
+                    @*<div class="col"><button type="button" class="btn btn-primary px-3">Import</button></div>*@
+                    <div class="col">
+                        <a asp-page="../Lessons/Index" asp-route-id="@(Model.course!=null&&Model.course.Id!=0?Model.course.Id:0)" class="btn btn-primary px-3" disabled="@Model.course==null">Các học phần</a>
+                    </div>
                 </div>
             </div>
         </div>

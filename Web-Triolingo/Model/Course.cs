@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Web_Triolingo.Models
+namespace Web_Triolingo.Model
 {
     public partial class Course
     {
@@ -12,18 +12,13 @@ namespace Web_Triolingo.Models
         }
 
         public int Id { get; set; }
-        public string? Name { get; set; } = null!;
-        public string Description { get; set; }
+        public string Name { get; set; } = null!;
+        public string Description { get; set; } = null!;
         public double? RateAverage { get; set; }
         public int Status { get; set; }
-        public string? Note { get; set; } = null!;
+        public string? Note { get; set; }
 
         public virtual ICollection<StudentCourse> StudentCourses { get; set; }
         public virtual ICollection<Unit> Units { get; set; }
-
-        public static implicit operator Task<object>(Course v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

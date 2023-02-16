@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using Web_Triolingo.DBContext;
 using Web_Triolingo.Interface.Settings;
 using Web_Triolingo.ModelDto;
-using Web_Triolingo.Models;
+using Web_Triolingo.Model;
 
 namespace Web_Triolingo.ServiceManager.Settings
 {
@@ -56,6 +56,22 @@ namespace Web_Triolingo.ServiceManager.Settings
             await DataProvider.Ins.DB.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> EditSetting(SettingDto setting)
+        {
+            var oldEntity = await DataProvider.Ins.DB.Settings.Where(x => x.Id == setting.Id).FirstOrDefaultAsync();
+            if (oldEntity != null)
+            {
+                oldEntity.Name = setting.Name;
+                oldEntity.Note = setting.Note;
+                oldEntity.Value = setting.Value;
+                oldEntity.ParentId = setting.ParentId;
+                DataProvider.Ins.DB.Settings.Update(oldEntity);
+                await DataProvider.Ins.DB.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
         public async Task<bool> ActiveSetting(int? settingId)
         {
             var settingg = await DataProvider.Ins.DB.Settings.Where(x => x.Id == settingId).FirstOrDefaultAsync();
@@ -81,12 +97,9 @@ namespace Web_Triolingo.ServiceManager.Settings
             return result;
         }
 
-        #region private method
-
-        private bool IsDuplicateSetting(SettingDto item)
+        public bool IsDuplicateSetting(SettingDto item)
         {
-            var val = DataProvider.Ins.DB.Settings.Where(x => x.Id == item.Id
-            || x.Name == item.Name
+            var val = DataProvider.Ins.DB.Settings.Where(x => x.Name == item.Name
             || x.Value == item.Value).FirstOrDefault();
             if (val == null)
             {
@@ -95,6 +108,5 @@ namespace Web_Triolingo.ServiceManager.Settings
             return true;
         }
 
-        #endregion
     }
 }

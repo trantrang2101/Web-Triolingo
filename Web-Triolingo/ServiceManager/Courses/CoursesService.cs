@@ -6,14 +6,14 @@ using Web_Triolingo.Common;
 using Web_Triolingo.DBContext;
 using Web_Triolingo.Interface.Courses;
 using Web_Triolingo.ModelDto;
-using Web_Triolingo.Models;
+using Web_Triolingo.Model;
 
 namespace Web_Triolingo.ServiceManager.Courses
 {
-    public class CoursesService : ICourseService
+    public class CourseService : ICourseService
     {
         private readonly IMapper _mapper;
-        public CoursesService(IMapper mapper)
+        public CourseService(IMapper mapper)
         {
             _mapper = mapper;
         }

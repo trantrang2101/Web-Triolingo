@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Web_Triolingo.DBContext;
 using Web_Triolingo.Interface.Lessons;
 using Web_Triolingo.ModelDto;
-using Web_Triolingo.Models;
+using Web_Triolingo.Model;
 
 namespace Web_Triolingo.ServiceManager.Lessons
 {

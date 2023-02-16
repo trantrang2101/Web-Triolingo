@@ -1,4 +1,4 @@
-﻿using Web_Triolingo.ModelDto;
+using Web_Triolingo.ModelDto;
 using Web_Triolingo.Models;
 
 namespace Web_Triolingo.Interface.Lessons

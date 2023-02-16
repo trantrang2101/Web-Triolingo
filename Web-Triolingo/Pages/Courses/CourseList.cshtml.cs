@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Web_Triolingo.Common;
 using Web_Triolingo.Interface.Courses;
 using Web_Triolingo.Interface.Settings;
-using Web_Triolingo.Models;
+using Web_Triolingo.Model;
 using Web_Triolingo.Pages.Settings;
 using Web_Triolingo.ServiceManager.Courses;
 using Web_Triolingo.ServiceManager.Settings;
@@ -17,7 +17,7 @@ namespace Web_Triolingo.Pages.Courses
         private readonly ICourseService service;
         public List<Course> List { get; set; }
         [BindProperty]
-        public Course GetCourse { get; set; }
+        public Course course { get; set; }
         public CourseListModel(ILogger<CourseListModel> _logger, ICourseService _service)
         {
             logger = _logger;
@@ -39,7 +39,7 @@ namespace Web_Triolingo.Pages.Courses
         {
             try
             {
-                GetCourse = service.GetCourseById(id).Result;
+                course = service.GetCourseById(id).Result;
                 List = service.GetAllCourse().Result;
             }
             catch (Exception ex)
@@ -52,8 +52,8 @@ namespace Web_Triolingo.Pages.Courses
         {
             try
             {
-                GetCourse = new Course();
-                GetCourse.Id = 0;
+                course = new Course();
+                course.Id = 0;
                 List = service.GetAllCourse().Result;
             }
             catch (Exception ex)
@@ -66,16 +66,16 @@ namespace Web_Triolingo.Pages.Courses
         {
             try
             {
-                if (GetCourse == null || GetCourse.Id == null || GetCourse.Id == 0)
+                if (course == null || course.Id == null || course.Id == 0)
                 {
-                    if (service.AddNewCourse(GetCourse).Result == false)
+                    if (service.AddNewCourse(course).Result == false)
                     {
                         return BadRequest();
                     }
                 }
                 else
                 {
-                    if (service.EditCourse(GetCourse).Result == false)
+                    if (service.EditCourse(course).Result == false)
                     {
                         return BadRequest();
                     }

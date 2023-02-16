@@ -36,7 +36,7 @@ namespace Web_Triolingo.Pages.Lessons
             ViewData["RegisError"] = regisError;
             try
             {
-                ListAllLesson = _lessonService.GetAllLesson().Result;
+                ListAllLesson = _lessonService.GetAllLessonDTO().Result;
             }
             catch (Exception ex)
             {

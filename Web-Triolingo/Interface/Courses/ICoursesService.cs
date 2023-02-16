@@ -1,5 +1,5 @@
 ﻿using Web_Triolingo.Common;
-using Web_Triolingo.Models;
+using Web_Triolingo.Model;
 
 namespace Web_Triolingo.Interface.Courses
 {

@@ -5,7 +5,6 @@
 <h1>Quản lý cài đặt</h1>
 
 <div class="">
-    <button type="button" class="btn btn-secondary">Xóa</button>
     <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
         Thêm mới
     </a>
@@ -46,211 +45,193 @@
                     </select>
                     <br />
                     <button type="submit" class="btn btn-primary">Thêm</button>
+                    @if (ViewData["ErrorMesageAdd"] != null)
+                    {
+                        <span class="btn btn-danger">@ViewData["ErrorMesageAdd"]</span>
+                    }
                 </form>
             </div>
         </div>
     </div>
 </div>
-<table class="table">
-    <thead>
-        <tr>
-            <td>No</td>
-            <th>Tên</th>
-            <th>Trạng thái</th>
-            <th>Giá trị</th>
-            <th>Ghi chú</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @{
-            int count = 1;
-        }
-        @{
-            foreach (var item in Model.ListAllSettings)
-            {
-
-                <tr class="accoordion">
-                    <td>
-                        <form method="post" asp-page-handler="getchild">
-                            <input type="hidden" name="Id" value="@item.Id" />
-                            <input type="submit" onclick="TestAjax()" value="@count" />
-                        </form>
-                    </td>
-                    <td>@item.Name</td>
-                    <td>
-                        @{
-                            if (item.Status == 1)
-                            {
-                                <span class="badge bg-success">Active</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger">Deactive</span>
-                            }
-                        }
-                    </td>
-                    <td>@item.Value</td>
-                    <td>@item.Note</td>
-                    <td>
-                        @{
-                            if (item.Status == 1)
-                            {
-                                <form method="post">
-                                    <input type="hidden" name="Id" value="@item.Id" />
-                                    <input class="btn bg-danger" type="submit" value="Deactive" />
-                                </form>
-                            }
-                            else
-                            {
-                                <form method="post">
-                                    <input type="hidden" name="Id" value="@item.Id" />
-                                    <input class="btn bg-success" type="submit" value="Active" />
-                                </form>
-                            }
-                            <a class="material-symbols-outlined" data-bs-toggle="modal" data-bs-target="#exampleModal" style="text-decoration: none; cursor: pointer;">
-                                edit
-                            </a>
-                            //<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
-                            //    <div class="offcanvas-header">
-                            //        <div class="offcanvas-body">
-                            //            <div>
-                            //                Edit setting
-                            //            </div>
-                            //            <form>
-                            //                <div class="form-group">
-                            //                    <label for="email">Tên</label>
-                            //                    <input type="email" class="form-control" id="email" placeholder="nhập tên" aria-describedby="emailHelp">
-                            //                </div>
-                            //                <div class="form-group">
-                            //                    <label for="password">Giá trị</label>
-                            //                    <input type="password" class="form-control" id="password" placeholder="nhập giá trị">
-                            //                </div>
-                            //                <div class="form-group">
-                            //                    <label for="password">Ghi chú</label>
-                            //                    <input type="password" class="form-control" id="password" placeholder="nhập ghi chú">
-                            //                </div>
-
-                            //                <div class="form-check">
-                            //                    <label for="chkShowSelect">Có phải cài đặt cha không?</label>
-                            //                    <input id="chkShowSelect" class="form-check-input" type="checkbox">
-                            //                </div>
-                            //                <br />
-                            //                <select class="form-select" id="selOption" style="display: none;">
-                            //                    <option>@item.Name</option>
-                            //                </select>
-                            //                <br />
-                            //                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                            //            </form>
-                            //        </div>
-                            //    </div>
-                            //</div>
-                        }
-                    </td>
-                </tr>
-
-                count++;
-                if (Model.AllSettingsByParent != null && Model.AllSettingsByParent.Any())
-                {
-                    <tr class="panel">
-                        <td>
-                            <table>
-                                @{
-                                    foreach (var item2 in Model.AllSettingsByParent)
-                                    {
-                                        int count2 = 1;
-                                        <tr>
-                                            <td>@item2.Name</td>
-                                            <td>@item2.Name</td>
-                                            <td>
-                                                @{
-                                                    if (item2.Status == 1)
-                                                    {
-                                                        <span class="badge bg-success">Active</span>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="badge bg-danger">Deactive</span>
-                                                    }
-                                                }
-                                            </td>
-                                            <td>@item2.Value</td>
-                                            <td>@item2.Note</td>
-                                            <td>
-                                                @{
-                                                    if (item2.Status == 1)
-                                                    {
-                                                        <form method="post">
-                                                            <input type="hidden" name="Id" value="@item2.Id" />
-                                                            <input class="btn bg-danger" type="submit" value="Deactive" />
-                                                        </form>
-                                                    }
-                                                    else
-                                                    {
-                                                        <form method="post">
-                                                            <input type="hidden" name="Id" value="@item2.Id" />
-                                                            <input class="btn bg-success" type="submit" value="Active" />
-                                                        </form>
-                                                    }
-                                                }
-                                            </td>
-                                        </tr>
-                                        count2++;
-                                    }
-                                }
-                            </table>
-                        </td>
+<div class="row p-0">
+    <div class="col-md-8 col-12">
+        <h5 class="card-header bg-transparent text-uppercase">Danh sách</h5>
+        <div class="boxscroll card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr class="table-primary">
+                        <td>No</td>
+                        <th>Tên</th>
+                        <th>Trạng thái</th>
+                        <th>Giá trị</th>
+                        <th>Ghi chú</th>
+                        <th>Action</th>
                     </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int count = 1;
+                    }
+                    @{
+                        foreach (var item in Model.ListAllSettings)
+                        {
+
+                            <tr class="accoordion">
+                                <td>
+                                    <form method="post" asp-page-handler="getchild">
+                                        <input type="hidden" name="Id" value="@item.Id" />
+                                        <input type="submit" class="btn btn-primary" onclick="TestAjax()" value="@count" />
+                                    </form>
+                                </td>
+                                <td>@item.Name</td>
+                                <td>
+                                    @{
+                                        if (item.Status == 1)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Deactive</span>
+                                        }
+                                    }
+                                </td>
+                                <td>@item.Value</td>
+                                <td>@item.Note</td>
+                                <td>
+                                    @{
+                                        if (item.Status == 1)
+                                        {
+                                            <form method="post">
+                                                <input type="hidden" name="Id" value="@item.Id" />
+                                                <input class="btn bg-danger" type="submit" value="Deactive" />
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form method="post">
+                                                <input type="hidden" name="Id" value="@item.Id" />
+                                                <input class="btn bg-success" type="submit" value="Active" />
+                                            </form>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+
+                            count++;
+                            if (Model.AllSettingsByParent != null && Model.AllSettingsByParent.Any())
+                            {
+                                <tr class="panel">
+                                    <td>
+                                        <table>
+                                            @{
+                                                foreach (var item2 in Model.AllSettingsByParent)
+                                                {
+                                                    int count2 = 1;
+                                                    <tr>
+                                                        <td>@item2.Name</td>
+                                                        <td>@item2.Name</td>
+                                                        <td>
+                                                            @{
+                                                                if (item2.Status == 1)
+                                                                {
+                                                                    <span class="badge bg-success">Active</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="badge bg-danger">Deactive</span>
+                                                                }
+                                                            }
+                                                        </td>
+                                                        <td>@item2.Value</td>
+                                                        <td>@item2.Note</td>
+                                                        <td>
+                                                            @{
+                                                                if (item2.Status == 1)
+                                                                {
+                                                                    <form method="post">
+                                                                        <input type="hidden" name="Id" value="@item2.Id" />
+                                                                        <input class="btn bg-danger" type="submit" value="Deactive" />
+                                                                    </form>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <form method="post">
+                                                                        <input type="hidden" name="Id" value="@item2.Id" />
+                                                                        <input class="btn bg-success" type="submit" value="Active" />
+                                                                    </form>
+                                                                }
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                    count2++;
+                                                }
+                                            }
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-4 col-12">
+        <div class="card">
+            <h5 class="card-header bg-transparent text-uppercase">Chi tiết</h5>
+            <form method="post" class="card-body boxscroll" asp-page-handler="edit">
+                <input type="hidden" asp-for="SettingAdd.Id" />
+                <div class="mb-3 row">
+                    <label for="name" class="col-sm-2 col-form-label">Tên<span class="text-danger">*</span></label>
+                    <div class="col-sm-10">
+                        @*<input type="number" hidden asp-for="GetCourse.Id" />*@
+                        <input asp-for="SettingAdd.Name" type="text" class="form-control" id="name">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="valueSet" class="col-sm-2 col-form-label">Giá trị<span class="text-danger">*</span></label>
+                    <div class="col-sm-10">
+                        @*<input type="number" hidden asp-for="GetCourse.Id" />*@
+                        <input asp-for="SettingAdd.Value" type="text" class="form-control" id="valueSet">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="note" class="col-sm-2 col-form-label">Ghi chú<span class="text-danger">*</span></label>
+                    <div class="col-sm-10">
+                        <textarea id="editor" asp-for="SettingAdd.Note"></textarea>
+                    </div>
+                </div>
+                @{
+                    //if (Model.SettingAdd.ParentId != null)
+                    //{
+                    //    <div class="mb-3 row">
+                    //        <label for="note" class="col-sm-2 col-form-label">Cài đặt cha<span class="text-danger">*</span></label>
+                    //        <div class="col-sm-10">
+                    //            @*<input type="number" hidden asp-for="GetCourse.Id" />*@
+                    //            <select class="form-select" asp-for="SettingAdd.ParentId" id="parentId">
+                    //                @{
+                    //                    foreach (var item in Model.ListAllSettings)
+                    //                    {
+                    //                        bool isSelect = (Model.SettingAdd.ParentId == item.Id);
+                    //                        if (isSelect)
+                    //                        {
+                    //                            <option selected id="@item.Id" value="@item.Id">@item.Name</option>
+                    //                        }
+                    //                        else
+                    //                        {
+                    //                            <option id="@item.Id" value="@item.Id">@item.Name</option>
+                    //                        }
+                    //                    }
+                    //                }
+                    //            </select>
+                    //        </div>
+                    //    </div>
+                    //}
                 }
-            }
-        }
-    </tbody>
-</table>
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Sửa cài đặt</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="email">Tên</label>
-                        <input type="email" class="form-control" id="email" placeholder="nhập tên" aria-describedby="emailHelp">
-
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Giá trị</label>
-                        <input type="password" class="form-control" id="password" placeholder="nhập giá trị">
-
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Ghi chú</label>
-                        <input type="password" class="form-control" id="password" placeholder="nhập ghi chú">
-
-                    </div>
-
-                    <div class="form-check">
-                        <label for="chkShowSelect">Có phải cài đặt cha không?</label>
-                        <input id="chkShowSelect" class="form-check-input" type="checkbox">
-
-                    </div>
-                    <br />
-                    <select class="form-select" id="selOption" style="display: none;">
-
-                        <option>222</option>
-
-                    </select>
-                    <br />
-                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
+                <div class="col"><button type="button" class="btn btn-primary px-3" id="fakeSaveBtn">Lưu</button></div>
+            </form>
         </div>
     </div>
 </div>

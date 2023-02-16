@@ -1,0 +1,146 @@
+﻿@page
+@model Web_Triolingo.Pages.QnA.IndexModel
+@{
+    ViewData["Title"] = "Quản lý câu hỏi và bài tập";
+}
+<h2 class="text-uppercase">Quản lý câu hỏi và bài tập</h2>
+<div class="row p-0">
+    <div class="col-md-4 col-12">
+        <div class="card">
+            <h5 class="card-header bg-transparent text-uppercase">Danh sách</h5>
+            <div class="boxscroll card-body">
+                <table class="table table-hover ">
+                    <thead>
+                        <tr class="table-primary">
+                            <th>#</th>
+                            <th>Câu hỏi</th>
+                            <th>Loại</th>
+                            <th>Điểm</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model.List != null)
+                            {
+                                int count = 1;
+                                foreach (var item in Model.List)
+                                {
+
+                                    <tr onclick="document.getElementById('@("onClick"+count)').click()" class="@(Model.Question!=null&&(item.Id==Model.Question.Id)?"tr-selected":"")">
+                                        <td>
+                                            @count
+                                            <form method="post" hidden asp-page-handler="edit">
+                                                <input type="number" name="Id" value="@item.Id" />
+                                                <input type="submit" id="@("onClick"+count)" />
+                                            </form>
+                                        </td>
+                                        <td>@item.Question1</td>
+                                        <td>@item.Type.Name</td>
+                                        <td>@item.Mark</td>
+                                    </tr>
+
+                                    count++;
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer bg-transparent d-flex justify-content-between align-content-center">
+                <div>
+                    <select class="form-select">
+                        <option selected>15</option>
+                        <option value="1">30</option>
+                        <option value="2">50</option>
+                        <option value="3">100</option>
+                    </select>
+                </div>
+                <ul class="pagination m-0">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8 col-12">
+        <div class="card">
+            <h5 class="card-header bg-transparent text-uppercase">Chi tiết</h5>
+            <form method="post" class="card-body boxscroll" asp-page-handler="save">
+                <div class="mb-3 row">
+                    <label for="name" class="col-sm-2 col-form-label">Tên<span class="text-danger">*</span></label>
+                    <div class="col-sm-10">
+                        <input type="number" hidden asp-for="Question.Id" />
+                        <input asp-for="Question.Question1" type="text" class="form-control" id="name">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="editor" class="col-sm-2 col-form-label">Mô tả<span class="text-danger">*</span></label>
+                    <div class="col-sm-10">
+                        <textarea id="editor" asp-for="Question.Description"></textarea>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="editor" class="col-sm-2 col-form-label">Mô tả<span class="text-danger">*</span></label>
+                    <div class="col-sm-10">
+                        <select class="form-select" asp-for="Question.TypeId" asp-items="@(Model.Settings)">
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary px-3" hidden id="saveBtn">Lưu</button>
+            </form>
+            <div class="row card-footer border-0 bg-transparent justify-content-between align-content-center row-cols-md-5 row-cols-3">
+                <div class="col">
+                    <form method="post" asp-page-handler="add">
+                        <button type="button" class="btn btn-primary px-3">Thêm</button>
+                    </form>
+                </div>
+                <div class="col"><button type="button" class="btn btn-primary px-3" id="fakeSaveBtn">Lưu</button></div>
+                <div class="col"><button type="button" class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
+                @*<div class="col"><button type="button" class="btn btn-primary px-3">Import</button></div>*@
+                <div class="col">
+                    <a asp-page="../Lessons/Index" asp-route-id="@(Model.Question!=null&&Model.Question.Id!=0?Model.Question.Id:0)" class="btn btn-primary px-3" disabled="@Model.Question==null">Các học phần</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+        let isDisabled = true;
+        $(document).ready(() => {
+            document.getElementById('fakeSaveBtn').addEventListener('click', () => {
+                document.getElementById('saveBtn').click();
+            })
+            ClassicEditor.create(document.querySelector("#editor"), {
+                language: 'vi',
+                content: 'vi',
+            }).then((e => {
+                window.editor = e;
+                const o = document.querySelector("#disabledMode");
+                let t = !1;
+                o.addEventListener("click", (() => {
+                    isDisabled = !isDisabled;
+                    $("input,textarea,select").attr("disabled", isDisabled);
+                    t = !t, t ? e.disableReadOnlyMode("docs-snippet") : e.enableReadOnlyMode("docs-snippet"), e.editing.view.focus()
+                }));
+                const n = e.ui.view.toolbar.element;
+                e.on("change:isReadOnly", ((e, o, t) => {
+                    n.style.display = t ? "none" : "flex"
+                }))
+            })).catch((e => {
+                console.error(e.stack)
+            }))
+        })
+    </script>
+}
