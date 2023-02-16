@@ -97,12 +97,9 @@ namespace Web_Triolingo.ServiceManager.Settings
             return result;
         }
 
-        #region private method
-
-        private bool IsDuplicateSetting(SettingDto item)
+        public bool IsDuplicateSetting(SettingDto item)
         {
-            var val = DataProvider.Ins.DB.Settings.Where(x => x.Id == item.Id
-            || x.Name == item.Name
+            var val = DataProvider.Ins.DB.Settings.Where(x => x.Name == item.Name
             || x.Value == item.Value).FirstOrDefault();
             if (val == null)
             {
@@ -111,6 +108,5 @@ namespace Web_Triolingo.ServiceManager.Settings
             return true;
         }
 
-        #endregion
     }
 }

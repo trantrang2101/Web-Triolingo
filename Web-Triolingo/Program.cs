@@ -2,6 +2,7 @@
 using Web_Triolingo.Interface.Courses;
 using Web_Triolingo.Interface.Lessons;
 using Web_Triolingo.Interface.Settings;
+using Web_Triolingo.Interface.Units;
 using Web_Triolingo.Interface.User;
 using Web_Triolingo.Logger;
 using Web_Triolingo.ServiceManager.Courses;
@@ -23,6 +24,7 @@ builder.Services.AddTransient<ICourseService, QuestionService>();
 builder.Services.AddTransient<ISettingService, SettingService>();
 builder.Services.AddTransient<ILessonService, LessonService>();
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IUnitService, IUnitService>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(60);//You can set Time   
