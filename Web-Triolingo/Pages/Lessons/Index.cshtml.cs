@@ -22,6 +22,7 @@ namespace Web_Triolingo.Pages.Lessons
             _httpContextAccessor = httpContextAccessor;
         }
         public List<LessonDto> ListAllLesson { get; set; }
+        public LessonDto Lesson { get; set; }
         public void OnGet(string loginError, string regisError)
         {
             //Get session
@@ -36,6 +37,36 @@ namespace Web_Triolingo.Pages.Lessons
             try
             {
                 ListAllLesson = _lessonService.GetAllLessonDTO().Result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        public void OnPostLessonById(int id)
+        {
+            try
+            {
+                Lesson = _lessonService.GetLessonById(id).Result;
+                ListAllLesson = _lessonService.GetAllLesson().Result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        public void OnPostAdd(LessonDto lesson)
+        {
+            try
+            {
+                var check = _lessonService.AddLesson(lesson).Result;
+                if(check == true)
+                {
+
+                }
+                ListAllLesson = _lessonService.GetAllLesson().Result;
             }
             catch (Exception ex)
             {
