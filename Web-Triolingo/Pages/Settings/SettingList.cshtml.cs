@@ -23,11 +23,12 @@ namespace Web_Triolingo.Pages.Settings
         public List<SettingDto> AllSettingsByParent { get; set; }
         [BindProperty]
         public SettingDto SettingAdd { get; set; }
+        public int a { get; set; }
         public void OnGet()
         {
             try
             {
-                ListAllSettings = _settingService.GetSettingsNoParentId().Result;
+                ListAllSettings = _settingService.GetSettingsNoParentId();
             }
             catch (Exception ex)
             {
@@ -35,17 +36,22 @@ namespace Web_Triolingo.Pages.Settings
                 throw;
             }
         }
-        public JsonResult OnPostGetChild(int? id)
+        public void OnPostGetChild(int? id)
         {
             try
             {
-                AllSettingsByParent = _settingService.GetSettingByParentId(id).Result;
-                ListAllSettings = _settingService.GetSettingsNoParentId().Result;
-                //return RedirectToAction("SettingList");
-                return new JsonResult(AllSettingsByParent, new JsonSerializerSettings
+                AllSettingsByParent = _settingService.GetSettingByParentId(id);
+                ListAllSettings = _settingService.GetSettingsNoParentId();
+                
+                if ((int)a == id)
                 {
-                    Formatting = Formatting.Indented
-                });
+                    ViewData["Id"] = "0";
+                }
+                else
+                {
+                    ViewData["Id"] = id;
+                }
+                a = (int)ViewData["Id"];
             }
             catch (Exception ex)
             {
@@ -57,16 +63,16 @@ namespace Web_Triolingo.Pages.Settings
         {
             try
             {
-                    if (await _settingService.AddNewSetting(SettingAdd))
-                    {
-                        ListAllSettings = _settingService.GetSettingsNoParentId().Result;
-                        return RedirectToAction("SettingList");
-                    }
-                    else
-                    {
-                        return BadRequest(ModelState);
-                    }
+                if (await _settingService.AddNewSetting(SettingAdd))
+                {
+                    ListAllSettings = _settingService.GetSettingsNoParentId();
+                    return RedirectToAction("SettingList");
                 }
+                else
+                {
+                    return BadRequest(ModelState);
+                }
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex.ToString());
@@ -81,7 +87,7 @@ namespace Web_Triolingo.Pages.Settings
                 var oldEntity = await _settingService.GetSettingById(SettingAdd.Id);
                 if (oldEntity != null)
                     ViewData["OldEntity"] = oldEntity;
-                
+
                 return RedirectToAction("SettingList");
             }
             catch (Exception e)

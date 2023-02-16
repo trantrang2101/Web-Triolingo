@@ -13,35 +13,35 @@ function ViewDetail() {
         });
     }
 }
-function TestAjax() {
-    $(document).ready(function () {
-        $('#form').submit(function (e) {
-            e.preventDefault();
-            var form = $(this);
-            $.ajax({
-                type: "POST",
-                url: form.attr('action'),
-                data: form.serialize(),
-                success: function (data) {
-                    // Code to clear existing table data
-                    $('.panel td').empty();
-                    // Loop through returned data and append to table
-                    $.each(data, function (index, item) {
-                        var row = '<tr>' +
-                            '<td>' + item.Name + '</td>' +
-                            '<td>' + item.Column2 + '</td>' +
-                            '<td>' + item.Column3 + '</td>' +
-                            '</tr>';
-                        $('.panel td').append(row);
-                    });
-                },
-                error: function () {
-                    // Code logic on error
-                }
-            });
-        });
-    });
-}
+//function TestAjax() {
+//    $(document).ready(function () {
+//        $('#form').submit(function (e) {
+//            e.preventDefault();
+//            var form = $(this);
+//            $.ajax({
+//                type: "POST",
+//                url: form.attr('action'),
+//                data: form.serialize(),
+//                success: function (data) {
+//                    // Code to clear existing table data
+//                    $('.panel td').empty();
+//                    // Loop through returned data and append to table
+//                    $.each(data, function (index, item) {
+//                        var row = '<tr>' +
+//                            '<td>' + item.Name + '</td>' +
+//                            '<td>' + item.Column2 + '</td>' +
+//                            '<td>' + item.Column3 + '</td>' +
+//                            '</tr>';
+//                        $('.panel td').append(row);
+//                    });
+//                },
+//                error: function () {
+//                    // Code logic on error
+//                }
+//            });
+//        });
+//    });
+//}
 
 var chkShowSelect = document.getElementById("chkShowSelect");
 var selOption = document.getElementById("selOption");
