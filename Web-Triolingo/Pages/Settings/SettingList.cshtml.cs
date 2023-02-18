@@ -20,15 +20,15 @@ namespace Web_Triolingo.Pages.Settings
             _settingService = settingService;
         }
         public List<SettingDto> ListAllSettings { get; set; }
-        public List<SettingDto> AllSettingsByParent { get; set; }
+        public List<SettingDto> ParentSetting { get; set; }
         [BindProperty]
         public SettingDto SettingAdd { get; set; }
-        public int a { get; set; }
         public void OnGet()
         {
             try
             {
-                ListAllSettings = _settingService.GetSettingsNoParentId();
+                ListAllSettings = _settingService.OrderSettingsParent();
+                ParentSetting = _settingService.GetSettingsNoParentId();
             }
             catch (Exception ex)
             {
@@ -36,29 +36,29 @@ namespace Web_Triolingo.Pages.Settings
                 throw;
             }
         }
-        public void OnPostGetChild(int? id)
-        {
-            try
-            {
-                AllSettingsByParent = _settingService.GetSettingByParentId(id);
-                ListAllSettings = _settingService.GetSettingsNoParentId();
-                
-                if ((int)a == id)
-                {
-                    ViewData["Id"] = "0";
-                }
-                else
-                {
-                    ViewData["Id"] = id;
-                }
-                a = (int)ViewData["Id"];
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.ToString());
-                throw;
-            }
-        }
+        //public void OnPostGetChild(int? id)
+        //{
+        //    try
+        //    {
+        //        AllSettingsByParent = _settingService.GetSettingByParentId(id);
+        //        ListAllSettings = _settingService.GetSettingsNoParentId();
+
+        //        if ((int)a == id)
+        //        {
+        //            ViewData["Id"] = "0";
+        //        }
+        //        else
+        //        {
+        //            ViewData["Id"] = id;
+        //        }
+        //        a = (int)ViewData["Id"];
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.ToString());
+        //        throw;
+        //    }
+        //}
         public async Task<IActionResult> OnPostAdd()
         {
             try
@@ -79,16 +79,28 @@ namespace Web_Triolingo.Pages.Settings
                 throw;
             }
         }
-
-        public async Task<IActionResult> OnPostEdit(int? id)
+        public void OnPostUpdateSetting(int? id)
         {
             try
             {
-                var oldEntity = await _settingService.GetSettingById(SettingAdd.Id);
-                if (oldEntity != null)
-                    ViewData["OldEntity"] = oldEntity;
+                ListAllSettings = _settingService.OrderSettingsParent();
+                ParentSetting = _settingService.GetSettingsNoParentId();
+                SettingAdd = _settingService.GetSettingById(id).Result;
 
-                return RedirectToAction("SettingList");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.ToString());
+                throw;
+            }
+        }
+        public async Task<IActionResult> OnPostEdit()
+        {
+            try
+            {
+                  if (_settingService.EditSetting(SettingAdd).Result)
+                    return RedirectToAction("SettingList");
+                return NotFound();
             }
             catch (Exception e)
             {
