@@ -61,7 +61,7 @@ namespace Web_Triolingo.Pages.QnA
                 {
                     Lesson = lessonService.GetLessonById(id).Result;
                 }
-                Unit = unitService.GetById(Lesson?.UnitId).Result;
+                Unit = unitService.GetById(Lesson?.UnitId);
                 Course = courseService.GetCourseById(Unit.CourseId).Result;
                 Units = Course.Units.ToList();
                 Lessons = Unit.Lessons.ToList();
