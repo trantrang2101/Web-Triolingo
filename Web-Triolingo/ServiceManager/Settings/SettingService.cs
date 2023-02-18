@@ -15,7 +15,6 @@ namespace Web_Triolingo.ServiceManager.Settings
             _mapper = mapper;
         }
 
-
         public List<SettingDto> GetAllSetting()
         {
             var settings = DataProvider.Ins.DB.Settings.ToList();
@@ -86,6 +85,19 @@ namespace Web_Triolingo.ServiceManager.Settings
         {
             var settings = await DataProvider.Ins.DB.Settings.Where(x => x.Id == id).FirstOrDefaultAsync();
             var result = _mapper.Map<SettingDto>(settings);
+            return result;
+        }
+
+        public List<SettingDto> OrderSettingsParent()
+        {
+            List<SettingDto> temp = new List<SettingDto>();
+            temp = GetSettingsNoParentId();
+            List<SettingDto> result = new List<SettingDto>();
+            foreach (var item in temp)
+            {
+                result.Add(item);
+                result.AddRange(GetSettingByParentId(item.Id));
+            }
             return result;
         }
 

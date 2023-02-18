@@ -30,14 +30,14 @@
                     </div>
 
                     <div class="form-check">
-                        <label for="chkShowSelect">Có phải cài đặt cha không?</label>
+                        <label for="chkShowSelect">Có phải cài đặt con không?</label>
                         <input id="chkShowSelect" class="form-check-input" type="checkbox">
                     </div>
                     <br />
                     <select class="form-select" asp-for="SettingAdd.ParentId" id="selOption" style="display: none;">
                         @{
                             <option selected value="">None</option>
-                            foreach (var item in Model.ListAllSettings)
+                            foreach (var item in Model.ParentSetting)
                             {
                                 <option id="@item.Id" value="@item.Id">@item.Name</option>
                             }
@@ -71,18 +71,29 @@
                 </thead>
                 <tbody>
                     @{
-                        int count = 1;
-                    }
-                    @{
                         foreach (var item in Model.ListAllSettings)
                         {
-
-                            <tr class="accoordion">
+                            bool checkParent = item.ParentId == null;
+                            string classTab = checkParent ? "table-warning" : "";
+                            <tr class="@classTab" onclick="UpdateSetting(@item.Id)">
+                                <form method="post" asp-page-handler="updatesetting" id="update-@item.Id">
+                                    <input type="hidden" value="@item.Id" name="id" />
+                                </form>
                                 <td>
-                                    <form method="post" asp-page-handler="getchild">
-                                        <input type="hidden" name="Id" value="@item.Id" />
-                                        <input type="submit" class="btn btn-primary" value="@count" />
-                                    </form>
+                                    @{
+                                        if (checkParent)
+                                        {
+                                            <span class="material-symbols-outlined">
+                                                arrow_drop_down
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="material-symbols-outlined">
+                                                arrow_right
+                                            </span>
+                                        }
+                                    }
                                 </td>
                                 <td>@item.Name</td>
                                 <td>
@@ -118,60 +129,6 @@
                                     }
                                 </td>
                             </tr>
-
-                            count++;
-                            if (ViewData["Id"] != null && Model.AllSettingsByParent != null && item.Id == (int)ViewData["Id"])
-                            {
-                                <tr class="panel">
-                                    <td>
-                                        <table>
-                                            @{
-                                                foreach (var item2 in Model.AllSettingsByParent)
-                                                {
-                                                    int count2 = 1;
-                                                    <tr>
-                                                        <td>@item2.Name</td>
-                                                        <td>@item2.Name</td>
-                                                        <td>
-                                                            @{
-                                                                if (item2.Status == 1)
-                                                                {
-                                                                    <span class="badge bg-success">Active</span>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <span class="badge bg-danger">Deactive</span>
-                                                                }
-                                                            }
-                                                        </td>
-                                                        <td>@item2.Value</td>
-                                                        <td>@item2.Note</td>
-                                                        <td>
-                                                            @{
-                                                                if (item2.Status == 1)
-                                                                {
-                                                                    <form method="post">
-                                                                        <input type="hidden" name="Id" value="@item2.Id" />
-                                                                        <input class="btn bg-danger" type="submit" value="Deactive" />
-                                                                    </form>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <form method="post">
-                                                                        <input type="hidden" name="Id" value="@item2.Id" />
-                                                                        <input class="btn bg-success" type="submit" value="Active" />
-                                                                    </form>
-                                                                }
-                                                            }
-                                                        </td>
-                                                    </tr>
-                                                    count2++;
-                                                }
-                                            }
-                                        </table>
-                                    </td>
-                                </tr>
-                            }
                         }
                     }
                 </tbody>
@@ -182,18 +139,16 @@
         <div class="card">
             <h5 class="card-header bg-transparent text-uppercase">Chi tiết</h5>
             <form method="post" class="card-body boxscroll" asp-page-handler="edit">
-                <input type="hidden" asp-for="SettingAdd.Id" />
+                <input type="number" hidden asp-for="SettingAdd.Id"/>
                 <div class="mb-3 row">
                     <label for="name" class="col-sm-2 col-form-label">Tên<span class="text-danger">*</span></label>
                     <div class="col-sm-10">
-                        @*<input type="number" hidden asp-for="GetCourse.Id" />*@
                         <input asp-for="SettingAdd.Name" type="text" class="form-control" id="name">
                     </div>
                 </div>
                 <div class="mb-3 row">
                     <label for="valueSet" class="col-sm-2 col-form-label">Giá trị<span class="text-danger">*</span></label>
                     <div class="col-sm-10">
-                        @*<input type="number" hidden asp-for="GetCourse.Id" />*@
                         <input asp-for="SettingAdd.Value" type="text" class="form-control" id="valueSet">
                     </div>
                 </div>
@@ -230,7 +185,7 @@
                     //    </div>
                     //}
                 }
-                <div class="col"><button type="button" class="btn btn-primary px-3" id="fakeSaveBtn">Lưu</button></div>
+                <div class="col"><input type="submit" value="Lưu" class="btn btn-primary px-3" id="fakeSaveBtn" /></div>
             </form>
         </div>
     </div>
