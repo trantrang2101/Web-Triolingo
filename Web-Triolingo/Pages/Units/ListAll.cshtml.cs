@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Web_Triolingo.Interface.Units;
-using Web_Triolingo.Model;
+using Triolingo.Core.Entity;
 
 namespace Web_Triolingo.Pages.Units
 {

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Web_Triolingo.Interface.User;
-using Web_Triolingo.ModelDto;
+using Web_Triolingo.Interface.Users;
+using Triolingo.Core.Entity;
 
 namespace Web_Triolingo.Pages.Shared
 {
@@ -14,12 +14,12 @@ namespace Web_Triolingo.Pages.Shared
             _logger = logger;
             _userService = userService;
         }
-        public List<UserLoginDto> UserLogin { get; set; }
+        public List<User> UserLogin { get; set; }
         public void OnGet()
         {
 
         }
-        public IActionResult OnPost(UserLoginDto userLogin)
+        public IActionResult OnPost(User userLogin)
         {
             try
             {

@@ -6,8 +6,7 @@ using Web_Triolingo.Interface.Lessons;
 using Web_Triolingo.Interface.QnA;
 using Web_Triolingo.Interface.Settings;
 using Web_Triolingo.Interface.Units;
-using Web_Triolingo.Model;
-using Web_Triolingo.ModelDto;
+using Triolingo.Core.Entity;
 
 namespace Web_Triolingo.Pages.QnA
 {
@@ -25,7 +24,7 @@ namespace Web_Triolingo.Pages.QnA
         public List<Course> Courses { get; set; }
         public List<Unit> Units { get; set; } 
         public List<Lesson> Lessons { get; set; }
-        public List<SettingDto> Settings { get; set; }
+        public List<Setting> Settings { get; set; }
         public Course? Course;
         public Unit? Unit;
         public Lesson? Lesson;
@@ -63,9 +62,9 @@ namespace Web_Triolingo.Pages.QnA
                 }
                 Unit = unitService.GetById(Lesson?.UnitId);
                 Course = courseService.GetCourseById(Unit.CourseId).Result;
-                Units = Course.Units.ToList();
-                Lessons = Unit.Lessons.ToList();
-                List = Lesson.Questions.ToList();
+                //Units = Course..ToList();
+                //Lessons = Unit.Lessons.ToList();
+                //List = Lesson.Questions.ToList();
             }catch(Exception e)
             {
                 logger.LogError(e.ToString());

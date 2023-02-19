@@ -16,9 +16,7 @@ namespace Triolingo.Core.Configuration
             builder.ToTable("Question");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Question1).HasMaxLength(250).IsRequired();
-            builder.Property(x => x.Description).IsRequired();
             builder.Property(x => x.Status).IsRequired();
-            builder.Property(x => x.File).IsRequired();
             builder.Property(x => x.Mark).IsRequired();
         }
     }
