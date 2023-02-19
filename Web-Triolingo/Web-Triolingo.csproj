@@ -36,4 +36,8 @@
     <None Include="wwwroot\css\Lessons\Lessons.css" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Triolingo.Core\Triolingo.Core.csproj" />
+  </ItemGroup>
+
 </Project>

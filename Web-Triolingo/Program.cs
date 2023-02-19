@@ -1,4 +1,5 @@
 
+using Microsoft.EntityFrameworkCore;
 using Web_Triolingo.Interface.Courses;
 using Web_Triolingo.Interface.Lessons;
 using Web_Triolingo.Interface.QnA;
@@ -34,6 +35,10 @@ builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(60);//You can set Time   
 });
 builder.Services.AddHttpContextAccessor();
+var configuration = builder.Configuration;
+string connectionString = configuration.GetConnectionString("TriolingoConStr");
+builder.Services.AddDbContext<Triolingo.Core.DataAccess.TriolingoDbContext>(options =>
+        options.UseSqlServer(connectionString));
 
 var app = builder.Build();
 
