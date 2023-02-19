@@ -29,6 +29,7 @@ namespace Triolingo.Core.DataAccess
             modelBuilder.ApplyConfiguration(new QuestionConfiguration());
             modelBuilder.ApplyConfiguration(new AnswerConfiguration());
             modelBuilder.ApplyConfiguration(new StudentLessonConfiguration());
+            modelBuilder.ApplyConfiguration(new ExerciseConfiguration());
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -53,6 +54,7 @@ namespace Triolingo.Core.DataAccess
         public DbSet<StudentCourse> StudentCourses { get; set; }
         public DbSet<StudentLesson> StudentLessons { get; set; }
         public DbSet<Unit> Units { get; set; }
+        public DbSet<Exercise> Exercises { get; set; }
         #endregion
     }
 }

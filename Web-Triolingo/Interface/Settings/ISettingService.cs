@@ -1,6 +1,4 @@
-﻿using Web_Triolingo.DBContext;
-using Web_Triolingo.ModelDto;
-using Triolingo.Core.Entity;
+﻿using Triolingo.Core.Entity;
 
 namespace Web_Triolingo.Interface.Settings
 {

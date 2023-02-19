@@ -2,10 +2,8 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Web_Triolingo.Interface.Lessons;
-using Web_Triolingo.Interface.User;
-using Web_Triolingo.Model;
-using Web_Triolingo.ModelDto;
-using Web_Triolingo.Pages.Settings;
+using Web_Triolingo.Interface.Users;
+using Triolingo.Core.Entity;
 
 namespace Web_Triolingo.Pages.Lessons
 {
@@ -30,7 +28,7 @@ namespace Web_Triolingo.Pages.Lessons
             var objString = HttpContext.Session.GetString("user");
             if (objString != null)
             {
-                var obj = JsonConvert.DeserializeObject<UserDto>(objString);
+                var obj = JsonConvert.DeserializeObject<User>(objString);
                 ViewData["Name"] = obj.FullName;
             }
             ViewData["LoginError"] = loginError;
@@ -58,7 +56,7 @@ namespace Web_Triolingo.Pages.Lessons
                 throw;
             }
         }
-        public void OnPostAdd(LessonDto lesson)
+        public void OnPostAdd(Lesson lesson)
         {
             try
             {
@@ -76,7 +74,7 @@ namespace Web_Triolingo.Pages.Lessons
             }
         }
 
-        public ActionResult OnPostLogin(UserLoginDto userLogin)
+        public ActionResult OnPostLogin(User userLogin)
         {
             try
             {
@@ -100,7 +98,7 @@ namespace Web_Triolingo.Pages.Lessons
                 throw;
             }
         }
-        public ActionResult OnPostRegis(UserRegisDto userRegis)
+        public ActionResult OnPostRegis(User userRegis)
         {
             try
             {
