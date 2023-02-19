@@ -1,46 +1,47 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Web_Triolingo.DBContext;
 using Web_Triolingo.Interface.Settings;
-using Web_Triolingo.ModelDto;
-using Web_Triolingo.Model;
+using Triolingo.Core.Entity;
+using Triolingo.Core.DataAccess;
 
 namespace Web_Triolingo.ServiceManager.Settings
 {
     public class SettingService : ISettingService
     {
         private readonly IMapper _mapper;
-        public SettingService(IMapper mapper)
+        private readonly TriolingoDbContext _context;
+        public SettingService(IMapper mapper, TriolingoDbContext context)
         {
             _mapper = mapper;
+            _context = context;
         }
 
-        public List<SettingDto> GetAllSetting()
+        public List<Setting> GetAllSetting()
         {
-            var settings = DataProvider.Ins.DB.Settings.ToList();
-            var result = _mapper.Map<List<SettingDto>>(settings);
-            return result;
+            var settings = _context.Settings.ToList();
+            //var result = _mapper.Map<List<SettingDto>>(settings);
+            return settings;
         }
 
-        public List<SettingDto> GetSettingByParentId(int? settingId)
+        public List<Setting> GetSettingByParentId(int? settingId)
         {
-            var settings = DataProvider.Ins.DB.Settings.Where(x => x.ParentId == settingId).ToList();
-            var result = _mapper.Map<List<SettingDto>>(settings);
-            return result;
+            var settings = _context.Settings.Where(x => x.ParentId == settingId).ToList();
+            //var result = _mapper.Map<List<SettingDto>>(settings);
+            return settings;
         }
 
         public async Task<bool> DeactiveSetting(int? settingId)
         {
-            var settingg = await DataProvider.Ins.DB.Settings.Where(x => x.Id == settingId).FirstOrDefaultAsync();
+            var settingg = await _context.Settings.Where(x => x.Id == settingId).FirstOrDefaultAsync();
             if (settingg != null)
             {
                 settingg.Status = 0;
-                await DataProvider.Ins.DB.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return true;
             }
             return false;
         }
-        public async Task<bool> AddNewSetting(SettingDto setting)
+        public async Task<bool> AddNewSetting(Setting setting)
         {
             Setting set = new Setting()
             {
@@ -50,49 +51,49 @@ namespace Web_Triolingo.ServiceManager.Settings
                 Value = setting.Value,
                 ParentId = setting.ParentId,
             };
-            await DataProvider.Ins.DB.Settings.AddAsync(set);
-            await DataProvider.Ins.DB.SaveChangesAsync();
+            await _context.Settings.AddAsync(set);
+            await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<bool> EditSetting(SettingDto setting)
+        public async Task<bool> EditSetting(Setting setting)
         {
-            var oldEntity = await DataProvider.Ins.DB.Settings.Where(x => x.Id == setting.Id).FirstOrDefaultAsync();
+            var oldEntity = await _context.Settings.Where(x => x.Id == setting.Id).FirstOrDefaultAsync();
             if (oldEntity != null)
             {
                 oldEntity.Name = setting.Name;
                 oldEntity.Note = setting.Note;
                 oldEntity.Value = setting.Value;
                 oldEntity.ParentId = setting.ParentId;
-                DataProvider.Ins.DB.Settings.Update(oldEntity);
-                await DataProvider.Ins.DB.SaveChangesAsync();
+                _context.Update(oldEntity);
+                await _context.SaveChangesAsync();
                 return true;
             }
             return false;
         }
         public async Task<bool> ActiveSetting(int? settingId)
         {
-            var settingg = await DataProvider.Ins.DB.Settings.Where(x => x.Id == settingId).FirstOrDefaultAsync();
+            var settingg = await _context.Settings.Where(x => x.Id == settingId).FirstOrDefaultAsync();
             if (settingg != null)
             {
                 settingg.Status = 1;
-                await DataProvider.Ins.DB.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return true;
             }
             return false;
         }
-        public async Task<SettingDto> GetSettingById(int? id)
+        public async Task<Setting> GetSettingById(int? id)
         {
-            var settings = await DataProvider.Ins.DB.Settings.Where(x => x.Id == id).FirstOrDefaultAsync();
-            var result = _mapper.Map<SettingDto>(settings);
-            return result;
+            var settings = await _context.Settings.Where(x => x.Id == id).FirstOrDefaultAsync();
+            //var result = _mapper.Map<SettingDto>(settings);
+            return settings;
         }
 
-        public List<SettingDto> OrderSettingsParent()
+        public List<Setting> OrderSettingsParent()
         {
-            List<SettingDto> temp = new List<SettingDto>();
+            List<Setting> temp = new List<Setting>();
             temp = GetSettingsNoParentId();
-            List<SettingDto> result = new List<SettingDto>();
+            List<Setting> result = new List<Setting>();
             foreach (var item in temp)
             {
                 result.Add(item);
@@ -101,16 +102,16 @@ namespace Web_Triolingo.ServiceManager.Settings
             return result;
         }
 
-        public List<SettingDto> GetSettingsNoParentId()
+        public List<Setting> GetSettingsNoParentId()
         {
-            var settings = DataProvider.Ins.DB.Settings.Where(x => x.ParentId == null).ToList();
-            var result = _mapper.Map<List<SettingDto>>(settings);
-            return result;
+            var settings = _context.Settings.Where(x => x.ParentId == null).ToList();
+            //var result = _mapper.Map<List<SettingDto>>(settings);
+            return settings;
         }
 
-        public bool IsDuplicateSetting(SettingDto item)
+        public bool IsDuplicateSetting(Setting item)
         {
-            var val = DataProvider.Ins.DB.Settings.Where(x => x.Name == item.Name
+            var val = _context.Settings.Where(x => x.Name == item.Name
             || x.Value == item.Value).FirstOrDefault();
             if (val == null)
             {

@@ -2,11 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Web_Triolingo.Interface.Settings;
-using Web_Triolingo.ModelDto;
-using Web_Triolingo.Model;
-using Web_Triolingo.ServiceManager.Settings;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Newtonsoft.Json;
+using Triolingo.Core.Entity;
 
 namespace Web_Triolingo.Pages.Settings
 {
@@ -19,10 +15,10 @@ namespace Web_Triolingo.Pages.Settings
             _logger = logger;
             _settingService = settingService;
         }
-        public List<SettingDto> ListAllSettings { get; set; }
-        public List<SettingDto> ParentSetting { get; set; }
+        public List<Setting> ListAllSettings { get; set; }
+        public List<Setting> ParentSetting { get; set; }
         [BindProperty]
-        public SettingDto SettingAdd { get; set; }
+        public Setting SettingAdd { get; set; }
         public void OnGet()
         {
             try
