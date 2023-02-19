@@ -4,7 +4,7 @@
 
 namespace Triolingo.Core.Migrations
 {
-    public partial class initdb : Migration
+    public partial class exercise : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -169,31 +169,31 @@ namespace Triolingo.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Question",
+                name: "Exercise",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Question1 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SettingId = table.Column<int>(type: "int", nullable: false),
                     TypeId = table.Column<int>(type: "int", nullable: false),
                     LessonId = table.Column<int>(type: "int", nullable: false),
-                    File = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Mark = table.Column<int>(type: "int", nullable: false)
+                    File = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Question", x => x.Id);
+                    table.PrimaryKey("PK_Exercise", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Question_Lesson_LessonId",
+                        name: "FK_Exercise_Lesson_LessonId",
                         column: x => x.LessonId,
                         principalTable: "Lesson",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Question_Setting_TypeId",
-                        column: x => x.TypeId,
+                        name: "FK_Exercise_Setting_SettingId",
+                        column: x => x.SettingId,
                         principalTable: "Setting",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -228,6 +228,28 @@ namespace Triolingo.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Question",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Question1 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    ExerciseId = table.Column<int>(type: "int", nullable: false),
+                    Mark = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Question", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Question_Exercise_ExerciseId",
+                        column: x => x.ExerciseId,
+                        principalTable: "Exercise",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Answer",
                 columns: table => new
                 {
@@ -255,19 +277,24 @@ namespace Triolingo.Core.Migrations
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Exercise_LessonId",
+                table: "Exercise",
+                column: "LessonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Exercise_SettingId",
+                table: "Exercise",
+                column: "SettingId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Lesson_UnitId",
                 table: "Lesson",
                 column: "UnitId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Question_LessonId",
+                name: "IX_Question_ExerciseId",
                 table: "Question",
-                column: "LessonId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Question_TypeId",
-                table: "Question",
-                column: "TypeId");
+                column: "ExerciseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Setting_ParentId",
@@ -328,13 +355,16 @@ namespace Triolingo.Core.Migrations
                 name: "StudentCourse");
 
             migrationBuilder.DropTable(
+                name: "Exercise");
+
+            migrationBuilder.DropTable(
+                name: "User");
+
+            migrationBuilder.DropTable(
                 name: "Lesson");
 
             migrationBuilder.DropTable(
                 name: "Setting");
-
-            migrationBuilder.DropTable(
-                name: "User");
 
             migrationBuilder.DropTable(
                 name: "Unit");

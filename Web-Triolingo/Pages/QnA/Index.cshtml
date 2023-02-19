@@ -14,8 +14,7 @@
                         <tr class="table-primary">
                             <th>#</th>
                             <th>Câu hỏi</th>
-                            <th>Loại</th>
-                            <th>Điểm</th>
+=                            <th>Điểm</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,7 +34,6 @@
                                             </form>
                                         </td>
                                         <td>@item.Question1</td>
-                                        <td>Type</td>
                                         <td>@item.Mark</td>
                                     </tr>
 
@@ -94,6 +92,7 @@
                     <label for="editor" class="col-sm-2 col-form-label">Mô tả<span class="text-danger">*</span></label>
                     <div class="col-sm-10">
                         @*<select class="form-select" asp-for="Question.TypeId" asp-items="@Model.Settings">*@
+                       <select>
                         </select>
                     </div>
                 </div>

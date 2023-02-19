@@ -82,6 +82,48 @@ namespace Triolingo.Core.Migrations
                     b.ToTable("Course", (string)null);
                 });
 
+            modelBuilder.Entity("Triolingo.Core.Entity.Exercise", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("File")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SettingId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("TypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonId");
+
+                    b.HasIndex("SettingId");
+
+                    b.ToTable("Exercise", (string)null);
+                });
+
             modelBuilder.Entity("Triolingo.Core.Entity.Lesson", b =>
                 {
                     b.Property<int>("Id")
@@ -123,15 +165,7 @@ namespace Triolingo.Core.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("File")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("LessonId")
+                    b.Property<int>("ExerciseId")
                         .HasColumnType("int");
 
                     b.Property<int>("Mark")
@@ -145,14 +179,9 @@ namespace Triolingo.Core.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("TypeId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("LessonId");
-
-                    b.HasIndex("TypeId");
+                    b.HasIndex("ExerciseId");
 
                     b.ToTable("Question", (string)null);
                 });
@@ -365,6 +394,25 @@ namespace Triolingo.Core.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("Triolingo.Core.Entity.Exercise", b =>
+                {
+                    b.HasOne("Triolingo.Core.Entity.Lesson", "Lesson")
+                        .WithMany()
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Triolingo.Core.Entity.Setting", "Setting")
+                        .WithMany()
+                        .HasForeignKey("SettingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+
+                    b.Navigation("Setting");
+                });
+
             modelBuilder.Entity("Triolingo.Core.Entity.Lesson", b =>
                 {
                     b.HasOne("Triolingo.Core.Entity.Unit", "Unit")
@@ -378,21 +426,13 @@ namespace Triolingo.Core.Migrations
 
             modelBuilder.Entity("Triolingo.Core.Entity.Question", b =>
                 {
-                    b.HasOne("Triolingo.Core.Entity.Lesson", "Lesson")
+                    b.HasOne("Triolingo.Core.Entity.Exercise", "Exercise")
                         .WithMany()
-                        .HasForeignKey("LessonId")
+                        .HasForeignKey("ExerciseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Triolingo.Core.Entity.Setting", "Type")
-                        .WithMany()
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lesson");
-
-                    b.Navigation("Type");
+                    b.Navigation("Exercise");
                 });
 
             modelBuilder.Entity("Triolingo.Core.Entity.Setting", b =>

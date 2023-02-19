@@ -39,7 +39,6 @@ namespace Triolingo.Core.DataAccess
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json")
                     .Build();
-
                 optionsBuilder.UseSqlServer(config.GetConnectionString("TriolingoConStr"));
             }
         }

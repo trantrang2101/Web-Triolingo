@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Web_Triolingo.Interface.Lessons;
 using Triolingo.Core.Entity;
 using Triolingo.Core.DataAccess;
@@ -8,11 +7,9 @@ namespace Web_Triolingo.ServiceManager.Lessons
 {
     public class LessonService : ILessonService
     {
-        private readonly IMapper _mapper;
         private readonly TriolingoDbContext _dbContext;
-        public LessonService(IMapper mapper, TriolingoDbContext dbContext)
+        public LessonService(TriolingoDbContext dbContext)
         {
-            _mapper = mapper;
             _dbContext = dbContext;
         }
         //public async Task<User> FindExistLesson(string name)
@@ -24,8 +21,8 @@ namespace Web_Triolingo.ServiceManager.Lessons
         public async Task<List<Lesson>> GetAllLesson()
         {
             var lessons = await _dbContext.Lessons.Where(x => x.Status == 1).ToListAsync();
-            var result = _mapper.Map<List<Lesson>>(lessons);
-            return result;
+            //var result = _mapper.Map<List<Lesson>>(lessons);
+            return lessons;
 
         }
         public async Task<Lesson> GetLessonById(int id)
