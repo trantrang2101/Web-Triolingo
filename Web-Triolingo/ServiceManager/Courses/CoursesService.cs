@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using Web_Triolingo.Interface.Courses;
 using Triolingo.Core.Entity;
@@ -9,11 +8,9 @@ namespace Web_Triolingo.ServiceManager.Courses
 {
     public class CourseService : ICourseService
     {
-        private readonly IMapper _mapper;
         private readonly TriolingoDbContext _dbContext;
-        public CourseService(IMapper mapper, TriolingoDbContext dBContext)
+        public CourseService(TriolingoDbContext dBContext)
         {
-            _mapper = mapper;
             _dbContext = dBContext;
         }
         public async Task<bool> AddNewCourse(Course Course)
@@ -42,15 +39,15 @@ namespace Web_Triolingo.ServiceManager.Courses
         public async Task<List<Course>> GetAllCourse()
         {
             var courses = await _dbContext.Courses.ToListAsync();
-            var result = _mapper.Map<List<Course>>(courses);
-            return result;
+            //var result = _mapper.Map<List<Course>>(courses);
+            return courses;
         }
 
         public async Task<Course> GetCourseById(int? id)
         {
             var course = await _dbContext.Courses.Where(x => x.Id == id).FirstOrDefaultAsync();
-            var result = _mapper.Map<Course>(course);
-            return result;
+            //var result = _mapper.Map<Course>(course);
+            return course;
         }
     }
 }

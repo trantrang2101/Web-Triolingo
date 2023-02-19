@@ -13,6 +13,7 @@ using Web_Triolingo.ServiceManager.QnA;
 using Web_Triolingo.ServiceManager.Settings;
 using Web_Triolingo.ServiceManager.Units;
 using Web_Triolingo.ServiceManager.Users;
+using Triolingo.Core.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +37,7 @@ builder.Services.AddSession(options => {
 builder.Services.AddHttpContextAccessor();
 var configuration = builder.Configuration;
 string connectionString = configuration.GetConnectionString("TriolingoConStr");
-builder.Services.AddDbContext<Triolingo.Core.DataAccess.TriolingoDbContext>(options =>
+builder.Services.AddDbContext<TriolingoDbContext>(options =>
         options.UseSqlServer(connectionString));
 
 var app = builder.Build();

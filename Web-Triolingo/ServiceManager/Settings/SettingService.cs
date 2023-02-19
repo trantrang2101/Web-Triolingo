@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Web_Triolingo.Interface.Settings;
 using Triolingo.Core.Entity;
 using Triolingo.Core.DataAccess;
@@ -8,11 +7,9 @@ namespace Web_Triolingo.ServiceManager.Settings
 {
     public class SettingService : ISettingService
     {
-        private readonly IMapper _mapper;
         private readonly TriolingoDbContext _context;
-        public SettingService(IMapper mapper, TriolingoDbContext context)
+        public SettingService(TriolingoDbContext context)
         {
-            _mapper = mapper;
             _context = context;
         }
 

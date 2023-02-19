@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Triolingo.Core.DataAccess;
 using Triolingo.Core.Entity;
 using Web_Triolingo.Interface.Users;
@@ -8,11 +7,9 @@ namespace Web_Triolingo.ServiceManager.Users
 {
     public class UserService : IUserService
     {
-        private readonly IMapper _mapper;
         private readonly TriolingoDbContext _context;
-        public UserService(IMapper mapper, TriolingoDbContext context)
+        public UserService(TriolingoDbContext context)
         {
-            _mapper = mapper;
             _context = context;
         }
         public async Task<User> Login(User user)
