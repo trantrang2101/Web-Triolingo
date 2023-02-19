@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using Web_Triolingo.Interface.Courses;
 using Web_Triolingo.Interface.Lessons;
 using Web_Triolingo.Interface.QnA;
@@ -31,7 +32,16 @@ builder.Services.AddTransient<ILessonService, LessonService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IUnitService, UnitService>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddSession(options => {
+builder.Services.AddRazorPages().AddRazorPagesOptions(options => {
+    options.RootDirectory = "/Pages";
+    options.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute());
+});
+builder.Services.Configure<RouteOptions>(RouteOptions =>
+{
+    RouteOptions.LowercaseUrls= true;
+});
+builder.Services.AddSession(options =>
+{
     options.IdleTimeout = TimeSpan.FromMinutes(60);//You can set Time   
 });
 builder.Services.AddHttpContextAccessor();

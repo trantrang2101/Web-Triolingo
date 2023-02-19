@@ -8,8 +8,8 @@ namespace Web_Triolingo.Interface.Lessons
         Task<List<Lesson>> GetAllLesson();
         Task<Lesson> GetLessonById(int id);
         Task<bool> AddLesson(LessonDto lesson);
-        Task<bool> UpdateLesson(LessonDto lesson);
+        Task<bool> UpdateLesson(Lesson lesson);
         Task<bool> DeleteLesson(int id);
-        Task<List<LessonDto>> getAllLessonsByUnitId(int? unitId);
+        Task<List<Lesson>> getAllLessonsByUnitId(int? unitId);
     }
 }

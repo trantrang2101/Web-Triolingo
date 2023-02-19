@@ -3,12 +3,35 @@
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Lesson page";
+    string selectedUnit = ViewData["selectedUnit"] != null ? ViewData["selectedUnit"].ToString() : "";
 }
 <h2 class="text-uppercase">Quản lý môn học</h2>
 <div class="row p-0">
     <div class="col-md-4 col-12">
         <div class="card">
-            <h5 class="card-header bg-transparent text-uppercase">Danh sách</h5>
+            <div class="card-header">
+                <h5 class="bg-transparent text-uppercase">Danh sách</h5>
+                <form id="form-filter" method="post" asp-page-handler="filter">
+                    <span>Filter theo Unit</span>
+                    <select class="form-control" id="filterselect" name="UnitId">
+                        @if (Model.ListAllUnit != null)
+                        {
+                            @foreach (var unit in Model.ListAllUnit)
+                            {
+                                bool selected = ViewData["selectedUnit"] != null ? (unit.Id.ToString() == @selectedUnit) : false;
+                                if (selected)
+                                {
+                                    <option value="@unit.Id" selected>@unit.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@unit.Id">@unit.Name</option>
+                                }
+                            }
+                        }
+                    </select>
+                </form>
+            </div>
             <div class="boxscroll card-body">
                 <table class="table table-hover ">
                     <thead>
@@ -70,24 +93,41 @@
     <div class="col-md-8 col-12">
         <div class="card">
             <h5 class="card-header bg-transparent text-uppercase">Chi tiết</h5>
-            <form id="form-editor" method="post" class="card-body boxscroll" asp-page-handler="add">
+            <form id="form-editor" method="post" class="card-body boxscroll" asp-page-handler="save">
+                <input type="text" hidden class="form-control" id="id" asp-for="Lesson.Id" />
                 <div class="mb-3 row">
                     <label for="name" class="col-sm-2 col-form-label">Tên<span class="text-danger">*</span></label>
                     <div class="col-sm-10">
-                        <input type="number" hidden asp-for="Lesson.Id" />
                         <input asp-for="Lesson.Name" type="text" class="form-control" id="name">
                     </div>
                 </div>
                 <div class="mb-3 row">
                     <label for="editor" class="col-sm-2 col-form-label">Unit<span class="text-danger">*</span></label>
                     <div class="col-sm-10">
-                        <input type="text" id="unit" asp-for="Lesson.UnitId" />
+                        <select class="form-control" id="unit" asp-for="Lesson.UnitId">
+                            @if (Model.ListAllUnit != null)
+                            {
+                                @foreach (var unit in Model.ListAllUnit)
+                                {
+
+                                    bool selected = Model.Unit != null ? (unit.Id == Model.Unit.Id) : false;
+                                    if (selected)
+                                    {
+                                        <option value="@unit.Id" selected>@unit.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@unit.Id">@unit.Name</option>
+                                    }
+                                }
+                            }
+                        </select>
                     </div>
                 </div>
                 <div class="mb-3 row">
                     <label for="editor" class="col-sm-2 col-form-label">Mô tả<span class="text-danger">*</span></label>
                     <div class="col-sm-10">
-                        <textarea id="editor" asp-for="Lesson.Description"></textarea>
+                        <textarea id="editor" class="form-control" asp-for="Lesson.Description"></textarea>
                     </div>
                 </div>
                 <div class="mb-3 row">
@@ -96,15 +136,13 @@
                         <textarea class="form-control w-100" id="note" asp-for="Lesson.Note"></textarea>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary px-3" hidden id="saveBtn">Lưu</button>
             </form>
             <div class="row card-footer border-0 bg-transparent justify-content-between align-content-center row-cols-md-4 row-cols-2">
                 <div class="col">
-                    <button id="Add" type="button" class="btn btn-primary px-3">Thêm</button>
+                    <button id="Add" type="button" class="btn btn-primary px-3">Lưu</button>
                 </div>
-                <div class="col"><button type="button" class="btn btn-primary px-3" id="fakeSaveBtn">Lưu</button></div>
+                <div class="col"><button type="button" class="btn btn-primary px-3" id="delete">Xóa</button></div>
                 <div class="col"><button type="button" class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
-                <div class="col"><button type="button" class="btn btn-primary px-3">Import</button></div>
             </div>
         </div>
     </div>
@@ -122,12 +160,20 @@
     <script src="~/js/Login/Login.js"></script>
     <script>
         function ShowDetail(count) {
-            debugger
             $('#form-' + count).submit()
         }
-        $('#Add').on('click', function(){
-            $('#form-editor').attr('asp-page-handler', 'Add')
+        $('#Add').on('click', function () {
             $('#form-editor').submit();
+        })
+        $('#disabledMode').on('click', function () {
+            $('#id').val("");
+            $('#name').val("");
+            $('#unit').val("");
+            $('#editor').val("");
+            $('#note').val("");
+        })
+        $('#filterselect').on('change', function () {
+            $('#form-filter').submit();
         })
     </script>
 }
