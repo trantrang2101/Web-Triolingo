@@ -64,7 +64,7 @@ namespace Web_Triolingo.ServiceManager.Lessons
             return false;
         }
 
-        public async Task<bool> UpdateLesson(Lesson lesson)
+        public async Task<bool> UpdateLesson(LessonDto lesson)
         {
             using (var context = new TriolingoDBContext())
             {
@@ -76,7 +76,7 @@ namespace Web_Triolingo.ServiceManager.Lessons
                     lessons.Note= lesson.Note;
                     lessons.Description= lesson.Description;
                     lessons.UnitId= lesson.UnitId;
-                    context.Update(lessons);
+                    //await context.Update(lessons);
                     await context.SaveChangesAsync();
                     return true;
                 }
@@ -91,21 +91,19 @@ namespace Web_Triolingo.ServiceManager.Lessons
                 var lessons = await context.Lessons.Where(x => x.Status == 1 && x.Id == id).FirstOrDefaultAsync();
                 if (lessons != null)
                 {
-                    lessons.Status= 0;
-                    context.Update(lessons);
+                    //await context.RemoveAsync(lessons);
                     await context.SaveChangesAsync();
-                    return true;
                 }
-                return false;
+                return true;
             }
         }
 
-        public async Task<List<Lesson>> getAllLessonsByUnitId(int? unitId)
+        public async Task<List<LessonDto>> getAllLessonsByUnitId(int? unitId)
         {
             using (var context = new TriolingoDBContext())
             {
                 var lessons = await context.Lessons.Where(x => x.Status == 1 && x.UnitId == unitId).ToListAsync();
-                var result = _mapper.Map<List<Lesson>>(lessons);
+                var result =  _mapper.Map<List<LessonDto>>(lessons);
 
                 return result;
             }
