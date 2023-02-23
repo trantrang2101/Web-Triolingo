@@ -16,8 +16,8 @@ namespace Triolingo.Core.Configuration
             builder.ToTable("Course");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Name).HasMaxLength(150).IsRequired();
-            builder.Property(x => x.RateAverage).IsRequired();
-            builder.Property(x => x.Status).IsRequired();
+            builder.Property(x => x.RateAverage);
+            builder.Property(x => x.Status).HasDefaultValue(1).IsRequired();
             builder.Property(x => x.Note);
             builder.Property(x => x.Description).IsRequired();
         }

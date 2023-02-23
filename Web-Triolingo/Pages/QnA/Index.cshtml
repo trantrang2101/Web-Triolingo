@@ -14,7 +14,7 @@
                         <tr class="table-primary">
                             <th>#</th>
                             <th>Câu hỏi</th>
-=                            <th>Điểm</th>
+                            <th>Loại</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -25,18 +25,29 @@
                                 foreach (var item in Model.List)
                                 {
 
-                                    <tr onclick="document.getElementById('@("onClick"+count)').click()" class="@(Model.Question!=null&&(item.Id==Model.Question.Id)?"tr-selected":"")">
+                                    <tr>
                                         <td>
                                             @count
-                                            <form method="post" hidden asp-page-handler="edit">
-                                                <input type="number" name="Id" value="@item.Id" />
-                                                <input type="submit" id="@("onClick"+count)" />
-                                            </form>
                                         </td>
-                                        <td>@item.Question1</td>
-                                        <td>@item.Mark</td>
+                                        <td>@item.Title</td>
+                                        <td>@item.Setting.Name</td>
                                     </tr>
-
+                                    @foreach(var question in item.Questions)
+                                    {
+                                        <tr onclick="if(document.getElementById('@("onClick"+question.Id)'))document.getElementById('@("onClick"+count)').click()" class="@(Model.Question!=null&&(item.Id==Model.Question.Id)?"tr-selected":"")">
+                                            <td>
+                                                @if (Model.Question == null || (item.Id != Model.Question.Id))
+                                                {
+                                                    <form method="post" hidden asp-page-handler="edit">
+                                                        <input type="number" name="Id" value="@question.Id" />
+                                                        <input type="submit" id="@("onClick"+question.Id)" />
+                                                    </form>
+                                                }
+                                            </td>
+                                            <td>@question.Question1</td>
+                                            <td>@question.Mark</td>
+                                        </tr>
+                                    }
                                     count++;
                                 }
                             }
@@ -71,45 +82,173 @@
             </div>
         </div>
     </div>
-    <div class="col-md-8 col-12">
-        <div class="card">
-            <h5 class="card-header bg-transparent text-uppercase">Chi tiết</h5>
-            <form method="post" class="card-body boxscroll" asp-page-handler="save">
-                <div class="mb-3 row">
-                    <label for="name" class="col-sm-2 col-form-label">Tên<span class="text-danger">*</span></label>
-                    <div class="col-sm-10">
-                        <input type="number" hidden asp-for="Question.Id" />
-                        <input asp-for="Question.Question1" type="text" class="form-control" id="name">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="editor" class="col-sm-2 col-form-label">Mô tả<span class="text-danger">*</span></label>
-                    <div class="col-sm-10">
-                        <textarea id="editor" asp-for="Question.Description"></textarea>
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="editor" class="col-sm-2 col-form-label">Mô tả<span class="text-danger">*</span></label>
-                    <div class="col-sm-10">
-                        @*<select class="form-select" asp-for="Question.TypeId" asp-items="@Model.Settings">*@
-                       <select>
+    @*<div class="col-md-8 col-12 d-flex flex-column" style="row-gap: 0.5rem">
+        <div class="row row-cols-1 row-cols-xl-2 align-items-center">
+            <div class="col">
+                <div class="row row-cols-1 row-cols-xl-4 g-2 align-items-end">
+                    <form class="col" method="post" asp-page-handler="course">
+                        <label for="editor" class="form-label">Khóa học<span class="text-danger">*</span></label>
+                        <select class="form-select" name="id" asp-items="@(Model.Courses)" onchange="$('#saveCourseBtn').click()"></select>
+                        <button type="submit" class="btn btn-primary px-3" hidden id="saveCourseBtn">Lưu</button>
+                    </form>
+                    <form class="col" method="post" asp-page-handler="unit">
+                        <label for="editor" class="form-label">Học phần<span class="text-danger">*</span></label>
+                        <select class="form-select" name="id" asp-items="@(Model.Units)" onchange="$('#saveUnitBtn').click()">
                         </select>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary px-3" hidden id="saveBtn">Lưu</button>
-            </form>
-            <div class="row card-footer border-0 bg-transparent justify-content-between align-content-center row-cols-md-5 row-cols-3">
-                <div class="col">
-                    <form method="post" asp-page-handler="add">
-                        <button type="button" class="btn btn-primary px-3">Thêm</button>
+                        <button type="submit" class="btn btn-primary px-3" hidden id="saveUnitBtn">Lưu</button>
+                    </form>
+                    <form class="col" method="get">
+                        <label for="editor" class="form-label">Bài học<span class="text-danger">*</span></label>
+                        <select class="form-select" name="id" asp-items="@(Model.Lessons)" onchange="$('#saveLessonBtn').click()">
+                        </select>
+                        <button type="submit" class="btn btn-primary px-3" hidden id="saveLessonBtn">Lưu</button>
                     </form>
                 </div>
-                <div class="col"><button type="button" class="btn btn-primary px-3" id="fakeSaveBtn">Lưu</button></div>
-                <div class="col"><button type="button" class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
-                @*<div class="col"><button type="button" class="btn btn-primary px-3">Import</button></div>*@
-                <div class="col">
-                    <a asp-page="../Lessons/Index" asp-route-id="@(Model.Question!=null&&Model.Question.Id!=0?Model.Question.Id:0)" class="btn btn-primary px-3" disabled="@Model.Question==null">Các học phần</a>
+            </div>
+            <div class="col">
+                <div class="row bg-transparent justify-content-between align-content-center row-cols-xl-5 row-cols-3">
+                    <div class="col">
+                        <form method="post" asp-page-handler="add">
+                            <input type="number" hidden name="exerciseId" value="@(Model.Lesson!=null?Model.Lesson.Id:0)" />
+                            <button type="submit" class="btn btn-primary px-3">Thêm</button>
+                        </form>
+                    </div>
+                    <div class="col"><button type="button" class="btn btn-primary px-3" id="fakeSaveBtn" onclick="document.getElementById('saveBtn').click();">Lưu</button></div>
                 </div>
+            </div>
+        </div>
+        @if (Model.Question != null)
+        {
+            <div class="card">
+                <h5 class="card-header bg-transparent text-uppercase">Chi tiết</h5>
+                <form class="card-body boxscroll23" method="post" asp-page-handler="save">
+                    <div class="mb-3 row">
+                        <label for="name" class="col-sm-2 col-form-label">Tên<span class="text-danger">*</span></label>
+                        <div class="col-sm-10">
+                            <input type="number" hidden asp-for="Question.Id" />
+                            <input type="number" hidden asp-for="Question.LessonId" />
+                            <input asp-for="Question.Question1" type="text" class="form-control" id="name">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="type" class="col-sm-2 col-form-label">Loại<span class="text-danger">*</span></label>
+                        <div class="col-sm-10">
+                            <select id="type" class="form-select" asp-for="Question.TypeId" asp-items="@(Model.Settings)">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="editor" class="col-sm-2 col-form-label">Mô tả<span class="text-danger">*</span></label>
+                        <div class="col-sm-10">
+                            <textarea id="editor" asp-for="Question.Description"></textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="mark" class="col-sm-2 col-form-label">Điểm<span class="text-danger">*</span></label>
+                        <div class="col-sm-10">
+                            <input asp-for="Question.Mark" type="number" min="1" class="form-control" id="mark">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary px-3" hidden id="saveBtn">Lưu</button>
+                </form>
+            </div>
+            @if (Model.Question.Id != 0)
+            {
+
+                <div class="card">
+                    <h5 class="card-header bg-transparent text-uppercase">Các đáp án</h5>
+                    <div class="card-body">
+                        <div class="container">
+                            <div class="row row-cols-xl-4 row-cols-2 gy-4 gx-2">
+                                @foreach (var ans in Model.Answers)
+                                {
+                                    <div class="col">
+                                        <div class="alert alert-@(ans.IsCorrect?"success":"warning") alert-dismissible fade show" role="alert">
+                                            <form method="post" asp-page-handler="open">
+                                                <input type="number" hidden name="id" value="@ans.Id" />
+                                                <input type="number" hidden name="questionId" value="@(Model.Question!=null?Model.Question.Id:0)" />
+                                                <button type="submit" class="btn p-0 bg-transparent">
+                                                    <strong>@ans.Answer1</strong>
+                                                </button>
+                                            </form>
+                                            <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#@("deleteConfirm"+ans.Id)"></button>
+                                        </div>
+                                    </div>
+                                    <div class="modal fade" id="@("deleteConfirm"+ans.Id)" aria-hidden="true" aria-labelledby="@("deleteConfirm"+ans.Id+"Label")" tabindex="-1">
+                                        <div class="modal-dialog modal-sm">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="@("deleteConfirm"+ans.Id+"Label")">Xóa đáp án</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Bạn có chắc xóa đáp án @ans.Answer1 của câu hỏi @ans.Question.Question1 ?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                                    <form method="post" asp-page-handler="deleteAnswer">
+                                                        <input type="number" hidden name="id" value="@ans.Id" />
+                                                        <button type="submit" class="btn btn-danger">Xóa</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="col">
+                                    <div class="alert alert-primary fade d-flex justify-content-between align-items-center show" role="alert">
+                                        <strong>Thêm đáp án</strong>
+                                        <form method="post" asp-page-handler="open">
+                                            <input type="number" hidden name="questionId" value="@(Model.Question!=null?Model.Question.Id:0)" />
+                                            <button type="submit" class="btn p-0 bg-transparent">
+                                                <i class="fa-solid fa-plus"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <button type="button" hidden class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAnswer" id="editPopUp">
+                                    Launch demo modal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+*@</div>
+<div class="modal fade" id="addAnswer" tabindex="-1" aria-labelledby="addAnswerLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addAnswerLabel">Thêm đáp án mới</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="modal-body" method="post" asp-page-handler="saveAnswer">
+                <div class="mb-3 row">
+                    <label for="name" class="col-sm-2 col-form-label">Đáp án<span class="text-danger">*</span></label>
+                    <div class="col-sm-10">
+                        <input type="number" hidden asp-for="Answer.Id" />
+                        <input asp-for="Answer.Answer1" type="text" class="form-control" id="name">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="editor" class="col-sm-2 col-form-label">Loại<span class="text-danger">*</span></label>
+                    <div class="col-sm-10">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" asp-for="Answer.IsCorrect">
+                            <label class="form-check-label">
+                                Có phải là đáp án đúng?
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <input type="number" hidden asp-for="Answer.QuestionId" />
+                <button type="submit" class="btn btn-primary px-3" hidden id="saveAnswerBtn">Lưu</button>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="fakeSaveAnswerBtn" onclick="document.getElementById('saveAnswerBtn').click();">Save changes</button>
             </div>
         </div>
     </div>
@@ -118,9 +257,11 @@
     <script type="text/javascript">
         let isDisabled = true;
         $(document).ready(() => {
-            document.getElementById('fakeSaveBtn').addEventListener('click', () => {
-                document.getElementById('saveBtn').click();
-            })
+            if ('@(Model.isEdit)'.toLowerCase()==='true'){
+                if ($('#editPopUp')){
+                    $('#editPopUp').click();
+                }
+            }
             ClassicEditor.create(document.querySelector("#editor"), {
                 language: 'vi',
                 content: 'vi',

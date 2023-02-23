@@ -5,7 +5,7 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web-Triolingo", "Web-Triolingo\Web-Triolingo.csproj", "{E84990FD-F8E1-4244-8E88-67AB3DFC46D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triolingo.Core", "Triolingo.Core\Triolingo.Core.csproj", "{72BF9A42-7172-40F2-92AF-171CAE2235BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Triolingo.Core", "Triolingo.Core\Triolingo.Core.csproj", "{72BF9A42-7172-40F2-92AF-171CAE2235BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

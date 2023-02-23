@@ -56,31 +56,34 @@ namespace Web_Triolingo.Pages.Courses
                 throw;
             }
         }
-        public IActionResult OnPostSave()
+        public void OnPostSave()
         {
             try
             {
                 if (course == null || course.Id == null || course.Id == 0)
                 {
-                    if (service.AddNewCourse(course).Result == false)
+                    int id = service.AddNewCourse(course).Result;
+                    if (id!=0)
                     {
-                        return BadRequest();
+                        OnPostEdit(id);
+                        return;
                     }
                 }
                 else
                 {
                     if (service.EditCourse(course).Result == false)
                     {
-                        return BadRequest();
                     }
+                    OnPostEdit(course.Id);
+                    return;
                 }
-                return RedirectToAction("CourseList");
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.ToString());
                 throw;
             }
+            OnGet();
         }
     }
 }

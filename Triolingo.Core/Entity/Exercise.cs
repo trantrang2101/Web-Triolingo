@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,5 +18,7 @@ namespace Triolingo.Core.Entity
         public virtual Lesson Lesson { get; set; }
         public int LessonId { get; set; }
         public string File { get; set; }
+        [NotMapped]
+        public List<Question> Questions { get;set; }
     }
 }

@@ -13,12 +13,11 @@ namespace Web_Triolingo.ServiceManager.Courses
         {
             _dbContext = dBContext;
         }
-        public async Task<bool> AddNewCourse(Course Course)
+        public async Task<int> AddNewCourse(Course Course)
         {
-            Course cour = new Course();
-            await _dbContext.Courses.AddAsync(cour);
+            await _dbContext.Courses.AddAsync(Course);
             await _dbContext.SaveChangesAsync();
-            return true;
+            return Course.Id;
         }
 
         public async Task<bool> EditCourse(Course course)

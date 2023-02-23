@@ -3,29 +3,29 @@ using Web_Triolingo.Interface.QnA;
 
 namespace Web_Triolingo.ServiceManager.QnA
 {
-    public class QuestionService : IQuestion
+    public class AnswerService : IAnswer
     {
-        public Task<int> AddNewQuestion(Question Question)
+        public Task<bool> AddNewAnswer(Answer Answer)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> DeleteQuestion(int Question)
+        public Task<bool> DeleteAnswer(int Question)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> EditQuestion(Question Question)
+        public Task<bool> EditAnswer(Answer Answer)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<Question>> GetAllQuestions(int exerciseId)
+        public Task<List<Answer>> GetAllAnswers(int questionId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Question> GetQuestionById(int? id)
+        public Task<Answer> GetAnswerById(int? id)
         {
             throw new NotImplementedException();
         }

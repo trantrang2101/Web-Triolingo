@@ -7,7 +7,7 @@ namespace Web_Triolingo.Interface.Courses
     {
         Task<List<Course>> GetAllCourse();
         Task<Course> GetCourseById(int? id);
-        Task<bool> AddNewCourse(Course Course);
+        Task<int> AddNewCourse(Course Course);
         Task<bool> EditCourse(Course Course);
     }
 }
