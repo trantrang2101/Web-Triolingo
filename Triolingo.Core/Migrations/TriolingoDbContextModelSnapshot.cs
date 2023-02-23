@@ -41,7 +41,9 @@ namespace Triolingo.Core.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.HasKey("Id");
 
@@ -102,11 +104,10 @@ namespace Triolingo.Core.Migrations
                     b.Property<int>("LessonId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SettingId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -120,7 +121,7 @@ namespace Triolingo.Core.Migrations
 
                     b.HasIndex("LessonId");
 
-                    b.HasIndex("SettingId");
+                    b.HasIndex("TypeId");
 
                     b.ToTable("Exercise", (string)null);
                 });
@@ -146,7 +147,9 @@ namespace Triolingo.Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<int>("UnitId")
                         .HasColumnType("int");
@@ -178,7 +181,9 @@ namespace Triolingo.Core.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.HasKey("Id");
 
@@ -207,7 +212,9 @@ namespace Triolingo.Core.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -309,7 +316,9 @@ namespace Triolingo.Core.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.HasKey("Id");
 
@@ -348,7 +357,9 @@ namespace Triolingo.Core.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.HasKey("Id");
 
@@ -405,8 +416,8 @@ namespace Triolingo.Core.Migrations
 
                     b.HasOne("Triolingo.Core.Entity.Setting", "Setting")
                         .WithMany()
-                        .HasForeignKey("SettingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Lesson");

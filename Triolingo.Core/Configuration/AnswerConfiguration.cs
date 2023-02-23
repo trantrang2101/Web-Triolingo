@@ -15,7 +15,7 @@ namespace Triolingo.Core.Configuration
         {
             builder.ToTable("Answer");
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Status).IsRequired();
+            builder.Property(x => x.Status).HasDefaultValue(1).IsRequired();
             builder.Property(x => x.Answer1).IsRequired();
             builder.Property(x => x.Status).IsRequired();
             builder.Property(x => x.IsCorrect).IsRequired();

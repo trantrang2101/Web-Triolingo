@@ -16,7 +16,7 @@ namespace Triolingo.Core.Configuration
             builder.ToTable("Unit");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Name).HasMaxLength(250).IsRequired();
-            builder.Property(x => x.Status).IsRequired();
+            builder.Property(x => x.Status).HasDefaultValue(1).IsRequired();
             builder.Property(x => x.Order).IsRequired();
             builder.Property(x => x.Note);
             builder.Property(x => x.Description).IsRequired();

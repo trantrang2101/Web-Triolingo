@@ -19,7 +19,7 @@ namespace Triolingo.Core.Configuration
             builder.Property(x => x.Password).HasMaxLength(250).IsRequired();
             builder.Property(x => x.Email).HasMaxLength(250).IsRequired();
             builder.Property(x => x.Note);
-            builder.Property(x => x.Status).IsRequired();
+            builder.Property(x => x.Status).HasDefaultValue(1).IsRequired();
             builder.Property(x => x.FullName).HasMaxLength(250).IsRequired();
         }
     }

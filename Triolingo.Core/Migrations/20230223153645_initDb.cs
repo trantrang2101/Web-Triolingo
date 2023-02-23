@@ -4,7 +4,7 @@
 
 namespace Triolingo.Core.Migrations
 {
-    public partial class exercise : Migration
+    public partial class initDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -16,8 +16,8 @@ namespace Triolingo.Core.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RateAverage = table.Column<double>(type: "float", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    RateAverage = table.Column<double>(type: "float", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     Note = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -32,7 +32,7 @@ namespace Triolingo.Core.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Value = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     ParentId = table.Column<int>(type: "int", nullable: true)
@@ -57,7 +57,7 @@ namespace Triolingo.Core.Migrations
                     Email = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     AvatarUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     Note = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -75,7 +75,7 @@ namespace Triolingo.Core.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Order = table.Column<int>(type: "int", nullable: false),
                     CourseId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     Note = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -155,7 +155,7 @@ namespace Triolingo.Core.Migrations
                     UnitId = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false)
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1)
                 },
                 constraints: table =>
                 {
@@ -174,10 +174,9 @@ namespace Triolingo.Core.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     Title = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SettingId = table.Column<int>(type: "int", nullable: false),
                     TypeId = table.Column<int>(type: "int", nullable: false),
                     LessonId = table.Column<int>(type: "int", nullable: false),
                     File = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -192,11 +191,10 @@ namespace Triolingo.Core.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Exercise_Setting_SettingId",
-                        column: x => x.SettingId,
+                        name: "FK_Exercise_Setting_TypeId",
+                        column: x => x.TypeId,
                         principalTable: "Setting",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -234,7 +232,7 @@ namespace Triolingo.Core.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Question1 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     ExerciseId = table.Column<int>(type: "int", nullable: false),
                     Mark = table.Column<int>(type: "int", nullable: false)
                 },
@@ -257,7 +255,7 @@ namespace Triolingo.Core.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     QuestionId = table.Column<int>(type: "int", nullable: false),
                     Answer1 = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     IsCorrect = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -282,9 +280,9 @@ namespace Triolingo.Core.Migrations
                 column: "LessonId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Exercise_SettingId",
+                name: "IX_Exercise_TypeId",
                 table: "Exercise",
-                column: "SettingId");
+                column: "TypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Lesson_UnitId",
