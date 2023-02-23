@@ -15,10 +15,11 @@ namespace Triolingo.Core.Configuration
         {
             builder.ToTable("Exercise");
             builder.HasKey(e => e.Id);
-            builder.Property(e => e.Status).IsRequired();
+            builder.Property(e => e.Status).HasDefaultValue(1).IsRequired();
             builder.Property(e => e.Title).HasMaxLength(250).IsRequired();
             builder.Property(e => e.Description).IsRequired();
             builder.Property(e => e.File).IsRequired();
+            builder.HasOne(x => x.Setting).WithMany().HasForeignKey(x => x.TypeId).OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Triolingo.Core.Configuration
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Name).HasMaxLength(150).IsRequired();
             builder.Property(x => x.Value).HasMaxLength(250).IsRequired();
-            builder.Property(x => x.Status).IsRequired();
+            builder.Property(x => x.Status).HasDefaultValue(1).IsRequired();
             builder.Property(x => x.Note);
             builder.HasOne(x => x.ParentSetting).WithMany(x => x.Settings).HasForeignKey(x => x.ParentId).OnDelete(DeleteBehavior.NoAction);
         }
