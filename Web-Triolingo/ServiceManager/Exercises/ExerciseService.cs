@@ -50,7 +50,7 @@ namespace Web_Triolingo.ServiceManager.Exercises
                 exercises.Title = exercise.Title;
                 exercises.Description = exercise.Description;
                 exercises.LessonId = exercise.LessonId;
-                //await context.Update(exercises);
+                _dbContext.Update(exercises);
                 await _dbContext.SaveChangesAsync();
                 return true;
             }

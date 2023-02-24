@@ -1,33 +1,57 @@
-﻿using Triolingo.Core.Entity;
+﻿using Microsoft.EntityFrameworkCore;
+using Triolingo.Core.DataAccess;
+using Triolingo.Core.Entity;
 using Web_Triolingo.Interface.QnA;
 
 namespace Web_Triolingo.ServiceManager.QnA
 {
     public class AnswerService : IAnswer
     {
-        public Task<bool> AddNewAnswer(Answer Answer)
+        private readonly TriolingoDbContext _dbContext;
+        public AnswerService(TriolingoDbContext dbContext)
         {
-            throw new NotImplementedException();
+            _dbContext = dbContext;
+        }
+        public async Task<bool> AddNewAnswer(Answer Answer)
+        {
+            await _dbContext.AddAsync(Answer);
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
 
-        public Task<bool> DeleteAnswer(int Question)
+        public async Task<bool> DeleteAnswer(int Question)
         {
-            throw new NotImplementedException();
+            Answer answer = await _dbContext.Answers.Where(x=>x.Id== Question).FirstOrDefaultAsync();
+            if(answer != null)
+            {
+                _dbContext.Answers.Remove(answer);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
-        public Task<bool> EditAnswer(Answer Answer)
+        public async Task<bool> EditAnswer(Answer Answer)
         {
-            throw new NotImplementedException();
+            Answer answer = await _dbContext.Answers.Where(x => x.Id == Answer.Id).FirstOrDefaultAsync();
+            if (answer != null)
+            {
+                answer.Answer1 = Answer.Answer1;
+                answer.IsCorrect = Answer.IsCorrect;
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
-        public Task<List<Answer>> GetAllAnswers(int questionId)
+        public async Task<List<Answer>> GetAllAnswers(int questionId)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Answers.Where(x => x.QuestionId== questionId).ToListAsync();
         }
 
-        public Task<Answer> GetAnswerById(int? id)
+        public async Task<Answer> GetAnswerById(int? id)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Answers.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
     }
 }

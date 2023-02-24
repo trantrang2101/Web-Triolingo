@@ -24,7 +24,7 @@ namespace Web_Triolingo.Pages.QnA
         public List<Course> Courses { get; set; }
         public List<Unit> Units { get; set; }
         public List<Lesson> Lessons { get; set; }
-        public List<Setting> Settings { get; set; }
+        public List<SelectListItem> Settings { get; set; }
         public Course? Course { get; set; }
         public Unit? Unit { get; set; }
         public Lesson Lesson { get; set; }
@@ -36,14 +36,16 @@ namespace Web_Triolingo.Pages.QnA
         public Question Question { get; set; }
         [BindProperty]
         public Answer? Answer { get; set; }
-        public IndexModel(ILogger<IndexModel> _logger, IExercise exercise, IQuestion _service, ICourseService courseService, IUnitService unitService, ILessonService lessonService,IAnswer answer)
+        public IndexModel(ILogger<IndexModel> _logger,ISettingService setting, IExercise exercise, IQuestion _service, ICourseService courseService, IUnitService unitService, ILessonService lessonService,IAnswer answer)
         {
             logger = _logger;
+            settingService = setting;
             service = _service;
             answerService = answer;
             this.courseService = courseService;
             this.lessonService = lessonService;
             this.unitService = unitService;
+            exservice= exercise;
         }
         public void OnGet(int id)
         {
@@ -55,27 +57,34 @@ namespace Web_Triolingo.Pages.QnA
                     Setting set = settings.Where(x => x.Value.ToLower() == "lesson").FirstOrDefault();
                     if (set != null)
                     {
-                        Settings = settingService.GetSettingByParentId(set.Id);
+                        List<Setting> list = settingService.GetSettingByParentId(set.Id).ToList();
+                        Settings = list.Select(a =>
+                                  new SelectListItem
+                                  {
+                                      Value = a.Id.ToString(),
+                                      Text = a.Name
+                                  }).ToList();
                     }
                 }
-                if (id == null || id <= 0)
+                if (id != null && id > 0)
+                {
+                    Lesson = lessonService.GetLessonById(id).Result;
+                }
+                if (Lesson==null||id == null || id <= 0)
                 {
                     List<Lesson> lessons = lessonService.GetAllLesson().Result;
                     Lesson = lessons.FirstOrDefault();
                 }
-                else
-                {
-                    Lesson = lessonService.GetLessonById(id).Result;
-                }
-                Unit = Lesson.Unit;
-                Course = Unit.Course;
+                Unit = unitService.GetById(Lesson.UnitId);
+                Course = courseService.GetCourseById(Unit.CourseId).Result;
                 Courses = courseService.GetAllCourse().Result;
                 Units = unitService.GetUnitsByCourseId(Course.Id);
                 Lessons = lessonService.getAllLessonsByUnitId(Unit.Id).Result;
                 List = new List<Exercise>();
                 exservice.getAllExercisesByLessonId(Lesson.Id).Result.ToList().ForEach(x =>
                 {
-                    x.Questions = service.GetAllQuestions(x.Id).Result;
+                    x.Setting = settingService.GetSettingById(x.TypeId).Result;
+                    x.Questions = service.GetAllQuestions(x.Id).Result.ToList();
                     List.Add(x);
                 });
             }
@@ -109,13 +118,22 @@ namespace Web_Triolingo.Pages.QnA
             //    throw;
             //}
         }
-        public void OnPostEdit(int? id)
+        public void OnPostEdit(int? questionId, int id = 0)
         {
             try
             {
-                Question = service.GetQuestionById(id).Result;
-                Answers = answerService.GetAllAnswers(Question.Id).Result;
-                OnGet(Question.ExerciseId);
+                if (questionId != null)
+                {
+                    Question = service.GetQuestionById(questionId).Result;
+                    Answers = answerService.GetAllAnswers(Question.Id).Result;
+                    Exercise = exservice.GetExerciseById(Question.ExerciseId).Result;
+                }
+                if(id != 0) 
+                {
+                    Exercise = exservice.GetExerciseById(id).Result;
+                    Question = null;
+                }
+                OnGet(Exercise.LessonId);
             }
             catch (Exception ex)
             {
@@ -123,15 +141,33 @@ namespace Web_Triolingo.Pages.QnA
                 throw;
             }
         }
-        public void OnPostAdd(int exerciseId)
+        public void OnPostAdd(int lessonId)
+        {
+            try
+            {
+                Exercise = new Exercise();
+                Exercise.Id = 0;
+                Exercise.LessonId = lessonId;
+                Question = null;
+                OnGet(lessonId) ;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        public void OnPostAddQuestion(int exerciseId)
         {
             try
             {
                 Question = new Question();
                 Question.Id = 0;
                 Question.ExerciseId = exerciseId;
+                Exercise = exservice.GetExerciseById(exerciseId).Result;
+                Question.Exercise= Exercise;
                 Answers = new List<Answer>();
-                OnGet(exerciseId);
+                OnGet(Exercise.LessonId);
             }
             catch (Exception ex)
             {
@@ -163,6 +199,31 @@ namespace Web_Triolingo.Pages.QnA
             }
         }
         public void OnPostSave()
+        {
+            try
+            {
+                if (Exercise.Id == null || Exercise.Id == 0)
+                {
+                    Exercise.Id = exservice.AddExercise(Exercise).Result;
+                    if (Exercise.Id == null || Exercise.Id == 0)
+                    {
+                    }
+                }
+                else
+                {
+                    if (exservice.UpdateExercise(Exercise).Result == false)
+                    {
+                    }
+                }
+                OnPostEdit(null,Exercise.LessonId);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        public void OnPostSaveQuestion()
         {
             try
             {
