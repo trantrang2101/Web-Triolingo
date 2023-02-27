@@ -12,6 +12,32 @@ namespace Web_Triolingo.ServiceManager.QnA
         {
             _dbContext = dbContext;
         }
+
+        public async Task<bool> ActiveQuestion(int Question)
+        {
+            var question = await _dbContext.Questions.Where(x => x.Id == Question).FirstOrDefaultAsync();
+            if (question != null)
+            {
+                List<Answer> answerList = await _dbContext.Answers.Where(x => x.QuestionId == Question).ToListAsync();
+                foreach (var answer in answerList)
+                {
+                    answer.Status = answer.Status + 1;
+                }
+                Exercise exercise = await _dbContext.Exercises.Where(x => x.Id == question.ExerciseId).FirstOrDefaultAsync();
+                if (exercise != null && exercise.Status != 1)
+                {
+                    exercise.Status = 1;
+                    _dbContext.Exercises.Update(exercise);
+                }
+                question.Status = 1;
+                _dbContext.Answers.UpdateRange(answerList);
+                _dbContext.Questions.Update(question);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
         public async Task<int> AddNewQuestion(Question Question)
         {
             await _dbContext.Questions.AddAsync(Question);
@@ -27,9 +53,11 @@ namespace Web_Triolingo.ServiceManager.QnA
                 List<Answer> answerList = await _dbContext.Answers.Where(x => x.QuestionId == Question).ToListAsync();
                 foreach (var answer in answerList)
                 {
-                    _dbContext.Answers.Remove(answer);
+                    answer.Status = answer.Status-1;
                 }
-                _dbContext.Questions.Remove(question);
+                question.Status = 0;
+                _dbContext.Answers.UpdateRange(answerList);
+                _dbContext.Questions.Update(question);
                 await _dbContext.SaveChangesAsync();
                 return true;
             }

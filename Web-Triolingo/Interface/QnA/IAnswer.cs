@@ -9,5 +9,6 @@ namespace Web_Triolingo.Interface.QnA
         Task<bool> AddNewAnswer(Answer Answer);
         Task<bool> EditAnswer(Answer Answer);
         Task<bool> DeleteAnswer(int Question);
+        Task<bool> ActiveAnswer(int Question);
     }
 }

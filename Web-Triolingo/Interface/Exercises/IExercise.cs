@@ -10,5 +10,6 @@ namespace Web_Triolingo.Interface.Exercises
         Task<bool> UpdateExercise(Exercise lesson);
         Task<bool> DeleteExercise(int id);
         Task<List<Exercise>> getAllExercisesByLessonId(int? lessonId);
+        Task<bool> ActiveExercise(int id);
     }
 }

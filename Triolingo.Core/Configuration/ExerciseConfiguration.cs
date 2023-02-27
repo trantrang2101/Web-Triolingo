@@ -19,6 +19,7 @@ namespace Triolingo.Core.Configuration
             builder.Property(e => e.Title).HasMaxLength(250).IsRequired();
             builder.Property(e => e.Description);
             builder.Property(e => e.File);
+            builder.Property(e => e.FileName);
             builder.HasOne(x => x.Setting).WithMany().HasForeignKey(x => x.TypeId).OnDelete(DeleteBehavior.NoAction);
         }
     }

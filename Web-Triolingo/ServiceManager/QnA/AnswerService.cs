@@ -12,6 +12,32 @@ namespace Web_Triolingo.ServiceManager.QnA
         {
             _dbContext = dbContext;
         }
+
+        public async Task<bool> ActiveAnswer(int Question)
+        {
+            Answer answer = await _dbContext.Answers.Where(x => x.Id == Question).FirstOrDefaultAsync();
+            if (answer != null)
+            {
+                Question question = await _dbContext.Questions.Where(x => x.Id==Question).FirstOrDefaultAsync();
+                if (question!=null&&question.Status != 1)
+                {
+                    Exercise exercise = await _dbContext.Exercises.Where(x => x.Id == question.ExerciseId).FirstOrDefaultAsync();
+                    if(exercise != null && exercise.Status != 1)
+                    {
+                        exercise.Status = 1;
+                        _dbContext.Exercises.Update(exercise);
+                    }
+                    question.Status = 1;
+                    _dbContext.Questions.Update(question);
+                }
+                answer.Status = 1;
+                _dbContext.Answers.Update(answer);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
         public async Task<bool> AddNewAnswer(Answer Answer)
         {
             await _dbContext.AddAsync(Answer);
@@ -24,7 +50,8 @@ namespace Web_Triolingo.ServiceManager.QnA
             Answer answer = await _dbContext.Answers.Where(x=>x.Id== Question).FirstOrDefaultAsync();
             if(answer != null)
             {
-                _dbContext.Answers.Remove(answer);
+                answer.Status = 0;
+                _dbContext.Answers.Update(answer);
                 await _dbContext.SaveChangesAsync();
                 return true;
             }

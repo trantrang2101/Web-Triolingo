@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
 using Triolingo.Core.Entity;
 using Web_Triolingo.Interface.Courses;
 using Web_Triolingo.Interface.Exercises;
@@ -36,6 +38,9 @@ namespace Web_Triolingo.Pages.QnA
         public Question Question { get; set; }
         [BindProperty]
         public Answer? Answer { get; set; }
+        [BindProperty]
+        [DataType(DataType.Upload)]
+        public IFormFile FileUpload { get; set; }
         public IndexModel(ILogger<IndexModel> _logger,ISettingService setting, IExercise exercise, IQuestion _service, ICourseService courseService, IUnitService unitService, ILessonService lessonService,IAnswer answer)
         {
             logger = _logger;
@@ -47,7 +52,7 @@ namespace Web_Triolingo.Pages.QnA
             this.unitService = unitService;
             exservice= exercise;
         }
-        public void OnGet(int id)
+        public void OnGet(int id = 0)
         {
             try
             {
@@ -94,44 +99,144 @@ namespace Web_Triolingo.Pages.QnA
                 throw;
             }
         }
-        public void OnPostLesson(int id)
+        public void OnPostCourse(int id)
         {
-            //try
-            //{
-            //    if(id== null||id<=0) {
-            //        var list = lessonService.GetAllLesson().Result;
-            //        Lesson = list.FirstOrDefault();
-            //    }
-            //    else
-            //    {
-            //        Lesson = lessonService.GetLessonById(id).Result;
-            //    }
-            //    Unit = unitService.GetById(Lesson?.UnitId);
-            //    Courses = courseService.GetAllCourse().Result;
-            //    Units = unitService.GetUnitsByCourseId(Course.Id);
-            //    Lessons = lessonService.getAllLessonsByUnitId(Unit.Id).Result;
-            //    List = service.GetAllQuestions(Lesson.Id).Result;
-            //}
-            //catch (Exception ex)
-            //{
-            //    logger.LogError(ex.ToString());
-            //    throw;
-            //}
+            try
+            {
+                if(Course== null||id==null||id<=0)
+                {
+                    var list = courseService.GetAllCourse().Result;
+                    id = list.FirstOrDefault().Id;
+                }
+                Unit = unitService.GetUnitsByCourseId(id).FirstOrDefault();
+                Lesson = lessonService.getAllLessonsByUnitId(Unit.Id).Result.FirstOrDefault();
+                OnGet(Lesson.Id);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        public void OnPostUnit(int id)
+        {
+            try
+            {
+                if (Course == null || id == null || id <= 0)
+                {
+                    var list = unitService.GetAll();
+                    id = list.FirstOrDefault().Id;
+                }
+                Lesson = lessonService.getAllLessonsByUnitId(id).Result.FirstOrDefault();
+                OnGet(Lesson.Id);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        private bool IsBase64String(string? base64)
+        {
+            if(base64== null)
+            {
+                return false;
+            }
+            Span<byte> buffer = new Span<byte>(new byte[base64.Length]);
+            return Convert.TryFromBase64String(base64, buffer, out int bytesParsed);
         }
         public void OnPostEdit(int? questionId, int id = 0)
         {
             try
             {
+                if (id != 0)
+                {
+                    Exercise = exservice.GetExerciseById(id).Result;
+                    Question = null;
+                }
                 if (questionId != null)
                 {
                     Question = service.GetQuestionById(questionId).Result;
                     Answers = answerService.GetAllAnswers(Question.Id).Result;
                     Exercise = exservice.GetExerciseById(Question.ExerciseId).Result;
                 }
-                if(id != 0) 
+                if (Exercise.File!=null&& Exercise.FileName !=null)
+                {
+                    if (IsBase64String(Exercise.File))
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            byte[] bytes = Convert.FromBase64String(Exercise.File);
+                            FileUpload = new FormFile(ms, 0, bytes.Length, Exercise.FileName, Exercise.FileName);
+                            Exercise.FileExtention = System.IO.Path.GetExtension(Exercise.FileName);
+                        }
+                    }
+                    else
+                    {
+                        Exercise.FileUrl = Exercise.File;
+                    }
+                }
+                OnGet(Exercise.LessonId);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        public void OnPostDelete(int questionId = 0, int id = 0)
+        {
+            try
+            {
+                if (questionId != 0)
+                {
+                    Question = service.GetQuestionById(questionId).Result;
+                    Answers = answerService.GetAllAnswers(Question.Id).Result;
+                    Exercise = exservice.GetExerciseById(Question.ExerciseId).Result;
+                    if (service.DeleteQuestion(questionId).Result == false)
+                    {
+
+                    }
+                }
+                if (id != 0)
                 {
                     Exercise = exservice.GetExerciseById(id).Result;
                     Question = null;
+                    if (exservice.DeleteExercise(id).Result == false)
+                    {
+
+                    }
+                }
+                OnGet(Exercise.LessonId);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        public void OnPostActive(int questionId = 0, int id = 0)
+        {
+            try
+            {
+                if (id != 0)
+                {
+                    Exercise = exservice.GetExerciseById(id).Result;
+                    Question = null;
+                    if (exservice.ActiveExercise(id).Result == false)
+                    {
+
+                    }
+                }
+                if (questionId != 0)
+                {
+                    Question = service.GetQuestionById(questionId).Result;
+                    Answers = answerService.GetAllAnswers(Question.Id).Result;
+                    Exercise = exservice.GetExerciseById(Question.ExerciseId).Result;
+                    if (service.ActiveQuestion(questionId).Result == false)
+                    {
+
+                    }
                 }
                 OnGet(Exercise.LessonId);
             }
@@ -198,10 +303,24 @@ namespace Web_Triolingo.Pages.QnA
                 throw;
             }
         }
-        public void OnPostSave()
+        public void OnPostSave(int questionId=0)
         {
             try
             {
+                if (FileUpload != null && FileUpload.Length > 0)
+                {
+                    using(var ms = new MemoryStream())
+                    {
+                        FileUpload.CopyTo(ms);
+                        byte[] bytes = ms.ToArray();
+                        Exercise.File=  Convert.ToBase64String(bytes);
+                        Exercise.FileName = FileUpload.FileName;
+                    }
+                }else if(Exercise.File!=null&&Exercise.File.Length > 0)
+                {
+                    Exercise.File = Exercise.FileUrl;
+                    Exercise.FileName = System.IO.Path.GetFileName(Exercise.File);
+                }
                 if (Exercise.Id == null || Exercise.Id == 0)
                 {
                     Exercise.Id = exservice.AddExercise(Exercise).Result;
@@ -215,7 +334,7 @@ namespace Web_Triolingo.Pages.QnA
                     {
                     }
                 }
-                OnPostEdit(null,Exercise.LessonId);
+                OnPostEdit(questionId, Exercise.LessonId);
             }
             catch (Exception ex)
             {
@@ -240,7 +359,6 @@ namespace Web_Triolingo.Pages.QnA
                     {
                     }
                 }
-                OnPostEdit(Question.Id);
             }
             catch (Exception ex)
             {
@@ -254,6 +372,23 @@ namespace Web_Triolingo.Pages.QnA
             {
                 int questionId = answerService.GetAnswerById(id).Result.QuestionId;
                 if (answerService.DeleteAnswer(id).Result == false)
+                {
+
+                }
+                OnPostEdit(questionId);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        public void OnPostActiveAnswer(int id)
+        {
+            try
+            {
+                int questionId = answerService.GetAnswerById(id).Result.QuestionId;
+                if (answerService.ActiveAnswer(id).Result == false)
                 {
 
                 }

@@ -18,6 +18,11 @@ namespace Triolingo.Core.Entity
         public virtual Lesson Lesson { get; set; }
         public int LessonId { get; set; }
         public string? File { get; set; }
+        public string? FileName { get; set; }
+        [NotMapped]
+        public string? FileExtention{ get; set; }
+        [NotMapped]
+        public string? FileUrl{ get; set; }
         [NotMapped]
         public List<Question> Questions { get;set; }
     }
