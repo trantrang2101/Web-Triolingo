@@ -7,7 +7,10 @@ namespace Web_Triolingo.Interface.Units
         List<Unit> GetUnitsByCourseId(int? courseId);
         Unit GetById(int? unitId);
         List<Unit> GetAll();
+        Task<bool> ActiceUnit(int unitId);
+        Task<bool> DeactiveUnit(int unitId);
         Task<bool> UpdateUnit(Unit unit);
         Task<bool> AddUnit(Unit unit);
+        Course GetCourseByUnitId(int unitId);
     }
 }
