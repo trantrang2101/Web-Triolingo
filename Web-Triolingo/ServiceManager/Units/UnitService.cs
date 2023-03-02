@@ -2,21 +2,50 @@
 using Web_Triolingo.Interface.Units;
 using Triolingo.Core.Entity;
 using Triolingo.Core.DataAccess;
+using Web_Triolingo.Interface.Courses;
 
 namespace Web_Triolingo.ServiceManager.Units
 {
     public class UnitService : IUnitService
     {
         private readonly TriolingoDbContext _dbContext;
-        public UnitService(TriolingoDbContext dbContext)
+        private readonly ICourseService _courseService;
+        public UnitService(TriolingoDbContext dbContext, 
+            ICourseService courseService)
         {
             _dbContext = dbContext;
+            _courseService = courseService;
         }
         public async Task<bool> AddUnit(Unit unit)
         {
+            unit.Status = 1;
             await _dbContext.Units.AddAsync(unit);
             await _dbContext.SaveChangesAsync();
             return true;
+        }
+        public async Task<bool> ActiceUnit(int unitId)
+        {
+            var unit = GetById(unitId);
+            if (unit != null)
+            {
+                unit.Status = 1;
+                _dbContext.Update(unit);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+        public async Task<bool> DeactiveUnit(int unitId)
+        {
+            var unit = GetById(unitId);
+            if (unit != null)
+            {
+                unit.Status = 0;
+                _dbContext.Update(unit);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public List<Unit> GetAll()
@@ -26,7 +55,7 @@ namespace Web_Triolingo.ServiceManager.Units
 
         public Unit GetById(int? unitId)
         {
-            return _dbContext.Units.Where(x => x.Id == unitId).FirstOrDefault();
+            return _dbContext.Units.Where(x => x.Id == unitId).SingleOrDefault();
         }
 
         public List<Unit> GetUnitsByCourseId(int? courseId)
@@ -51,6 +80,12 @@ namespace Web_Triolingo.ServiceManager.Units
                 return true;
             }
             return false;
+        }
+
+        public Course GetCourseByUnitId(int unitId)
+        {
+            var unit =GetById(unitId);
+            return _courseService.GetCourseById(unit.CourseId).Result;
         }
     }
 }
