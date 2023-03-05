@@ -10,7 +10,7 @@ namespace Web_Triolingo.ServiceManager.Units
     {
         private readonly TriolingoDbContext _dbContext;
         private readonly ICourseService _courseService;
-        public UnitService(TriolingoDbContext dbContext, 
+        public UnitService(TriolingoDbContext dbContext,
             ICourseService courseService)
         {
             _dbContext = dbContext;
@@ -72,7 +72,6 @@ namespace Web_Triolingo.ServiceManager.Units
             {
                 item.Order = unit.Order;
                 item.Note = unit.Note;
-                item.CourseId = unit.CourseId;
                 item.Description = unit.Description;
                 item.Name = unit.Name;
                 _dbContext.Units.Update(item);
@@ -84,7 +83,7 @@ namespace Web_Triolingo.ServiceManager.Units
 
         public Course GetCourseByUnitId(int unitId)
         {
-            var unit =GetById(unitId);
+            var unit = GetById(unitId);
             return _courseService.GetCourseById(unit.CourseId).Result;
         }
     }

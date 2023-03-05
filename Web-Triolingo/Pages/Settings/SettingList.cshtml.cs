@@ -32,29 +32,6 @@ namespace Web_Triolingo.Pages.Settings
                 throw;
             }
         }
-        //public void OnPostGetChild(int? id)
-        //{
-        //    try
-        //    {
-        //        AllSettingsByParent = _settingService.GetSettingByParentId(id);
-        //        ListAllSettings = _settingService.GetSettingsNoParentId();
-
-        //        if ((int)a == id)
-        //        {
-        //            ViewData["Id"] = "0";
-        //        }
-        //        else
-        //        {
-        //            ViewData["Id"] = id;
-        //        }
-        //        a = (int)ViewData["Id"];
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.ToString());
-        //        throw;
-        //    }
-        //}
         public async Task<IActionResult> OnPostAdd()
         {
             try
