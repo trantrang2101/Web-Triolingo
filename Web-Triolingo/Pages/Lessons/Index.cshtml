@@ -70,7 +70,7 @@
     <div class="col-md-8 col-12">
         <div class="card">
             <h5 class="card-header bg-transparent text-uppercase">Chi tiết</h5>
-            <form id="form-editor" method="post" class="card-body boxscroll" asp-page-handler="add">
+            <form method="post" id="form-editor" class="card-body boxscroll">
                 <div class="mb-3 row">
                     <label for="name" class="col-sm-2 col-form-label">Tên<span class="text-danger">*</span></label>
                     <div class="col-sm-10">
@@ -81,7 +81,24 @@
                 <div class="mb-3 row">
                     <label for="editor" class="col-sm-2 col-form-label">Unit<span class="text-danger">*</span></label>
                     <div class="col-sm-10">
-                        <input type="text" id="unit" asp-for="Lesson.UnitId" />
+                        <select class="form-control" id="unit" asp-for="Lesson.UnitId">
+                            @if (Model.ListAllUnit != null)
+                            {
+                                @foreach (var unit in Model.ListAllUnit)
+                                {
+
+                                    bool selected = Model.Unit != null ? (unit.Id == Model.Unit.Id) : false;
+                                    if (selected)
+                                    {
+                                        <option value="@unit.Id" selected>@unit.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@unit.Id">@unit.Name</option>
+                                    }
+                                }
+                            }
+                        </select>
                     </div>
                 </div>
                 <div class="mb-3 row">
@@ -96,16 +113,16 @@
                         <textarea class="form-control w-100" id="note" asp-for="Lesson.Note"></textarea>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary px-3" hidden id="saveBtn">Lưu</button>
-            </form>
-            <div class="row card-footer border-0 bg-transparent justify-content-between align-content-center row-cols-md-4 row-cols-2">
-                <div class="col">
-                    <button id="Add" type="button" class="btn btn-primary px-3">Thêm</button>
+                <div class="row card-footer border-0 bg-transparent justify-content-between align-content-center row-cols-md-4 row-cols-2">
+                    <div class="col">
+                        <button id="Add" asp-page-handler="Add" class="btn btn-primary px-3">Thêm</button>
+                    </div>
+                    <div class="col"><button asp-page-handler="Delete" class="btn btn-primary px-3" id="fakeSaveBtn">Xóa</button></div>
+                    <div class="col"><button asp-page-handler ="Update" class="btn btn-primary px-3" id="fakeSaveBtn">Sửa</button></div>
+                    <div class="col"><button class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
                 </div>
-                <div class="col"><button type="button" class="btn btn-primary px-3" id="fakeSaveBtn">Lưu</button></div>
-                <div class="col"><button type="button" class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
-                <div class="col"><button type="button" class="btn btn-primary px-3">Import</button></div>
-            </div>
+            </form>
+
         </div>
     </div>
 </div>
@@ -125,7 +142,7 @@
             debugger
             $('#form-' + count).submit()
         }
-        $('#Add').on('click', function(){
+        $('#Add').on('click', function    ( ) {
             $('#form-editor').attr('asp-page-handler', 'Add')
             $('#form-editor').submit();
         })

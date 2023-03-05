@@ -4,6 +4,8 @@ using Newtonsoft.Json;
 using Web_Triolingo.Interface.Lessons;
 using Web_Triolingo.Interface.Users;
 using Triolingo.Core.Entity;
+using Web_Triolingo.ServiceManager.Units;
+using Web_Triolingo.Interface.Units;
 
 namespace Web_Triolingo.Pages.Lessons
 {
@@ -12,17 +14,21 @@ namespace Web_Triolingo.Pages.Lessons
         private readonly ILogger<IndexModel> _logger;
         private readonly ILessonService _lessonService;
         private readonly IUserService _userService;
+        private readonly IUnitService _unitService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public IndexModel(ILogger<IndexModel> logger, ILessonService lessonService, IUserService userService, IHttpContextAccessor httpContextAccessor)
+        public IndexModel(ILogger<IndexModel> logger, IUnitService unitService, ILessonService lessonService, IUserService userService, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _lessonService = lessonService;
             _userService = userService;
             _httpContextAccessor = httpContextAccessor;
+            _unitService= unitService;
         }
         public List<Lesson> ListAllLesson { get; set; }
         public Lesson Lesson { get; set; }
-        public void OnGet(string loginError, string regisError)
+        public Unit Unit { get; set; }
+        public List<Unit> ListAllUnit { get; set; }
+        public void OnGet(string? loginError, string? regisError)
         {
             //Get session
             var objString = HttpContext.Session.GetString("user");
@@ -36,11 +42,27 @@ namespace Web_Triolingo.Pages.Lessons
             try
             {
                 ListAllLesson = _lessonService.GetAllLesson().Result;
+                ListAllUnit = _unitService.GetAll();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.ToString());
                 throw;
+            }
+        }
+        public void OnPost(Lesson lesson)
+        {
+            if (Request.Form["asp-page-handler"] == "Add")
+            {
+                OnPostAdd(lesson);
+            }
+            else if (Request.Form["asp-page-handler"] == "Delete")
+            {
+                OnPostDelete(lesson);
+            }
+            else if (Request.Form["asp-page-handler"] == "Update")
+            {
+                OnPostUpdate(lesson);
             }
         }
         public void OnPostLessonById(int id)
@@ -49,6 +71,8 @@ namespace Web_Triolingo.Pages.Lessons
             {
                 Lesson = _lessonService.GetLessonById(id).Result;
                 ListAllLesson = _lessonService.GetAllLesson().Result;
+                Unit = _unitService.GetById(Lesson.UnitId);
+                ListAllUnit = _unitService.GetAll();
             }
             catch (Exception ex)
             {
@@ -73,7 +97,44 @@ namespace Web_Triolingo.Pages.Lessons
                 throw;
             }
         }
+        public void OnPostUpdate(Lesson lesson)
+        {
+            try
+            {
+                var check = _lessonService.UpdateLesson(lesson).Result;
+                if (check == true)
+                {
 
+                }
+                ListAllLesson = _lessonService.GetAllLesson().Result;
+                ListAllUnit = _unitService.GetAll();
+                Lesson = _lessonService.GetLessonById(lesson.Id).Result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        public void OnPostDelete(Lesson lesson)
+        {
+            try
+            {
+                var check = _lessonService.DeleteLesson(lesson.Id).Result;
+                if (check == true)
+                {
+
+                }
+                ListAllLesson = _lessonService.GetAllLesson().Result;
+                ListAllUnit = _unitService.GetAll();
+                Lesson = _lessonService.GetLessonById(lesson.Id).Result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
         public ActionResult OnPostLogin(User userLogin)
         {
             try

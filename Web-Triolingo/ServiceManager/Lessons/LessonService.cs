@@ -64,7 +64,7 @@ namespace Web_Triolingo.ServiceManager.Lessons
                 lessons.Note = lesson.Note;
                 lessons.Description = lesson.Description;
                 lessons.UnitId = lesson.UnitId;
-                //await context.Update(lessons);
+                _dbContext.Update(lessons);
                 await _dbContext.SaveChangesAsync();
                 return true;
             }
@@ -77,7 +77,7 @@ namespace Web_Triolingo.ServiceManager.Lessons
             var lessons = await _dbContext.Lessons.Where(x => x.Status == 1 && x.Id == id).FirstOrDefaultAsync();
             if (lessons != null)
             {
-                //await context.RemoveAsync(lessons);
+                _dbContext.Remove(lessons);
                 await _dbContext.SaveChangesAsync();
             }
             return true;
