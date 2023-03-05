@@ -24,16 +24,14 @@ namespace Web_Triolingo.Pages.Units
         [BindProperty]
         public Unit UnitAdd { get; set; }
         public string CourseName { get; set; }
-        public int Id { get; set; }
+        public int CourseId { get; set; }
         public void OnGet(int? id)
         {
             try
             {
-                //id = id == null ? Id : id;
                 AllUnitsById = _unitService.GetUnitsByCourseId(id);
                 CourseName = _courseService.GetCourseById(id).Result.Name;
-                UnitAdd = new Unit();
-                UnitAdd.CourseId = Convert.ToInt32(id);
+                CourseId = Convert.ToInt32(id);
             }
             catch (Exception ex)
             {
@@ -45,8 +43,7 @@ namespace Web_Triolingo.Pages.Units
             try
             {
                 var unit = _unitService.GetById(id);
-                var course = _unitService.GetCourseByUnitId(id);
-                Id = course.Id;
+                var course = _unitService.GetCourseByUnitId(unit.CourseId);
                 AllUnitsById = _unitService.GetUnitsByCourseId(course.Id);
                 CourseName = course.Name;
                 if (unit.Status == 1)
@@ -57,7 +54,7 @@ namespace Web_Triolingo.Pages.Units
                 {
                     await _unitService.ActiceUnit(id);
                 }
-                return RedirectToPage("ListAll", new { id = Id });
+                return RedirectToPage("ListAll", new { id = unit.CourseId });
             }
             catch (Exception ex)
             {
@@ -65,23 +62,51 @@ namespace Web_Triolingo.Pages.Units
                 throw;
             }
         }
-        public async Task<IActionResult> OnPostAddAsync()
+
+        public async Task<IActionResult> OnPostEditAsync()
         {
             try
             {
-                var course = _courseService.GetCourseById(UnitAdd.CourseId).Result;
-                Id = UnitAdd.CourseId;
+                if (await _unitService.UpdateUnit(UnitAdd)) return RedirectToPage("ListAll", new { id = UnitAdd.CourseId });
+                else return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<IActionResult> OnPostAddAsync(int id)
+        {
+            try
+            {
+                var course = _courseService.GetCourseById(id).Result;
                 AllUnitsById = _unitService.GetUnitsByCourseId(UnitAdd.CourseId);
                 CourseName = course.Name;
+                UnitAdd.CourseId = id;
                 if (await _unitService.AddUnit(UnitAdd))
                 {
-                    return RedirectToPage("ListAll", new { id = Id });
+                    return RedirectToPage("ListAll", new { id = UnitAdd.CourseId });
                 }
                 return BadRequest();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+        public void OnPostEditUnit(int? id)
+        {
+            try
+            {
+                UnitAdd = _unitService.GetById(id);
+                AllUnitsById = _unitService.GetUnitsByCourseId(UnitAdd.CourseId);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.ToString());
                 throw;
             }
         }
