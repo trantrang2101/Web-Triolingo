@@ -1,8 +1,9 @@
 ﻿@page "/lessons"
+@addTagHelper *, Microsoft.AspNetCore.MVC.TagHelpers
 @model Web_Triolingo.Pages.Lessons.IndexModel
 @{
     Layout = "_Layout";
-    ViewData["Title"] = "Lesson page";
+    ViewData["Title"] = "Quản lý môn học";
 }
 <h2 class="text-uppercase">Quản lý môn học</h2>
 <div class="row p-0">
@@ -71,58 +72,73 @@
         <div class="card">
             <h5 class="card-header bg-transparent text-uppercase">Chi tiết</h5>
             <form method="post" id="form-editor" class="card-body boxscroll">
-                <div class="mb-3 row">
-                    <label for="name" class="col-sm-2 col-form-label">Tên<span class="text-danger">*</span></label>
-                    <div class="col-sm-10">
-                        <input type="number" hidden asp-for="Lesson.Id" />
-                        <input asp-for="Lesson.Name" type="text" class="form-control" id="name">
+                <fieldset>
+                    <div class="mb-3 row">
+                        <label for="name" class="col-sm-2 col-form-label">Tên<span class="text-danger"> *</span></label>
+                        <div class="col-sm-10">
+                            <input type="number" id="lessonId" hidden asp-for="Lesson.Id" />
+                            <input asp-for="Lesson.Name" type="text" class="form-control" id="lessonName" required>
+                        </div>
                     </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="editor" class="col-sm-2 col-form-label">Unit<span class="text-danger">*</span></label>
-                    <div class="col-sm-10">
-                        <select class="form-control" id="unit" asp-for="Lesson.UnitId">
-                            @if (Model.ListAllUnit != null)
-                            {
-                                @foreach (var unit in Model.ListAllUnit)
+                    <div class="mb-3 row">
+                        <label for="editor" class="col-sm-2 col-form-label">Unit<span class="text-danger"> *</span></label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="lessonUnit" asp-for="Lesson.UnitId">
+                                @if (Model.ListAllUnit != null)
                                 {
+                                    @foreach (var unit in Model.ListAllUnit)
+                                    {
 
-                                    bool selected = Model.Unit != null ? (unit.Id == Model.Unit.Id) : false;
-                                    if (selected)
-                                    {
-                                        <option value="@unit.Id" selected>@unit.Name</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@unit.Id">@unit.Name</option>
+                                        bool selected = Model.Unit != null ? (unit.Id == Model.Unit.Id) : false;
+                                        if (selected)
+                                        {
+                                            <option value="@unit.Id" selected>@unit.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@unit.Id">@unit.Name</option>
+                                        }
                                     }
                                 }
-                            }
-                        </select>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="editor" class="col-sm-2 col-form-label">Mô tả<span class="text-danger">*</span></label>
-                    <div class="col-sm-10">
-                        <textarea id="editor" asp-for="Lesson.Description"></textarea>
+                    <div class="mb-3 row">
+                        <label for="editor" class="col-sm-2 col-form-label">Mô tả<span class="text-danger"> *</span></label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" id="lessonDescription" asp-for="Lesson.Description" required></textarea>
+                        </div>
                     </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="note" class="col-sm-2 col-form-label">Ghi chú</label>
-                    <div class="col-sm-10">
-                        <textarea class="form-control w-100" id="note" asp-for="Lesson.Note"></textarea>
+                    <div class="mb-3 row">
+                        <label for="note" class="col-sm-2 col-form-label">Ghi chú</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control w-100" id="lessonNode" asp-for="Lesson.Note"></textarea>
+                        </div>
                     </div>
-                </div>
-                <div class="row card-footer border-0 bg-transparent justify-content-between align-content-center row-cols-md-4 row-cols-2">
-                    <div class="col">
-                        <button id="Add" asp-page-handler="Add" class="btn btn-primary px-3">Thêm</button>
+                </fieldset>
+                @if (ViewBag.AddAble == false)
+                {
+                    <div class="row card-footer border-0 bg-transparent justify-content-between align-content-center row-cols-md-4 row-cols-2">
+                        <div class="col">
+                            <button id="Add" disabled asp-page-handler="Add" class="btn btn-primary px-3">Thêm</button>
+                        </div>
+                        <div class="col"><button asp-page-handler="Delete" class="btn btn-primary px-3" id="Delete">Xóa</button></div>
+                        <div class="col"><button asp-page-handler="Update" class="btn btn-primary px-3" id="Update">Sửa</button></div>
+                        <div class="col"><button type="button" class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
                     </div>
-                    <div class="col"><button asp-page-handler="Delete" class="btn btn-primary px-3" id="fakeSaveBtn">Xóa</button></div>
-                    <div class="col"><button asp-page-handler ="Update" class="btn btn-primary px-3" id="fakeSaveBtn">Sửa</button></div>
-                    <div class="col"><button class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
-                </div>
+                }
+                @if (ViewBag.AddAble == true)
+                {
+                    <div class="row card-footer border-0 bg-transparent justify-content-between align-content-center row-cols-md-4 row-cols-2">
+                        <div class="col">
+                            <button id="Add" asp-page-handler="Add" class="btn btn-primary px-3">Thêm</button>
+                        </div>
+                        <div class="col"><button disabled asp-page-handler="Delete" class="btn btn-primary px-3" id="Delete">Xóa</button></div>
+                        <div class="col"><button disabled asp-page-handler="Update" class="btn btn-primary px-3" id="Update">Sửa</button></div>
+                        <div class="col"><button type="button" class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
+                    </div>
+                }
             </form>
-
         </div>
     </div>
 </div>
@@ -139,12 +155,17 @@
     <script src="~/js/Login/Login.js"></script>
     <script>
         function ShowDetail(count) {
-            debugger
             $('#form-' + count).submit()
         }
-        $('#Add').on('click', function    ( ) {
-            $('#form-editor').attr('asp-page-handler', 'Add')
-            $('#form-editor').submit();
+        $('#disabledMode').on('click', function () {
+            $('#lessonId').val("");
+            $('#lessonName').val("");
+            $('#lessonDescription').val("")
+            $('#lessonNode').val("")
+            $('#lessonUnit').prop('selectedIndex', 0);
+            $('#Add').prop('disabled', false);
+            $('#Delete').prop('disabled', true);
+            $('#Update').prop('disabled', true);
         })
     </script>
 }

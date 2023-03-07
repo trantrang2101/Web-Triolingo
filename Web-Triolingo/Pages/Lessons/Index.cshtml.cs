@@ -30,6 +30,7 @@ namespace Web_Triolingo.Pages.Lessons
         public List<Unit> ListAllUnit { get; set; }
         public void OnGet(string? loginError, string? regisError)
         {
+            ViewData["AddAble"] = true;
             //Get session
             var objString = HttpContext.Session.GetString("user");
             if (objString != null)
@@ -69,6 +70,7 @@ namespace Web_Triolingo.Pages.Lessons
         {
             try
             {
+                ViewData["AddAble"] = false;
                 Lesson = _lessonService.GetLessonById(id).Result;
                 ListAllLesson = _lessonService.GetAllLesson().Result;
                 Unit = _unitService.GetById(Lesson.UnitId);
@@ -84,11 +86,9 @@ namespace Web_Triolingo.Pages.Lessons
         {
             try
             {
+                ViewData["AddAble"] = false;
                 var check = _lessonService.AddLesson(lesson).Result;
-                if(check == true)
-                {
-
-                }
+                ListAllUnit = _unitService.GetAll();
                 ListAllLesson = _lessonService.GetAllLesson().Result;
             }
             catch (Exception ex)
@@ -101,14 +101,12 @@ namespace Web_Triolingo.Pages.Lessons
         {
             try
             {
+                ViewData["AddAble"] = false;
                 var check = _lessonService.UpdateLesson(lesson).Result;
-                if (check == true)
-                {
-
-                }
                 ListAllLesson = _lessonService.GetAllLesson().Result;
                 ListAllUnit = _unitService.GetAll();
                 Lesson = _lessonService.GetLessonById(lesson.Id).Result;
+                Unit = _unitService.GetById(Lesson.UnitId);
             }
             catch (Exception ex)
             {
@@ -120,14 +118,10 @@ namespace Web_Triolingo.Pages.Lessons
         {
             try
             {
+                ViewData["AddAble"] = false;
                 var check = _lessonService.DeleteLesson(lesson.Id).Result;
-                if (check == true)
-                {
-
-                }
                 ListAllLesson = _lessonService.GetAllLesson().Result;
                 ListAllUnit = _unitService.GetAll();
-                Lesson = _lessonService.GetLessonById(lesson.Id).Result;
             }
             catch (Exception ex)
             {
