@@ -1,40 +1,35 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.Text.Json.Serialization;
-using Web_Triolingo.Common;
-using Web_Triolingo.DBContext;
 using Web_Triolingo.Interface.Courses;
-using Web_Triolingo.ModelDto;
-using Web_Triolingo.Model;
+using Triolingo.Core.Entity;
+using Triolingo.Core.DataAccess;
 
 namespace Web_Triolingo.ServiceManager.Courses
 {
-    public class CoursesService : ICourseService
+    public class CourseService : ICourseService
     {
-        private readonly IMapper _mapper;
-        public CoursesService(IMapper mapper)
+        private readonly TriolingoDbContext _dbContext;
+        public CourseService(TriolingoDbContext dBContext)
         {
-            _mapper = mapper;
+            _dbContext = dBContext;
         }
-        public async Task<bool> AddNewCourse(Course Course)
+        public async Task<int> AddNewCourse(Course Course)
         {
-            Course cour = Course;
-            await DataProvider.Ins.DB.Courses.AddAsync(cour);
-            await DataProvider.Ins.DB.SaveChangesAsync();
-            return true;
+            await _dbContext.Courses.AddAsync(Course);
+            await _dbContext.SaveChangesAsync();
+            return Course.Id;
         }
 
         public async Task<bool> EditCourse(Course course)
         {
-            var getCourse = await DataProvider.Ins.DB.Courses.Where(x => x.Id == course.Id).FirstOrDefaultAsync();
+            var getCourse = await _dbContext.Courses.Where(x => x.Id == course.Id).FirstOrDefaultAsync();
             if (getCourse != null)
             {
                 getCourse.Name=course.Name;
                 getCourse.Description = course.Description;
                 getCourse.Note= course.Note;
                 getCourse.Status = course.Status;
-                await DataProvider.Ins.DB.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
                 return true;
             }
             return false;
@@ -42,16 +37,16 @@ namespace Web_Triolingo.ServiceManager.Courses
 
         public async Task<List<Course>> GetAllCourse()
         {
-            var courses = await DataProvider.Ins.DB.Courses.ToListAsync();
-            var result = _mapper.Map<List<Course>>(courses);
-            return result;
+            var courses = await _dbContext.Courses.ToListAsync();
+            //var result = _mapper.Map<List<Course>>(courses);
+            return courses;
         }
 
         public async Task<Course> GetCourseById(int? id)
         {
-            var course = await DataProvider.Ins.DB.Courses.Where(x => x.Id == id).FirstOrDefaultAsync();
-            var result = _mapper.Map<Course>(course);
-            return result;
+            var course = await _dbContext.Courses.Where(x => x.Id == id).FirstOrDefaultAsync();
+            //var result = _mapper.Map<Course>(course);
+            return course;
         }
     }
 }

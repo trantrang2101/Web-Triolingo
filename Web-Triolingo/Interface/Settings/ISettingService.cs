@@ -1,17 +1,18 @@
-﻿using Web_Triolingo.DBContext;
-using Web_Triolingo.ModelDto;
+﻿using Triolingo.Core.Entity;
 
 namespace Web_Triolingo.Interface.Settings
 {
     public interface ISettingService
     {
-        Task<List<SettingDto>> GetAllSetting();
+        List<Setting> GetAllSetting();
         Task<bool> DeactiveSetting(int? settingId);
         Task<bool> ActiveSetting(int? settingId);
-        Task<SettingDto> GetSettingById(int? id);
-        Task<List<SettingDto>> GetSettingByParentId(int? settingId);
-        Task<List<SettingDto>> GetSettingsNoParentId();
-        Task<bool> AddNewSetting(SettingDto setting);
-        Task<bool> EditSetting(SettingDto setting);
+        Task<Setting> GetSettingById(int? id);
+        List<Setting> GetSettingByParentId(int? settingId);
+        List<Setting> GetSettingsNoParentId();
+        Task<bool> AddNewSetting(Setting setting);
+        Task<bool> EditSetting(Setting setting);
+        bool IsDuplicateSetting(Setting item);
+        List<Setting> OrderSettingsParent();
     }
 }

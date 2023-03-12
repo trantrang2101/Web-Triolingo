@@ -1,4 +1,4 @@
-﻿.accordion {
+﻿/*.accordion {
     background-color: #eee;
     color: #444;
     cursor: pointer;
@@ -17,14 +17,14 @@
     }
 
 .panel {
-    display: none;
-}
-
-.panel-active {
     display: contents;
-}
+}*/
 
-    .panel-active td {
+/*.panel-active {
+    display: contents;
+}*/
+
+    /*.panel-active td {
         padding-left: 10px;
         width: 10px;
-    }
+    }*/

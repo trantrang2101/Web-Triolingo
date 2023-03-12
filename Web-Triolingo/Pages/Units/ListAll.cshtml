@@ -1,0 +1,152 @@
+﻿@page
+@addTagHelper *, Microsoft.AspNetCore.MVC.TagHelpers
+@model Web_Triolingo.Pages.Units.ListAllModel
+
+<h1>Các học phần của khóa học: @Model.CourseName</h1>
+<div class="">
+    <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+        Thêm mới
+    </a>
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasExampleLabel">Thêm mới</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div>
+                <form asp-page-handler="add" method="post">
+                    <input type="text" hidden name="id" value="@Model.CourseId" />
+                    <div class="form-group">
+                        <label for="email">Tên</label>
+                        <input type="text" required class="form-control" asp-for="UnitAdd.Name" id="name" placeholder="nhập tên" aria-describedby="emailHelp">
+                    </div>
+                    <div class="form-group">
+                        <label for="value">Mô tả</label>
+                        <input type="text" required class="form-control" asp-for="UnitAdd.Description" id="value" placeholder="nhập mô tả">
+                    </div>
+                    <div class="form-group">
+                        <label for="note">Thứ tự</label>
+                        <input type="number" class="form-control" id="note" asp-for="UnitAdd.Order" placeholder="nhập thứ tự bằng số">
+                    </div>
+                    <div class="form-group">
+                        <label for="value">Ghi chú</label>
+                        <input type="text" class="form-control" asp-for="UnitAdd.Note" id="value" placeholder="nhập ghi chú">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row p-0">
+    <div class="col-md-6 col-12">
+        <h5 class="card-header bg-transparent text-uppercase">Danh sách</h5>
+        <div class="boxscroll card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr class="table-primary">
+                        <td>No</td>
+                        <th>Tên</th>
+                        <th>Mô tả</th>
+                        <th>Thứ tự</th>
+                        <th>Ghi chú</th>
+                        <th>Trạng thái</th>
+                        <th>Chuyển trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        foreach (var item in Model.AllUnitsById)
+                        {
+                            <input type="text" hidden asp-for="@item.CourseId" />
+                            int count = 1;
+                            <tr onclick="UpdateUnit(@item.Id)">
+                                <form method="post" asp-page-handler="editunit" id="update-@item.Id">
+                                    <input type="hidden" value="@item.Id" name="id" />
+                                </form>
+                                <td>
+                                    @count
+                                </td>
+                                <td>@item.Name</td>
+                                <td>@item.Description</td>
+                                <td>@item.Order</td>
+                                <td>@item.Note</td>
+                                <td>
+                                    @{
+                                        if (item.Status == 1)
+                                        {
+                                            <span class="badge bg-success">Hoạt động</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Đã khóa</span>
+                                        }
+                                    }
+                                </td>
+                                <td>
+                                    @{
+                                        if (item.Status == 1)
+                                        {
+                                            <form method="post" asp-page-handler="status">
+                                                <input type="hidden" name="Id" value="@item.Id" />
+                                                <input class="btn bg-danger" type="submit" value="Khóa" />
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form method="post" asp-page-handler="status">
+                                                <input type="hidden" name="Id" value="@item.Id" />
+                                                <input class="btn bg-success" type="submit" value="Kích hoạt" />
+                                            </form>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                            count++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-6 col-12">
+        <div class="card">
+            <h5 class="card-header bg-transparent text-uppercase">Chi tiết</h5>
+            <form method="post" class="card-body boxscroll" asp-page-handler="edit">
+                <input type="number" hidden asp-for="UnitAdd.Id" />
+                <input type="number" hidden asp-for="UnitAdd.CourseId" />
+                <div class="mb-3 row">
+                    <label for="name" class="col-sm-2 col-form-label">Tên<span class="text-danger">*</span></label>
+                    <div class="col-sm-10">
+                        <input asp-for="UnitAdd.Name" required type="text" class="form-control" id="name">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="valueSet" class="col-sm-2 col-form-label">Thứ tự<span class="text-danger">*</span></label>
+                    <div class="col-sm-10">
+                        <input asp-for="UnitAdd.Order" required type="number" class="form-control" id="valueSet">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="note" class="col-sm-2 col-form-label">Ghi chú<span class="text-danger">*</span></label>
+                    <div class="col-sm-10">
+                        <textarea id="editor" class="form-control" asp-for="UnitAdd.Note"></textarea>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="note" class="col-sm-2 col-form-label">Mô tả<span class="text-danger">*</span></label>
+                    <div class="col-sm-10">
+                        <textarea id="editor" class="form-control" asp-for="UnitAdd.Description"></textarea>
+                    </div>
+                </div>
+                <div class="col"><input type="submit" value="Lưu" class="btn btn-primary px-3" id="fakeSaveBtn" /></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function UpdateUnit(id) {
+        $('#update-' + id).submit()
+    }
+</script>

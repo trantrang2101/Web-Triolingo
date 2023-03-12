@@ -1,32 +1,92 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Web_Triolingo.DBContext;
+﻿using Microsoft.EntityFrameworkCore;
 using Web_Triolingo.Interface.Lessons;
-using Web_Triolingo.ModelDto;
-using Web_Triolingo.Model;
+using Triolingo.Core.Entity;
+using Triolingo.Core.DataAccess;
 
 namespace Web_Triolingo.ServiceManager.Lessons
 {
     public class LessonService : ILessonService
     {
-        private readonly IMapper _mapper;
-        public LessonService(IMapper mapper)
+        private readonly TriolingoDbContext _dbContext;
+        public LessonService(TriolingoDbContext dbContext)
         {
-            _mapper = mapper;
+            _dbContext = dbContext;
         }
-        public async Task<List<LessonDto>> GetAllLesson()
+        //public async Task<User> FindExistLesson(string name)
+        //{
+        //    var userLoged = await _dbContext.Lessons.Where(x => x.Name == name && x.Status == 1).FirstOrDefaultAsync();
+        //    return userLoged;
+        //}
+
+        public async Task<List<Lesson>> GetAllLesson()
         {
-            using (var context = new TriolingoDBContext())
+            var lessons = await _dbContext.Lessons.Where(x => x.Status == 1).ToListAsync();
+            //var result = _mapper.Map<List<Lesson>>(lessons);
+            return lessons;
+
+        }
+        public async Task<Lesson> GetLessonById(int id)
+        {
+            var lessons = await _dbContext.Lessons.Where(x => x.Status == 1 && x.Id == id).FirstOrDefaultAsync();
+            return lessons;
+        }
+
+        public async Task<bool> AddLesson(Lesson lesson)
+        {
+            //var check = FindExistLesson(lesson.Name);
+            bool check = false;
+            if (check != null)
             {
-                var lessons = await context.Lessons.ToListAsync();
-                var result = _mapper.Map<List<LessonDto>>(lessons);
+                Lesson newUser = new Lesson()
+                {
+                    Name = lesson.Name,
+                    Status = 1,
+                    Note = lesson.Note,
+                    Description = lesson.Description,
+                    UnitId = lesson.UnitId,
+                };
+                await _dbContext.AddAsync(newUser);
+                await _dbContext.SaveChangesAsync();
 
-                return result;
+                return true;
             }
-            //var lessons = await DataProvider.Ins.DB.Lessons.ToListAsync();
-            //var result = _mapper.Map<List<LessonDto>>(lessons);
+            return false;
+        }
 
-            //return result;
+        public async Task<bool> UpdateLesson(Lesson lesson)
+        {
+
+            var lessons = await _dbContext.Lessons.Where(x => x.Status == 1 && x.Id == lesson.Id).FirstOrDefaultAsync();
+            if (lessons != null)
+            {
+                lessons.Name = lesson.Name;
+                lessons.Status = 1;
+                lessons.Note = lesson.Note;
+                lessons.Description = lesson.Description;
+                lessons.UnitId = lesson.UnitId;
+                _dbContext.Update(lessons);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+
+        }
+
+        public async Task<bool> DeleteLesson(int id)
+        {
+            var lessons = await _dbContext.Lessons.Where(x => x.Status == 1 && x.Id == id).FirstOrDefaultAsync();
+            if (lessons != null)
+            {
+                _dbContext.Remove(lessons);
+                await _dbContext.SaveChangesAsync();
+            }
+            return true;
+        }
+
+        public async Task<List<Lesson>> getAllLessonsByUnitId(int? unitId)
+        {
+            var lessons = await _dbContext.Lessons.Where(x => x.Status == 1 && x.UnitId == unitId).ToListAsync();
+            return lessons;
         }
     }
 }

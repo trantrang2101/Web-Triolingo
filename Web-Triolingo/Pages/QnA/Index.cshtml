@@ -1,0 +1,531 @@
+﻿@page
+@model Web_Triolingo.Pages.QnA.IndexModel
+@{
+    ViewData["Title"] = "Quản lý câu hỏi và bài tập";
+}
+<h2 class="text-uppercase">Quản lý câu hỏi và bài tập</h2>
+<div class="row p-0">
+    <div class="col-md-4 col-12">
+        <div class="card">
+            <h5 class="card-header bg-transparent text-uppercase">Danh sách</h5>
+            <div class="boxscroll card-body">
+                <table class="table">
+                    <thead>
+                        <tr class="table-primary">
+                            <th>#</th>
+                            <th>Câu hỏi</th>
+                            <th>Loại</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model.List != null)
+                            {
+                                int count = 1;
+                                foreach (var item in Model.List)
+                                {
+                                    <tr class=" @(Model.Exercise!=null&&(item.Id==Model.Exercise.Id)?"table-primary":(item.Status==1?"":"bg-danger-subtle"))" onclick="if(document.getElementById('@("onClickQ"+item.Id)'))document.getElementById('@("onClickQ"+item.Id)').click()">
+                                        <td>
+                                            @count
+                                            @if (item.Questions == null || item.Questions.Count() == 0)
+                                            {
+                                                <form method="post" hidden asp-page-handler="edit">
+                                                    <input type="number" name="id" value="@item.Id" />
+                                                    <input type="submit" id="@("onClickQ"+item.Id)" />
+                                                </form>
+                                            }else{
+                                                <button id="@("onClickQ"+item.Id)" class="d-none" data-bs-toggle="collapse" data-bs-target="#@("expand"+item.Id)" aria-expanded="false" aria-controls="@("expand"+item.Id)">
+                                                </button>
+                                            }
+                                        </td>
+                                        <th>@item.Title</th>
+                                        <td>@item.Setting.Name</td>
+                                        <td>
+                                            <button type="submit" class="btn bg-transparent p-0" data-bs-toggle="modal" data-bs-target="#@("activeExercise"+item.Id)">
+                                            @if(item.Status!=1){
+                                                        <i class="fa-solid fa-recycle text-success"></i>
+                                            }else{
+                                                    <i class="fa-solid fa-trash-can text-danger"></i>
+                                            }
+                                            </button>
+                                            <div class="modal fade" id="@("activeExercise"+item.Id)" tabindex="-1" aria-labelledby="@("activeExercise"+item.Id+"Label")" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h1 class="modal-title fs-5" id="@("activeExercise"+item.Id+"Label")">@(item.Status == 1 ? "Ẩn" : "Hiện") câu hỏi</h1>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Bạn có chắc @(item.Status == 1 ? "ẩn đi" : "mở lại") bài tập và tất cả câu hỏi, đáp án của câu hỏi @item.Title ?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                                            <form method="post" asp-page-handler="@(item.Status==1?"delete":"active")">
+                                                                <input type="number" name="id" hidden value="@item.Id" />
+                                                                <button type="submit" class="btn btn-primary">@(item.Status == 1 ? "Ẩn đi" : "Mở lại")</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @if (item.Questions != null && item.Questions.Count() > 0)
+                                    {
+                                        int i = 0;
+                                        <tr>
+                                            <td colspan="4" class="p-0">
+                                                <div class="accordian-body collapse" id="@("expand"+item.Id)">
+                                                    <table class="table m-0">
+                                                    <thead class="border-0">
+                                                            <tr>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th>Câu hỏi</th>
+                                                                <th>Điểm</th>
+                                                                <th></th>
+                                                            </tr>
+                                                    </thead>
+                                                        <tbody>
+                                                        @foreach (var question in item.Questions)
+                                                        {
+                                                                <tr onclick="if(document.getElementById('@("onClick"+question.Id)'))document.getElementById('@("onClick"+question.Id)').click()" class="@(Model.Question!=null&&(question.Id==Model.Question.Id)?"tr-selected":(item.Status==1&&question.Status==1?"":"bg-danger-subtle"))">
+                                                            <td></td>    
+                                                            <td>
+                                                                        @(++i)
+                                                                        @if (Model.Question == null || (question.Id != Model.Question.Id))
+                                                                {
+                                                                    <form method="post" hidden asp-page-handler="edit">
+                                                                        <input type="number" name="questionId" value="@question.Id" />
+                                                                        <input type="submit" id="@("onClick"+question.Id)" />
+                                                                    </form>
+                                                                }
+                                                                </td>
+                                                                <td>@question.Question1</td>
+                                                                <td>@question.Mark</td>
+                                                                    <td>
+                                                                        <button type="submit" class="btn bg-transparent p-0" data-bs-toggle="modal" data-bs-target="#@("activeQuestion"+question.Id)">
+                                                                            @if (question.Status != 1)
+                                                                            {
+                                                                                <i class="fa-solid fa-recycle text-success"></i>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <i class="fa-regular fa-trash-can text-danger"></i>
+                                                                            }
+                                                                        </button>
+
+                                                                        <div class="modal fade" id="@("activeQuestion"+question.Id)" tabindex="-1" aria-labelledby="@("activeQuestion"+question.Id+"Label")" aria-hidden="true">
+                                                                            <div class="modal-dialog">
+                                                                                <div class="modal-content">
+                                                                                    <div class="modal-header">
+                                                                                        <h1 class="modal-title fs-5" id="@("activeQuestion"+question.Id+"Label")">@(question.Status == 1 ? "Ẩn" : "Hiện") câu hỏi</h1>
+                                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                                                                    </div>
+                                                                                    <div class="modal-body">
+                                                                                        Bạn có chắc @(question.Status == 1 ? "ẩn đi" : "mở lại") câu hỏi và tất cả đáp án của câu hỏi @question.Question1 ?
+                                                                                    </div>
+                                                                                    <div class="modal-footer">
+                                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                                                                        <form method="post" asp-page-handler="@(question.Status==1?"delete":"active")">
+                                                                                            <input type="number" name="questionId" hidden value="@question.Id" />
+                                                                                            <button type="submit" class="btn btn-primary">@(question.Status == 1 ? "Ẩn đi" : "Mở lại")</button>
+                                                                                        </form>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                    count++;
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer bg-transparent d-flex justify-content-between align-content-center">
+                <div>
+                    <select class="form-select">
+                        <option selected>15</option>
+                        <option value="1">30</option>
+                        <option value="2">50</option>
+                        <option value="3">100</option>
+                    </select>
+                </div>
+                <ul class="pagination m-0">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8 col-12 d-flex flex-column" style="row-gap: 0.5rem">
+        <div class="row row-cols-1 row-cols-xl-2 align-items-center">
+            <div class="col col-xl-8">
+                <div class="row row-cols-1 row-cols-xl-3 g-2 align-items-end">
+                    <form class="col" method="post" asp-page-handler="course">
+                        <label for="editor" class="form-label">Khóa học<span class="text-danger">*</span></label>
+                        <select class="form-select" name="id" onchange="$('#saveCourseBtn').click()">
+                            @foreach(var cour in Model.Courses)
+                            {
+                                if (Model.Course!=null&&Model.Course.Id == cour.Id)
+                                {
+                                    <option value="@cour.Id" selected>@cour.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@cour.Id">@cour.Name</option>
+                                    
+                                }
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-primary px-3" hidden id="saveCourseBtn">Lưu</button>
+                    </form>
+                    <form class="col" method="post" asp-page-handler="unit">
+                        <label for="editor" class="form-label">Học phần<span class="text-danger">*</span></label>
+                        <select class="form-select" name="id" onchange="$('#saveUnitBtn').click()">
+                            @foreach (var unit in Model.Units)
+                            {
+                                if (Model.Unit != null && Model.Unit.Id == unit.Id)
+                                {
+                                    <option value="@unit.Id" selected>@unit.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@unit.Id">@unit.Name</option>
+
+                                }
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-primary px-3" hidden id="saveUnitBtn">Lưu</button>
+                    </form>
+                    <form class="col" method="get">
+                        <label for="editor" class="form-label">Bài học<span class="text-danger">*</span></label>
+                        <select class="form-select" name="id" onchange="$('#saveLessonBtn').click()">
+                            @foreach (var lesson in Model.Lessons)
+                            {
+                                if (Model.Lesson != null && Model.Lesson.Id == lesson.Id)
+                                {
+                                    <option value="@lesson.Id" selected>@lesson.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@lesson.Id">@lesson.Name</option>
+
+                                }
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-primary px-3" hidden id="saveLessonBtn">Lưu</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col col-xl-4 row-cols-1 row g-2">
+                <div class="row g-2 align-items-end">
+                        <form method="post" asp-page-handler="add" class="col">
+                            <input type="number" hidden name="lessonId" value="@(Model.Lesson!=null?Model.Lesson.Id:0)" />
+                            <button type="submit" class="btn btn-primary px-3">Thêm bài tập</button>
+                        </form>
+                    @if (Model.Exercise != null)
+                    {
+                        <div class="col"><button type="button" class="btn btn-primary px-3" id="fakeSaveBtn" onclick="if(document.getElementById('saveBtnQuestion')){document.getElementById('saveBtnQuestion').click();}if(document.getElementById('saveBtn')){document.getElementById('saveBtn').click();}">Lưu</button></div>
+                    }
+                </div>
+                @if (Model.Exercise != null && Model.Exercise.Id > 0)
+                {
+                    <form method="post" asp-page-handler="addQuestion">
+                        <input type="number" hidden name="exerciseId" value="@(Model.Exercise!=null?Model.Exercise.Id:0)" />
+                        <button type="submit" class="btn btn-primary px-3">Thêm Câu hỏi</button>
+                    </form>
+                }
+            </div>
+        </div>
+        @if (Model.Exercise != null)
+        {
+            <div class="row align-items-start">
+                <div class="col h-100 card p-0">
+                    <h5 class="card-header bg-transparent text-uppercase">Bài tập</h5>
+                    <form class="card-body boxscroll1" method="post" asp-page-handler="save" enctype="multipart/form-data">
+                        <div class="mb-3 row">
+                            <label for="name" class="form-label">Tên<span class="text-danger">*</span></label>
+                                <input type="number" hidden asp-for="Exercise.Id" />
+                                <input type="number" hidden name="questionId" value="@(Model.Question==null?0:Model.Question.Id)"/>
+                                <input type="number" hidden asp-for="Exercise.LessonId" />
+                                <input asp-for="Exercise.Title" type="text" class="form-control" id="name">
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="type" class="form-label">Loại<span class="text-danger">*</span></label>
+                            <select id="type" onchange="document.getElementById('fileChange').style.display = (document.getElementById('type').value != 6 && document.getElementById('type').value != 10) ? 'none' : 'block'" class="form-select" asp-for="Exercise.TypeId" asp-items="@(Model.Settings)"></select>
+                        </div>
+                        <div class="mb-3 row" id="fileChange">
+                            <label for="type" class="form-label">File<span class="text-danger">*</span></label>
+                            <div class="row">
+                                <div class="col-5">
+                                    <input class="form-control" type="file" asp-for="FileUpload" id="fileUpload" onchange="document.getElementById('urlFile').value=null">
+                                </div>
+                                <div class="col-5">
+                                    <input type="url" class="form-control col" id="urlFile" onchange="document.getElementById('fileUpload').value=null" asp-for="Exercise.FileUrl">
+                                </div>
+                                @if (Model.Exercise.File != null)
+                                {
+                                    <div class="col">
+                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#Preview">Preview</button>
+                                    </div>
+                                    <div class="modal fade" id="Preview" tabindex="-1" aria-labelledby="PreviewLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="PreviewLabel">Xem lại file</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    @if (Model.Exercise.TypeId == 6 || Model.Exercise.TypeId == 10)
+                                                    {
+                                                        <audio controls>
+                                                            <source src="@((Model.Exercise.FileExtention!=null?"data:audio/"+Model.Exercise.FileExtention+";base64,":"")+Model.Exercise.File)" />
+                                                        </audio>
+                                                    }
+                                                    else
+                                                    {
+                                                        <video controls>
+                                                            <source src="@((Model.Exercise.FileExtention!=null?"data:video/"+Model.Exercise.FileExtention+";base64,":"")+Model.Exercise.File)">
+                                                        </video>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="editor" class="form-label">Mô tả<span class="text-danger">*</span></label>
+                                <textarea id="editor" class="w-100" asp-for="Exercise.Description"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary px-3" hidden id="saveBtn">Lưu</button>
+                    </form>
+                </div>
+                @if (Model.Question!=null)
+            {
+                    <div class="col d-flex flex-column" style="row-gap: 0.5rem;">
+                        <div class="card">
+                            <h5 class="card-header bg-transparent text-uppercase">Câu hỏi</h5>
+                            <form class="card-body" method="post" asp-page-handler="saveQuestion">
+                                <div class="mb-3 row">
+                                    <label for="name" class="form-label">Câu hỏi<span class="text-danger">*</span></label>
+                                    <input type="number" hidden asp-for="Question.Id" />
+                                    <input type="number" hidden asp-for="Question.ExerciseId" />
+                                    <input asp-for="Question.Question1" type="text" class="form-control" id="name">
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="type" class="form-label">Điểm<span class="text-danger">*</span></label>
+                                    <input asp-for="Question.Mark" type="number" min="1" max="10" class="form-control" id="name">
+                                </div>
+                                <button type="submit" class="btn btn-primary px-3" hidden id="saveBtnQuestion">Lưu</button>
+                            </form>
+                        </div>
+                        @if (Model.Question.Id > 0)
+                        {
+                            <div class="card">
+                                <h5 class="card-header bg-transparent text-uppercase">Các đáp án</h5>
+                                <div class="card-body boxscroll12">
+                                    <div class="row row-cols-xl-2 row-cols-1 g-2">
+                                        @foreach (var ans in Model.Answers)
+                                        {
+                                            <div class="col">
+                                                <div class="alert alert-@(ans.Status==1?(ans.IsCorrect?"success":"warning"):"light d-flex justify-content-between pe-0") alert-dismissible fade show" role="alert">
+                                                    <form method="post" asp-page-handler="open">
+                                                        <input type="number" hidden name="id" value="@ans.Id" />
+                                                        <input type="number" hidden name="questionId" value="@(Model.Question!=null?Model.Question.Id:0)" />
+                                                        <button type="submit" class="btn p-0 bg-transparent">
+                                                            <strong>@ans.Answer1</strong>
+                                                        </button>
+                                                    </form>
+                                                    @if(ans.Status==1){
+                                                        <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#@("deleteConfirm"+ans.Id)"></button>
+                                                        <div class="modal fade" id="@("deleteConfirm"+ans.Id)" aria-hidden="true" aria-labelledby="@("deleteConfirm"+ans.Id+"Label")" tabindex="-1">
+                                                            <div class="modal-dialog modal-sm">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h1 class="modal-title fs-5" id="@("deleteConfirm"+ans.Id+"Label")">Xóa đáp án</h1>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        Bạn có chắc xóa đáp án @ans.Answer1 của câu hỏi @ans.Question.Question1 ?
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                                                        <form method="post" asp-page-handler="deleteAnswer">
+                                                                            <input type="number" hidden name="id" value="@ans.Id" />
+                                                                            <button type="submit" class="btn btn-danger">Xóa</button>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }else{
+                                                        <button type="button" class="bg-transparent btn py-0" data-bs-toggle="modal" data-bs-target="#@("activeConfirm"+ans.Id)">
+                                                            <i class="fa-solid fa-check"></i>
+                                                        </button>
+                                                        <div class="modal fade" id="@("activeConfirm"+ans.Id)" aria-hidden="true" aria-labelledby="@("activeConfirm"+ans.Id+"Label")" tabindex="-1">
+                                                            <div class="modal-dialog modal-sm">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h1 class="modal-title fs-5" id="@("activeConfirm"+ans.Id+"Label")">Mở lại đáp án</h1>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        Bạn có chắc mở lại đáp án @ans.Answer1 của câu hỏi @ans.Question.Question1 ?
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                                                        <form method="post" asp-page-handler="activeAnswer">
+                                                                            <input type="number" hidden name="id" value="@ans.Id" />
+                                                                            <button type="submit" class="btn btn-primary">Mở lại</button>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                        <div class="col">
+                                            <div class="alert alert-primary fade d-flex justify-content-between align-items-center show" role="alert">
+                                                <strong>Thêm đáp án</strong>
+                                                <form method="post" asp-page-handler="open">
+                                                    <input type="number" hidden name="questionId" value="@(Model.Question!=null?Model.Question.Id:0)" />
+                                                    <button type="submit" class="btn p-0 bg-transparent">
+                                                        <i class="fa-solid fa-plus"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <button type="button" hidden class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAnswer" id="editPopUp">
+                                            Launch demo modal
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <div class="row row-cols-3">
+                                        <div class="col">
+                                            <div class="rounded-circle bg-success" style="width: 20px;height: 20px;"></div>
+                                            <label>Đáp án đúng</label>
+                                        </div>
+                                        <div class="col">
+                                            <div class="rounded-circle bg-warning" style="width: 20px;height: 20px;"></div>
+                                            <label>Đáp án sai</label>
+                                        </div>
+                                        <div class="col">
+                                            <div class="rounded-circle bg-light" style="width: 20px;height: 20px;"></div>
+                                            <label>Đáp án không hoạt động</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+            }
+            </div>
+        }
+    </div>
+</div>
+<div class="modal fade" id="addAnswer" tabindex="-1" aria-labelledby="addAnswerLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addAnswerLabel">Thêm đáp án mới</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <form class="modal-body" method="post" asp-page-handler="saveAnswer">
+                <div class="mb-3 row">
+                    <label for="name" class="col-sm-2 col-form-label">Đáp án<span class="text-danger">*</span></label>
+                    <div class="col-sm-10">
+                        <input type="number" hidden asp-for="Answer.Id" />
+                        <input asp-for="Answer.Answer1" type="text" class="form-control" id="name">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="editor" class="col-sm-2 col-form-label">Loại<span class="text-danger">*</span></label>
+                    <div class="col-sm-10">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" asp-for="Answer.IsCorrect">
+                            <label class="form-check-label">
+                                Có phải là đáp án đúng?
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <input type="number" hidden asp-for="Answer.QuestionId" />
+                <button type="submit" class="btn btn-primary px-3" hidden id="saveAnswerBtn">Lưu</button>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="fakeSaveAnswerBtn" onclick="document.getElementById('saveAnswerBtn').click();">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+        let isDisabled = true;
+        $(document).ready(() => {
+            if ('@(Model.Question == null || Model.Question.Id <= 0)'.toLowerCase() === 'false') {
+                if ($('@("#onClickQ" + Model.Question?.ExerciseId)')) {
+                    $('@("#onClickQ" + Model.Question?.ExerciseId)').click();
+                }
+            }
+            function showDiv() {
+                document.getElementById('fileChange').style.display = (document.getElementById('type').value != 4 && document.getElementById('type').value != 10) ? 'none' : 'block'
+            }
+            if ('@(Model.isEdit)'.toLowerCase()==='true'){
+                if ($('#editPopUp')){
+                    $('#editPopUp').click();
+                }
+            }
+            if (document.querySelector("#editor")){
+                ClassicEditor.create(document.querySelector("#editor"), {
+                    language: 'vi',
+                    content: 'vi',
+                }).then((e => {
+                    window.editor = e;
+                    const o = document.querySelector("#disabledMode");
+                    let t = !1;
+                    if(o){
+                        o.addEventListener("click", (() => {
+                            isDisabled = !isDisabled;
+                            $("input,textarea,select").attr("disabled", isDisabled);
+                            t = !t, t ? e.disableReadOnlyMode("docs-snippet") : e.enableReadOnlyMode("docs-snippet"), e.editing.view.focus()
+                        }));
+                        const n = e.ui.view.toolbar.element;
+                        e.on("change:isReadOnly", ((e, o, t) => {
+                            n.style.display = t ? "none" : "flex"
+                        }))
+                    }
+                })).catch((e => {
+                    console.error(e.stack)
+                }))
+            }
+        })
+    </script>
+}

@@ -1,5 +1,5 @@
 ﻿using Web_Triolingo.Common;
-using Web_Triolingo.Model;
+using Triolingo.Core.Entity;
 
 namespace Web_Triolingo.Interface.Courses
 {
@@ -7,7 +7,7 @@ namespace Web_Triolingo.Interface.Courses
     {
         Task<List<Course>> GetAllCourse();
         Task<Course> GetCourseById(int? id);
-        Task<bool> AddNewCourse(Course Course);
+        Task<int> AddNewCourse(Course Course);
         Task<bool> EditCourse(Course Course);
     }
 }

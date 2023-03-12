@@ -16,9 +16,15 @@ html {
 body {
   margin-bottom: 60px;
 }
-.boxscroll{
-    overflow-y:auto;
+.boxscroll, .boxscroll1, .boxscroll12 {
+    overflow-y: auto;
 }
 .tr-selected {
     background: #e6f1f7 !important
+}
+.ck-editor {
+    width: 100% !important;
+}
+table thead>tr>*{
+    white-space:nowrap !important;
 }
