@@ -12,5 +12,7 @@ namespace Web_Triolingo.Interface.Units
         Task<bool> UpdateUnit(Unit unit);
         Task<bool> AddUnit(Unit unit);
         Course GetCourseByUnitId(int unitId);
+        bool IsDuplicateUnitAdd(Unit unit);
+        bool IsDuplicateUnitEdit(Unit unit);
     }
 }

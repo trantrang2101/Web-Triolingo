@@ -61,7 +61,7 @@ namespace Web_Triolingo.ServiceManager.Units
         public List<Unit> GetUnitsByCourseId(int? courseId)
         {
             List<Unit> units = new List<Unit>();
-            units = _dbContext.Units.Where(x => x.CourseId == courseId).ToList();
+            units = _dbContext.Units.Where(x => x.CourseId == courseId).OrderBy(x => x.Order).ToList();
             return units;
         }
 
@@ -85,6 +85,35 @@ namespace Web_Triolingo.ServiceManager.Units
         {
             var unit = GetById(unitId);
             return _courseService.GetCourseById(unit.CourseId).Result;
+        }
+
+        public bool IsDuplicateUnitAdd(Unit unit)
+        {
+            var list = GetUnitsByCourseId(unit.CourseId);
+            bool check = true;
+            list.ForEach(x =>
+            {
+                if (x.Name.ToLower() ==  unit.Name.ToLower() || x.Order == unit.Order)
+                {
+                    check = false;
+                }
+            });
+            return check;
+        }
+
+        public bool IsDuplicateUnitEdit(Unit unit)
+        {
+            var list = GetUnitsByCourseId(unit.CourseId);
+            var result = list.Where(x => x.Id != unit.Id).ToList();
+            bool check = true;
+            result.ForEach(x =>
+            {
+                if (x.Name.ToLower() == unit.Name.ToLower() || x.Order == unit.Order)
+                {
+                    check = false;
+                }
+            });
+            return check;
         }
     }
 }
