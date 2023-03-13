@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Web_Triolingo.Interface.Settings;
 using Triolingo.Core.Entity;
+using Newtonsoft.Json;
 
 namespace Web_Triolingo.Pages.Settings
 {
@@ -19,10 +20,14 @@ namespace Web_Triolingo.Pages.Settings
         public List<Setting> ParentSetting { get; set; }
         [BindProperty]
         public Setting SettingAdd { get; set; }
-        public void OnGet()
+        public void OnGet(string? addFail, string? updateFail)
         {
             try
             {
+                if (TempData["AddSetting"] != null)
+                    SettingAdd = JsonConvert.DeserializeObject<Setting>(TempData["AddSetting"].ToString());
+                ViewData["AddFailed"] = addFail;
+                ViewData["UpdateFaild"] = updateFail;
                 ListAllSettings = _settingService.OrderSettingsParent();
                 ParentSetting = _settingService.GetSettingsNoParentId();
             }
@@ -36,6 +41,13 @@ namespace Web_Triolingo.Pages.Settings
         {
             try
             {
+                if (!_settingService.IsValidSettingAdd(SettingAdd))
+                {
+                    ViewData["ErrorAdd"] = "Cài đặt của bạn bị trùng lặp! Tên hoặc giá trị đã tồn tại!";
+                    TempData["AddSetting"] = JsonConvert.SerializeObject(SettingAdd);
+                    return RedirectToAction("SettingList", new { addFail = ViewData["ErrorAdd"] });
+
+                }
                 if (await _settingService.AddNewSetting(SettingAdd))
                 {
                     ListAllSettings = _settingService.GetSettingsNoParentId();
@@ -71,7 +83,13 @@ namespace Web_Triolingo.Pages.Settings
         {
             try
             {
-                  if (_settingService.EditSetting(SettingAdd).Result)
+                if (!_settingService.IsValidSettingUpdate(SettingAdd))
+                {
+                    ViewData["ErrorAdd"] = "Cài đặt của bạn bị trùng lặp! Tên hoặc giá trị đã tồn tại!";
+                    TempData["AddSetting"] = JsonConvert.SerializeObject(SettingAdd);
+                    return RedirectToAction("SettingList", new { updateFail = ViewData["ErrorAdd"] });
+                }
+                if (_settingService.EditSetting(SettingAdd).Result)
                     return RedirectToAction("SettingList");
                 return NotFound();
             }

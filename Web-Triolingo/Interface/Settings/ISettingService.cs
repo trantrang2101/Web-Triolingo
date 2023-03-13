@@ -14,5 +14,7 @@ namespace Web_Triolingo.Interface.Settings
         Task<bool> EditSetting(Setting setting);
         bool IsDuplicateSetting(Setting item);
         List<Setting> OrderSettingsParent();
+        bool IsValidSettingUpdate(Setting set);
+        bool IsValidSettingAdd(Setting set);
     }
 }
