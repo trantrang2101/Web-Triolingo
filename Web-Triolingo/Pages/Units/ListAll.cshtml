@@ -4,10 +4,10 @@
 
 <h1>Các học phần của khóa học: @Model.CourseName</h1>
 <div class="">
-    <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+    <a class="btn btn-primary" data-bs-target="#addNew" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
         Thêm mới
     </a>
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="addNew" aria-labelledby="offcanvasExampleLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasExampleLabel">Thêm mới</h5>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -33,6 +33,7 @@
                         <input type="text" class="form-control" asp-for="UnitAdd.Note" id="value" placeholder="nhập ghi chú">
                     </div>
                     <button type="submit" class="btn btn-primary">Thêm</button>
+                    <label class="text-danger">@ViewData["ErrorAdd"]</label>
                 </form>
             </div>
         </div>
@@ -140,6 +141,7 @@
                     </div>
                 </div>
                 <div class="col"><input type="submit" value="Lưu" class="btn btn-primary px-3" id="fakeSaveBtn" /></div>
+                <label class="text-danger">@ViewData["ErrorUpdate"]</label>
             </form>
         </div>
     </div>
@@ -150,3 +152,13 @@
         $('#update-' + id).submit()
     }
 </script>
+@{
+    if (ViewData["ErrorAdd"] != null)
+    {
+        <script>
+            window.onload = function () {
+                $('#addNew').addClass('show')
+            }
+        </script>
+    }
+}

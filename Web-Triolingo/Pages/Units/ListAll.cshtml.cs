@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Web_Triolingo.Interface.Units;
 using Triolingo.Core.Entity;
 using Web_Triolingo.Interface.Courses;
+using Newtonsoft.Json;
 
 namespace Web_Triolingo.Pages.Units
 {
@@ -25,10 +26,13 @@ namespace Web_Triolingo.Pages.Units
         public Unit UnitAdd { get; set; }
         public string CourseName { get; set; }
         public int CourseId { get; set; }
-        public void OnGet(int? id)
+        public void OnGet(int? id, string? addFailed, string? updateFailed)
         {
             try
             {
+                if (TempData["UnitAdd"] != null) UnitAdd = JsonConvert.DeserializeObject<Unit>(TempData["UnitAdd"].ToString());
+                ViewData["ErrorUpdate"] = updateFailed;
+                ViewData["ErrorAdd"] = addFailed;
                 AllUnitsById = _unitService.GetUnitsByCourseId(id);
                 CourseName = _courseService.GetCourseById(id).Result.Name;
                 CourseId = Convert.ToInt32(id);
@@ -67,6 +71,12 @@ namespace Web_Triolingo.Pages.Units
         {
             try
             {
+                if(!_unitService.IsDuplicateUnitEdit(UnitAdd))
+                {
+                    ViewData["UpdateFail"] = "Học phần của bạn bị trùng lặp! Tên hoặc số thứ tự đã tồn tại!";
+                    TempData["UnitAdd"] = JsonConvert.SerializeObject(UnitAdd);
+                    return RedirectToPage("ListAll", new { id = UnitAdd.CourseId, updateFailed = ViewData["UpdateFail"] });
+                }
                 if (await _unitService.UpdateUnit(UnitAdd)) return RedirectToPage("ListAll", new { id = UnitAdd.CourseId });
                 else return NotFound();
             }
@@ -85,6 +95,12 @@ namespace Web_Triolingo.Pages.Units
                 AllUnitsById = _unitService.GetUnitsByCourseId(UnitAdd.CourseId);
                 CourseName = course.Name;
                 UnitAdd.CourseId = id;
+                if (!_unitService.IsDuplicateUnitAdd(UnitAdd))
+                {
+                    ViewData["AddFail"] = "Học phần của bạn bị trùng lặp! Tên hoặc số thứ tự đã tồn tại!";
+                    TempData["UnitAdd"] = JsonConvert.SerializeObject(UnitAdd);
+                    return RedirectToPage("ListAll", new { id = UnitAdd.CourseId, addFailed = ViewData["AddFail"] });
+                }
                 if (await _unitService.AddUnit(UnitAdd))
                 {
                     return RedirectToPage("ListAll", new { id = UnitAdd.CourseId });
