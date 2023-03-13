@@ -62,6 +62,18 @@
 				$('#ViewModal').modal('hide');
 			}
 		});
+		$.ajax({
+			url: '?handler=UserRoleInfo&id=' + id,
+			success: function (data) {
+				$('#roleEditSettingId').prop('selectedIndex', -1);
+				$('#roleEditSettingId option[value="' + data.id + '"]').prop('selected', true);
+				$('#editRoleNode').val(data.note);
+			},
+			error: function (error) {
+				alert(error);
+				$('#ViewModal').modal('hide');
+			}
+		});
 	}
 </script>
 <h1 class="mb-3">List of Users</h1>
@@ -119,6 +131,24 @@ else
 			<div class="modal-body">
 				<form asp-page-handler="newUser" method="post" id="createForm">
 					<div class="input-group mb-3">
+						<div class="input-group mb-3">
+							<div class="input-group mb-3">
+							<span class="input-group-text" id="inputRoleLbl">Role: </span>
+								<select class="form-select" id="roleSettingId" name="roleSettingId" data-val-required="User's role is required.">
+									@{
+										foreach (var role in (IEnumerable<SelectListItem>)Model._cacheRoles)
+										{
+											<option value="@role.Value">@role.Text</option>
+										}
+									}
+								</select>
+							</div>
+							<div class="input-group mb-3">
+								<span class="input-group-text ">Role's Note: </span>
+								<textarea class="form-control" name="roleNote"></textarea>
+							</div>
+						</div>
+						<hr class="dropdown-divider mb-3" />
 						<span class="input-group-text" id="inputEmail">Email: </span>
 						<input required type="text" name="user.Email" class="form-control" onfocusout="checkEmailExist(this)" aria-describedby="validationEmailFeedback">
 						<div id="validationEmailFeedback" class="invalid-feedback">
@@ -156,6 +186,24 @@ else
 			</div>
 			<div class="modal-body">
 				<form asp-page-handler="editUser" method="post" id="editForm">
+					<div class="input-group mb-3">
+						<div class="input-group mb-3">
+							<span class="input-group-text" id="inputRoleLbl">Role: </span>
+							<select class="form-select" id="roleEditSettingId" name="roleSettingId" data-val-required="User's role is required.">
+								@{
+									foreach (var role in (IEnumerable<SelectListItem>)Model._cacheRoles)
+									{
+										<option value="@role.Value">@role.Text</option>
+									}
+								}
+							</select>
+						</div>
+						<div class="input-group mb-3">
+							<span class="input-group-text ">Role's Note: </span>
+							<textarea class="form-control" id="editRoleNode" name="roleNote"></textarea>
+						</div>
+					</div>
+					<hr class="dropdown-divider mb-3" />
 					<input id="editInfoId" type="hidden" name="user.Id" value="-1" />
 					<div class="input-group mb-3">
 						<span class="input-group-text" id="inputEmail">Email: </span>
