@@ -1,0 +1,233 @@
+﻿@page
+@model Web_Triolingo.Pages.Users.UserControlModel
+@{
+}
+
+<script>
+	function chgStatus(id, obj) {
+		$.ajax({
+			url: '?handler=ChgStatus&id=' + id,
+			success: function (data) {
+				if (data === "1") {
+					$(obj).removeClass("btn-secondary");
+					$(obj).addClass("btn-success");
+					$(obj).html("Activated");
+				}
+				else {
+					$(obj).addClass("btn-secondary");
+					$(obj).removeClass("btn-success");
+					$(obj).html("Deactivated");
+				}
+			},
+			error: function (error) {
+				alert("Error: " + error);
+			}
+		});
+	}
+
+	function checkEmailExist(obj) {
+		$.ajax({
+			url: '?handler=CheckEmail&email=' + $(obj).val(),
+			success: function (data) {
+				if (data === "true") {
+					$(obj).removeClass("is-invalid");
+					$(obj).addClass("is-valid");
+					$('#newUserAddBtn').prop('disabled', false);
+				}
+				else {
+					$(obj).addClass("is-invalid");
+					$(obj).removeClass("is-valid");
+					$('#newUserAddBtn').prop('disabled', true);
+				}
+			},
+			error: function (error) {
+				alert("Error: " + error);
+			}
+		});
+	}
+
+	function onSwitchView(id) {
+		$.ajax({
+			url: '?handler=UserInfo&id=' + id,
+			success: function (data) {
+				$('#editInfoId').val(data.id);
+				$('#editInfoEmail').val(data.email);
+				$('#editInfoFullname').val(data.fullName);
+				$('#editInfoPassword').val(data.password);
+				$('#editInfoStatus').val(data.status);
+				$('#editInfoNote').val(data.note);
+			},
+			error: function (error) {
+				alert(error);
+				$('#ViewModal').modal('hide');
+			}
+		});
+		$.ajax({
+			url: '?handler=UserRoleInfo&id=' + id,
+			success: function (data) {
+				$('#roleEditSettingId').prop('selectedIndex', -1);
+				$('#roleEditSettingId option[value="' + data.id + '"]').prop('selected', true);
+				$('#editRoleNode').val(data.note);
+			},
+			error: function (error) {
+				alert(error);
+				$('#ViewModal').modal('hide');
+			}
+		});
+	}
+</script>
+<h1 class="mb-3">List of Users</h1>
+<button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#createNewUser">
+	Create new user...
+</button>
+@if (Model._cacheUsers != null && Model._cacheUsers.Any())
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Full Name</th>
+				<th>Email</th>
+				<th>Password</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var user in Model._cacheUsers)
+			{
+				<tr>
+					<td>@user.Id</td>
+					<td>@user.FullName</td>
+					<td>@user.Email</td>
+					<td>@user.Password</td>
+					<td>
+						<button type="button" class="btn btn-outline-info m-2" data-bs-toggle="modal" data-bs-target="#ViewModal" onclick="onSwitchView(@user.Id)">Edit</button>
+						@if (user.Status == 1)
+						{
+							<button type="button" class="btn btn-success" onclick="chgStatus(@user.Id, $(this))">Actived</button>
+						}
+						else
+						{
+							<button type="button" class="btn btn-secondary" onclick="chgStatus(@user.Id, $(this))">Deactived</button>
+						}
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else
+{
+	<p><i>No record of user in database!</i></p>
+}
+
+<div class="modal fade" id="createNewUser" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="exampleModalLabel">Create new user...</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form asp-page-handler="newUser" method="post" id="createForm">
+					<div class="input-group mb-3">
+						<div class="input-group mb-3">
+							<div class="input-group mb-3">
+							<span class="input-group-text" id="inputRoleLbl">Role: </span>
+								<select class="form-select" id="roleSettingId" name="roleSettingId" data-val-required="User's role is required.">
+									@{
+										foreach (var role in (IEnumerable<SelectListItem>)Model._cacheRoles)
+										{
+											<option value="@role.Value">@role.Text</option>
+										}
+									}
+								</select>
+							</div>
+							<div class="input-group mb-3">
+								<span class="input-group-text ">Role's Note: </span>
+								<textarea class="form-control" name="roleNote"></textarea>
+							</div>
+						</div>
+						<hr class="dropdown-divider mb-3" />
+						<span class="input-group-text" id="inputEmail">Email: </span>
+						<input required type="text" name="user.Email" class="form-control" onfocusout="checkEmailExist(this)" aria-describedby="validationEmailFeedback">
+						<div id="validationEmailFeedback" class="invalid-feedback">
+							This email is used. Please choose another one!
+						</div>
+					</div>
+					<div class="input-group mb-3">
+						<span class="input-group-text" id="inputFullName">Fullname: </span>
+						<input required type="text" name="user.FullName" class="form-control" aria-describedby="inputFullName">
+					</div>
+					<div class="input-group mb-3">
+						<span class="input-group-text" id="inputPassword">Password: </span>
+						<input required type="password" name="user.Password" class="form-control" aria-describedby="inputPassword">
+					</div>
+					<input type="hidden" name="user.Status" value="1" />
+					<div>
+						<span>Note: </span>
+						<textarea class="form-control" name="user.Note"></textarea>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				<button type="submit" form="createForm" class="btn btn-primary" id="newUserAddBtn">Add new user</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="ViewModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="editModelLabel">Edit info...</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form asp-page-handler="editUser" method="post" id="editForm">
+					<div class="input-group mb-3">
+						<div class="input-group mb-3">
+							<span class="input-group-text" id="inputRoleLbl">Role: </span>
+							<select class="form-select" id="roleEditSettingId" name="roleSettingId" data-val-required="User's role is required.">
+								@{
+									foreach (var role in (IEnumerable<SelectListItem>)Model._cacheRoles)
+									{
+										<option value="@role.Value">@role.Text</option>
+									}
+								}
+							</select>
+						</div>
+						<div class="input-group mb-3">
+							<span class="input-group-text ">Role's Note: </span>
+							<textarea class="form-control" id="editRoleNode" name="roleNote"></textarea>
+						</div>
+					</div>
+					<hr class="dropdown-divider mb-3" />
+					<input id="editInfoId" type="hidden" name="user.Id" value="-1" />
+					<div class="input-group mb-3">
+						<span class="input-group-text" id="inputEmail">Email: </span>
+						<input id="editInfoEmail" required type="text" name="user.Email" class="form-control">
+					</div>
+					<div class="input-group mb-3">
+						<span class="input-group-text" id="inputFullName">Fullname: </span>
+						<input id="editInfoFullname" required type="text" name="user.FullName" class="form-control" aria-describedby="inputFullName">
+					</div>
+					<div class="input-group mb-3">
+						<span class="input-group-text" id="inputPassword">Password: </span>
+						<input id="editInfoPassword" required type="password" name="user.Password" class="form-control" aria-describedby="inputPassword">
+					</div>
+					<input id="editInfoStatus" type="hidden" name="user.Status" value="1" />
+					<div>
+						<span>Note: </span>
+						<textarea id="editInfoNote" class="form-control" name="user.Note"></textarea>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="submit" form="editForm" class="btn btn-primary" id="editUserAddBtn">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>

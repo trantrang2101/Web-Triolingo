@@ -16,6 +16,8 @@ using Web_Triolingo.Interface.Exercises;
 using Web_Triolingo.Interface.QnA;
 using Web_Triolingo.ServiceManager.QnA;
 using Web_Triolingo.ServiceManager.Exercises;
+using Web_Triolingo.Interface.UserRoles;
+using Web_Triolingo.ServiceManager.UserRoles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,8 @@ builder.Services.AddTransient<IQuestion, QuestionService>();
 builder.Services.AddTransient<ICourseService, CourseService>();
 builder.Services.AddTransient<ISettingService, SettingService>();
 builder.Services.AddTransient<ILessonService, LessonService>();
+builder.Services.AddTransient<IUserControlService, UserControlService>();
+builder.Services.AddTransient<IUserRoleService, UserRoleService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IUnitService, UnitService>();
 builder.Services.AddSession(options => {
