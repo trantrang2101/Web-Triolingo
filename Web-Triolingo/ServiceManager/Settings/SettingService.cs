@@ -16,14 +16,12 @@ namespace Web_Triolingo.ServiceManager.Settings
         public List<Setting> GetAllSetting()
         {
             var settings = _context.Settings.ToList();
-            //var result = _mapper.Map<List<SettingDto>>(settings);
             return settings;
         }
 
         public List<Setting> GetSettingByParentId(int? settingId)
         {
             var settings = _context.Settings.Where(x => x.ParentId == settingId).ToList();
-            //var result = _mapper.Map<List<SettingDto>>(settings);
             return settings;
         }
 
@@ -61,7 +59,7 @@ namespace Web_Triolingo.ServiceManager.Settings
                 oldEntity.Name = setting.Name;
                 oldEntity.Note = setting.Note;
                 oldEntity.Value = setting.Value;
-                oldEntity.ParentId = setting.ParentId;
+                //oldEntity.ParentId = setting.ParentId;
                 _context.Update(oldEntity);
                 await _context.SaveChangesAsync();
                 return true;
@@ -82,7 +80,6 @@ namespace Web_Triolingo.ServiceManager.Settings
         public async Task<Setting> GetSettingById(int? id)
         {
             var settings = await _context.Settings.Where(x => x.Id == id).FirstOrDefaultAsync();
-            //var result = _mapper.Map<SettingDto>(settings);
             return settings;
         }
 
@@ -102,8 +99,35 @@ namespace Web_Triolingo.ServiceManager.Settings
         public List<Setting> GetSettingsNoParentId()
         {
             var settings = _context.Settings.Where(x => x.ParentId == null).ToList();
-            //var result = _mapper.Map<List<SettingDto>>(settings);
             return settings;
+        }
+
+        public bool IsValidSettingAdd(Setting set)
+        {
+            bool check = true;
+            var list = GetAllSetting();
+            list.ForEach(x =>
+            {
+                if (x.Value.ToLower() == set.Value.ToLower() || x.Name.ToLower() == set.Name.ToLower())
+                {
+                    check = false;
+                }
+            });
+            return check;
+        }
+
+        public bool IsValidSettingUpdate(Setting set)
+        {
+            bool check = true;
+            var settings = _context.Settings.Where(x => x.Id != set.Id).ToList();
+            settings.ForEach(x =>
+            {
+                if (x.Value.ToLower() == set.Value.ToLower() || x.Name.ToLower() == set.Name.ToLower())
+                {
+                    check = false;
+                }
+            });
+            return check;
         }
 
         public bool IsDuplicateSetting(Setting item)
