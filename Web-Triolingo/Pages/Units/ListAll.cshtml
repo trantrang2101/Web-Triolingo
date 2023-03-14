@@ -140,7 +140,15 @@
                         <textarea id="editor" class="form-control" asp-for="UnitAdd.Description"></textarea>
                     </div>
                 </div>
-                <div class="col"><input type="submit" value="Lưu" class="btn btn-primary px-3" id="fakeSaveBtn" /></div>
+                <div class="col">
+                    <input type="submit" value="Lưu" class="btn btn-primary px-3" id="fakeSaveBtn" />
+                    @{
+                        if (Model.UnitAdd != null && Model.UnitAdd.Id != null)
+                        {
+                            <a class="btn btn-primary px-3" asp-page="/Lessons/Index/@Model.UnitAdd.Id">Các bài học</a>
+                        }
+                    }
+                </div>
                 <label class="text-danger">@ViewData["ErrorUpdate"]</label>
             </form>
         </div>
