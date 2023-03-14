@@ -241,7 +241,7 @@
             </div>
             <div class="col col-xl-4 row-cols-1 row g-2">
                 <div class="row g-2 align-items-end">
-                        <form method="post" asp-page-handler="add" class="col">
+                        <form method="post" asp-page-handler="add" class="col-8">
                             <input type="number" hidden name="lessonId" value="@(Model.Lesson!=null?Model.Lesson.Id:0)" />
                             <button type="submit" class="btn btn-primary px-3">Thêm bài tập</button>
                         </form>
@@ -355,6 +355,7 @@
                                                 <div class="alert alert-@(ans.Status==1?(ans.IsCorrect?"success":"warning"):"light d-flex justify-content-between pe-0") alert-dismissible fade show" role="alert">
                                                     <form method="post" asp-page-handler="open">
                                                         <input type="number" hidden name="id" value="@ans.Id" />
+                                                        <input type="number" hidden name="exerciseId" value="@Model.Exercise.Id" />
                                                         <input type="number" hidden name="questionId" value="@(Model.Question!=null?Model.Question.Id:0)" />
                                                         <button type="submit" class="btn p-0 bg-transparent">
                                                             <strong>@ans.Answer1</strong>
@@ -410,10 +411,11 @@
                                                 </div>
                                             </div>
                                         }
-                                        <div class="col">
+                                        <div class="col @(Model.Answers.Count()>3?"d-none":"")">
                                             <div class="alert alert-primary fade d-flex justify-content-between align-items-center show" role="alert">
                                                 <strong>Thêm đáp án</strong>
                                                 <form method="post" asp-page-handler="open">
+                                                    <input type="number" hidden name="exerciseId" value="@Model.Exercise.Id" />
                                                     <input type="number" hidden name="questionId" value="@(Model.Question!=null?Model.Question.Id:0)" />
                                                     <button type="submit" class="btn p-0 bg-transparent">
                                                         <i class="fa-solid fa-plus"></i>
@@ -486,6 +488,18 @@
         </div>
     </div>
 </div>
+<button type="button" class="btn btn-primary" hidden id="liveToastBtn">Show live toast</button>
+
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="liveToast" class="toast align-items-center text-bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Câu hỏi này đã đạt được số lượng đáp án giới hạn
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+    </div>
+</div>
 @section Scripts {
     <script type="text/javascript">
         let isDisabled = true;
@@ -495,12 +509,28 @@
                     $('@("#onClickQ" + Model.Question?.ExerciseId)').click();
                 }
             }
-            function showDiv() {
-                document.getElementById('fileChange').style.display = (document.getElementById('type').value != 4 && document.getElementById('type').value != 10) ? 'none' : 'block'
+            const toastTrigger = document.getElementById('liveToastBtn')
+            const toastLiveExample = document.getElementById('liveToast')
+            if (toastTrigger && toastLiveExample) {
+                toastTrigger.addEventListener('click', () => {
+                    const toast = new bootstrap.Toast(toastLiveExample)
+                    toast.show();
+                    setTimeout(()=>{
+                        toast.hidden();
+                    },400);
+                })
+            }
+            if('@(Model.Exercise==null)'){
+                document.getElementById('fileChange').style.display = (document.getElementById('type').value != 6 && document.getElementById('type').value != 10) ? 'none' : 'block'
             }
             if ('@(Model.isEdit)'.toLowerCase()==='true'){
                 if ($('#editPopUp')){
                     $('#editPopUp').click();
+                }
+            }
+            else if('@(Model.isEdit)'.toLowerCase()==='false'){
+                if ($('#liveToastBtn')){
+                    $('#liveToastBtn').click();
                 }
             }
             if (document.querySelector("#editor")){

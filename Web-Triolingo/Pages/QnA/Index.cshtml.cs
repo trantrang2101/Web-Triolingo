@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Triolingo.Core.Entity;
@@ -31,7 +32,7 @@ namespace Web_Triolingo.Pages.QnA
         public Unit? Unit { get; set; }
         public Lesson Lesson { get; set; }
         public List<Exercise> List { get; set; }
-        public bool isEdit { get; set; }
+        public bool? isEdit { get; set; } = null;
         [BindProperty]
         public Exercise Exercise{ get; set; }
         [BindProperty]
@@ -154,7 +155,7 @@ namespace Web_Triolingo.Pages.QnA
                     Exercise = exservice.GetExerciseById(id).Result;
                     Question = null;
                 }
-                if (questionId != null)
+                if (questionId!=null&&questionId != 0)
                 {
                     Question = service.GetQuestionById(questionId).Result;
                     Answers = answerService.GetAllAnswers(Question.Id).Result;
@@ -168,7 +169,7 @@ namespace Web_Triolingo.Pages.QnA
                         {
                             byte[] bytes = Convert.FromBase64String(Exercise.File);
                             FileUpload = new FormFile(ms, 0, bytes.Length, Exercise.FileName, Exercise.FileName);
-                            Exercise.FileExtention = System.IO.Path.GetExtension(Exercise.FileName);
+                            Exercise.FileExtention = System.IO.Path.GetExtension(Exercise.FileName).Substring(1);
                         }
                     }
                     else
@@ -280,21 +281,46 @@ namespace Web_Triolingo.Pages.QnA
                 throw;
             }
         }
-        public void OnPostOpen(int? id, int questionId)
+        public void OnPostOpen(int? id, int questionId,int exerciseId)
         {
             try
             {
+                isEdit = true;
                 if (id == null)
                 {
                     Answer = new Answer();
                     Answer.Id = 0;
+                    Answer.QuestionId = questionId;
+                    List<Answer> listAns = answerService.GetAllAnswers(questionId).Result;
+                    switch (exservice.GetExerciseById(exerciseId).Result.TypeId){
+                        case 6:
+                            OnPostEdit(questionId);
+                            isEdit = false;
+                            break;
+                        case 7:
+                            if(listAns.Count() > 3)
+                            {
+                                isEdit = false;
+                            }
+                            break;
+                        case 8:
+                            if (listAns.Count() > 3)
+                            {
+                                isEdit = false;
+                            }
+                            break;
+                        case 9:
+                            if (listAns.Count() > 0)
+                            {
+                                isEdit = false;
+                            }
+                            break;
+                    }
                 }
                 else
                 {
                     Answer = answerService.GetAnswerById(id).Result;
                 }
-                Answer.QuestionId = questionId;
-                isEdit = true;
                 OnPostEdit(questionId);
             }
             catch (Exception ex)
