@@ -143,16 +143,11 @@
     </div>
 </div>
 
-<partial name="Login" model="@Model.User" />
-
 @section Head{
     <link rel="stylesheet" href="~/css/Lessons/Lessons.css" />
-    <link rel="stylesheet" href="~/css/Login/Login.css" />
 }
 @section Scripts{
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.2/dist/jquery.validate.min.js"></script>
-    <script src="~/js/Login/Login.js"></script>
     <script>
         function ShowDetail(count) {
             $('#form-' + count).submit()
