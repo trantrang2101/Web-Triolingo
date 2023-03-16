@@ -7,6 +7,8 @@ using System.Linq;
 using Triolingo.Core.Entity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Web_Triolingo.Interface.UserRoles;
+using Newtonsoft.Json;
+using Web_Triolingo.ServiceManager.Users;
 
 namespace Web_Triolingo.Pages.Users
 {
@@ -15,14 +17,17 @@ namespace Web_Triolingo.Pages.Users
 		private readonly ILogger<UserControlModel> _logger;
 		private readonly IUserControlService _service;
 		private readonly IUserRoleService _roleService;
-		public List<User> _cacheUsers;
+        private readonly IUserService _userService;
+
+        public List<User> _cacheUsers;
 		public List<SelectListItem> _cacheRoles = new List<SelectListItem>();
 
-		public UserControlModel(ILogger<UserControlModel> logger, IUserControlService service, IUserRoleService userRoleService)
+		public UserControlModel(ILogger<UserControlModel> logger, IUserControlService service, IUserRoleService userRoleService, IUserService userService)
 		{
 			_logger = logger;
 			_service = service;
 			_roleService = userRoleService;
+			_userService = userService;
 		}
 
 		public void RenderRoles()
@@ -204,5 +209,53 @@ namespace Web_Triolingo.Pages.Users
 				return BadRequest(ex.ToString());
 			}
 		}
-	}
+
+        public ActionResult OnPostLogin(User userLogin)
+        {
+            try
+            {
+                HttpContext.Session.Clear();
+                var user = _userService.Login(userLogin).Result;
+                if (user != null)
+                {
+                    //Set session
+                    string jsonStr = JsonConvert.SerializeObject(user);
+                    HttpContext.Session.SetString("user", jsonStr);
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    HttpContext.Session.SetString("loginError", "Email or Password is incorrect");
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        public ActionResult OnPostRegis(User userRegis)
+        {
+            try
+            {
+                HttpContext.Session.Clear();
+                var user = _userService.Regis(userRegis).Result;
+                if (user)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    HttpContext.Session.SetString("regisError", "This email is already in use");
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+    }
 }

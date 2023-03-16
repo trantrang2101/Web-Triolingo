@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Triolingo.Core.Entity;
@@ -11,6 +12,8 @@ using Web_Triolingo.Interface.Lessons;
 using Web_Triolingo.Interface.QnA;
 using Web_Triolingo.Interface.Settings;
 using Web_Triolingo.Interface.Units;
+using Web_Triolingo.Interface.Users;
+
 namespace Web_Triolingo.Pages.QnA
 {
     public class IndexModel : PageModel
@@ -20,6 +23,7 @@ namespace Web_Triolingo.Pages.QnA
         private readonly IQuestion service;
         private readonly IAnswer answerService;
         private readonly ILessonService lessonService;
+        private readonly IUserService _userService;
         private readonly ISettingService settingService;
         private readonly IUnitService unitService;
         private readonly ICourseService courseService;
@@ -42,7 +46,7 @@ namespace Web_Triolingo.Pages.QnA
         [BindProperty]
         [DataType(DataType.Upload)]
         public IFormFile FileUpload { get; set; }
-        public IndexModel(ILogger<IndexModel> _logger,ISettingService setting, IExercise exercise, IQuestion _service, ICourseService courseService, IUnitService unitService, ILessonService lessonService,IAnswer answer)
+        public IndexModel(ILogger<IndexModel> _logger,ISettingService setting, IUserService userService, IExercise exercise, IQuestion _service, ICourseService courseService, IUnitService unitService, ILessonService lessonService,IAnswer answer)
         {
             logger = _logger;
             settingService = setting;
@@ -51,6 +55,7 @@ namespace Web_Triolingo.Pages.QnA
             this.courseService = courseService;
             this.lessonService = lessonService;
             this.unitService = unitService;
+            _userService = userService;
             exservice= exercise;
         }
         public void OnGet(int id = 0)
@@ -444,6 +449,55 @@ namespace Web_Triolingo.Pages.QnA
                 }
                 isEdit = false;
                 OnPostEdit(Answer.QuestionId);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+
+
+        public ActionResult OnPostLogin(User userLogin)
+        {
+            try
+            {
+                HttpContext.Session.Clear();
+                var user = _userService.Login(userLogin).Result;
+                if (user != null)
+                {
+                    //Set session
+                    string jsonStr = JsonConvert.SerializeObject(user);
+                    HttpContext.Session.SetString("user", jsonStr);
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    HttpContext.Session.SetString("loginError", "Email or Password is incorrect");
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        public ActionResult OnPostRegis(User userRegis)
+        {
+            try
+            {
+                HttpContext.Session.Clear();
+                var user = _userService.Regis(userRegis).Result;
+                if (user)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    HttpContext.Session.SetString("regisError", "This email is already in use");
+                    return RedirectToAction("Index");
+                }
             }
             catch (Exception ex)
             {
