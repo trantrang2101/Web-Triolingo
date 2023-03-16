@@ -28,7 +28,7 @@ namespace Web_Triolingo.Pages.Lessons
         public Lesson Lesson { get; set; }
         public Unit Unit { get; set; }
         public List<Unit> ListAllUnit { get; set; }
-        public void OnGet(string? loginError, string? regisError)
+        public void OnGet()
         {
             ViewData["AddAble"] = true;
             //Get session
@@ -38,8 +38,6 @@ namespace Web_Triolingo.Pages.Lessons
                 var obj = JsonConvert.DeserializeObject<User>(objString);
                 ViewData["Name"] = obj.FullName;
             }
-            ViewData["LoginError"] = loginError;
-            ViewData["RegisError"] = regisError;
             try
             {
                 ListAllLesson = _lessonService.GetAllLesson().Result;
@@ -133,6 +131,7 @@ namespace Web_Triolingo.Pages.Lessons
         {
             try
             {
+                HttpContext.Session.Clear();
                 var user = _userService.Login(userLogin).Result;
                 if (user != null)
                 {
@@ -143,8 +142,8 @@ namespace Web_Triolingo.Pages.Lessons
                 }
                 else
                 {
-                    ViewData["Error"] = "Email or Password is incorrect";
-                    return RedirectToAction("Index", new { loginError = ViewData["Error"] });
+                    HttpContext.Session.SetString("loginError", "Email or Password is incorrect");
+                    return RedirectToAction("Index");
                 }
             }
             catch (Exception ex)
@@ -157,6 +156,7 @@ namespace Web_Triolingo.Pages.Lessons
         {
             try
             {
+                HttpContext.Session.Clear();
                 var user = _userService.Regis(userRegis).Result;
                 if (user)
                 {
@@ -164,8 +164,8 @@ namespace Web_Triolingo.Pages.Lessons
                 }
                 else
                 {
-                    ViewData["Error"] = "This email is already in use";
-                    return RedirectToAction("Index", new { regisError = ViewData["Error"] });
+                    HttpContext.Session.SetString("regisError", "This email is already in use");
+                    return RedirectToAction("Index");
                 }
             }
             catch (Exception ex)

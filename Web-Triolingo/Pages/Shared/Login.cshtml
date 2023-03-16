@@ -1,5 +1,19 @@
-﻿@*<button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#login">Login</button>*@
+﻿@using Microsoft.AspNetCore.Http
+@using Triolingo.Core.Entity;
+@using Newtonsoft.Json
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var loginError = HttpContextAccessor.HttpContext.Session.GetString("loginError");
+    var regisError = HttpContextAccessor.HttpContext.Session.GetString("regisError");
+    var user = HttpContextAccessor.HttpContext.Session.GetString("user");
 
+    User userLogin = new User();
+    if (user != null)
+    {
+        userLogin = JsonConvert.DeserializeObject<User>(user);
+    }
+
+}
 <div class="offcanvas offcanvas-bottom" id="login">
     <div class="offcanvas-header">
         <button type="button" class="btn btn-outline-primary" id="changeRegis">Đăng kí</button>
@@ -15,7 +29,7 @@
                 <input name="Password" type="password" class="form-control login-input" placeholder="Mật khẩu" />
                 <a class="forgot" href="#">Forgot?</a>
             </div>
-            <label class="text-danger">@ViewData["LoginError"]</label>
+            <label class="text-danger">@loginError</label>
             <button class="btn btn-primary submitbtn" id="loginbtn" type="button">Đăng nhập</button>
         </form>
         <form class="formLogin" id="formRegis" method="post" asp-page-handler="Regis">
@@ -32,7 +46,7 @@
             <div class="form-group">
                 <input name="Password" type="password" class="form-control login-input" placeholder="Mật khẩu" />
             </div>
-            <label class="text-danger">@ViewData["RegisError"]</label>
+            <label class="text-danger">@regisError</label>
             <button class="btn btn-primary submitbtn" id="regisbtn" type="button">Tạo tài khoản</button>
         </form>
         <div class="policy">
@@ -46,15 +60,7 @@
     </div>
 </div>
 
-
-@if (ViewData["Name"] != null)
-{
-    <script>
-        window.onload = function () {
-            alert('Hello @ViewData["Name"]')
-        }
-    </script>
-}@if (ViewData["Name"] == null)
+@if (@userLogin?.FullName == null)
 {
     <script>
         window.onload = function () {
@@ -62,7 +68,7 @@
         }
     </script>
 }
-@if (ViewData["RegisError"] != null)
+@if (@regisError != null)
 {
     <script>
         window.onload = function () {
