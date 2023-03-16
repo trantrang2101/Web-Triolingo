@@ -174,5 +174,10 @@ namespace Web_Triolingo.Pages.Lessons
                 throw;
             }
         }
+        public ActionResult OnPostLogout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index");
+        }
     }
 }

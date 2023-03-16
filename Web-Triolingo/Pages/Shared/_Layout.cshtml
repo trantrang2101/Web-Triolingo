@@ -1,4 +1,18 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@using Triolingo.Core.Entity;
+@using Newtonsoft.Json
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var user = HttpContextAccessor.HttpContext.Session.GetString("user");
+
+    User userLogin = new User();
+    if (user != null)
+    {
+        userLogin = JsonConvert.DeserializeObject<User>(user);
+    }
+
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -77,63 +91,71 @@
     </style>
 </head>
 <body>
-        <header>
-            <nav class="navbar navbar-expand-lg bg-light">
-                <div class="container-fluid">
-                    <div class="left-navbar">
-                        <a class="navbar-brand" asp-area="" asp-page="/Index">TrioLingo</a>
-                    </div>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        </ul>
-                        <div class="nav-item dropdown">
-                            <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Dropdown
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><button class="dropdown-item" type="button">Tạo hồ sơ</button></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><button class="dropdown-item" type="button">Cài đặt</button></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><button class="dropdown-item" type="button">Trợ giúp</button></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><button class="dropdown-item" type="button">Đăng nhập</button></li>
-                            </ul>
-                        </div>
-                    </div>
+    <header>
+        <nav class="navbar navbar-expand-lg bg-light">
+            <div class="container-fluid">
+                <div class="left-navbar">
+                    <a class="navbar-brand" asp-area="" asp-page="/Index">TrioLingo</a>
                 </div>
-            </nav>
-
-        </header>
-
-        <div class="d-flex">
-            <nav class="side-bar" id="side-bar">
-                <ul>
-                    <li data-item="1" class="side-item item1 active">
-                        <div>
-                            <span>Học</span>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    </ul>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            @userLogin.FullName
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item" type="button">Tạo hồ sơ</button></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button class="dropdown-item" type="button">Cài đặt</button></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button class="dropdown-item" type="button">Trợ giúp</button></li>
+                        </ul>
+                    </div>
+                    @if (userLogin.FullName != null)
+                    {
+                        <div class="nav-item dropdown" style="margin-left: 20px">
+                            <form class="formLogin" id="formLogout" method="post" asp-page-handler="Logout" style="width: auto">
+                                <button type="submit" class="btn btn-outline-info" style="border: none; color: black">
+                                    Đăng xuất
+                                </button>
+                            </form>
                         </div>
-                    </li>
-                    <li data-item="2" class="side-item item2">Cửa hàng</li>
-                    <li data-item="3" class="side-item item3">Schools</li>
-                    <li data-item="4" class="side-item item4"><a style="text-decoration: none" asp-page="/Settings/SettingList">Quản lý cài đặt</a></li>
-                    <li data-item="5" class="side-item item4"><a style="text-decoration: none" asp-page="/Courses/CourseList">Quản lý khóa học</a></li>
-                </ul>
-            </nav>
-            <main role="main" class="m-3">
-                @RenderBody()
-                <partial name="Login" model="@Model.User" />
-            </main>
-        </div>
-        <footer class="border-top footer text-muted">
-            <div class="container">
-                &copy; 2023 - DemoRazor - <a asp-area="" asp-page="/Privacy">Privacy</a>
-                @await RenderSectionAsync("Noidungfooter", required: false)
+                    }
+                </div>
             </div>
-        </footer>
+        </nav>
+
+    </header>
+
+    <div class="d-flex">
+        <nav class="side-bar" id="side-bar">
+            <ul>
+                <li data-item="1" class="side-item item1 active">
+                    <div>
+                        <span>Học</span>
+                    </div>
+                </li>
+                <li data-item="2" class="side-item item2">Cửa hàng</li>
+                <li data-item="3" class="side-item item3">Schools</li>
+                <li data-item="4" class="side-item item4"><a style="text-decoration: none" asp-page="/Settings/SettingList">Quản lý cài đặt</a></li>
+                <li data-item="5" class="side-item item4"><a style="text-decoration: none" asp-page="/Courses/CourseList">Quản lý khóa học</a></li>
+            </ul>
+        </nav>
+        <main role="main" class="m-3">
+            @RenderBody()
+            <partial name="Login" model="@Model.User" />
+        </main>
+    </div>
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2023 - DemoRazor - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            @await RenderSectionAsync("Noidungfooter", required: false)
+        </div>
+    </footer>
     <div class="loading" id="loading">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>

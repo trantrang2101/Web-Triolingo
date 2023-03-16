@@ -180,5 +180,10 @@ namespace Web_Triolingo.Pages.Units
                 throw;
             }
         }
+        public ActionResult OnPostLogout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index");
+        }
     }
 }

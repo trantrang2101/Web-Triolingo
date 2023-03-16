@@ -27,6 +27,7 @@ namespace Web_Triolingo.Pages
         {
             try
             {
+                HttpContext.Session.Clear();
                 var user = _userService.Login(userLogin).Result;
                 if (user != null)
                 {
@@ -51,6 +52,7 @@ namespace Web_Triolingo.Pages
         {
             try
             {
+                HttpContext.Session.Clear();
                 var user = _userService.Regis(userRegis).Result;
                 if (user)
                 {
@@ -67,6 +69,11 @@ namespace Web_Triolingo.Pages
                 _logger.LogError(ex.ToString());
                 throw;
             }
+        }
+        public ActionResult OnPostLogout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index");
         }
     }
 }
