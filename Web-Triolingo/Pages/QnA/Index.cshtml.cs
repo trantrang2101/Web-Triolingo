@@ -505,5 +505,10 @@ namespace Web_Triolingo.Pages.QnA
                 throw;
             }
         }
+        public ActionResult OnPostLogout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index");
+        }
     }
 }
