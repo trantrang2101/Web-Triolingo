@@ -16,5 +16,6 @@ namespace Web_Triolingo.Interface.Settings
         List<Setting> OrderSettingsParent();
         bool IsValidSettingUpdate(Setting set);
         bool IsValidSettingAdd(Setting set);
+        Task SendEmailAsync(string email, string subject, string message);
     }
 }

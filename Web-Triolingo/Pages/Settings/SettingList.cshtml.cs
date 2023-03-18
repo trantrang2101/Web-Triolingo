@@ -188,5 +188,18 @@ namespace Web_Triolingo.Pages.Settings
             HttpContext.Session.Clear();
             return RedirectToAction("Index");
         }
+        public async Task<IActionResult> OnPostEmail()
+        {
+            try
+            {
+                await _settingService.SendEmailAsync("anhnhthe15026@fpt.edu.vn", "Cai nay de test", "mail den roi ne hihi");
+                return RedirectToPage("./SettingList");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
     }
 }
