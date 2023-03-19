@@ -10,7 +10,7 @@ namespace Triolingo.Core.Entity
         public int StudentId { get; set; }
         public Course Course { get; set; }
         public int CourseId { get; set; }
-        public double Rate { get; set; }
+        public double? Rate { get; set; }
         public string? Comment { get; set; }
     }
 }
