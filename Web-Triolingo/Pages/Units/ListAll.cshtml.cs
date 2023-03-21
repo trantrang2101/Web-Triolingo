@@ -5,6 +5,7 @@ using Triolingo.Core.Entity;
 using Web_Triolingo.Interface.Courses;
 using Newtonsoft.Json;
 using Web_Triolingo.Interface.Users;
+using ClosedXML.Excel;
 
 namespace Web_Triolingo.Pages.Units
 {
@@ -35,12 +36,18 @@ namespace Web_Triolingo.Pages.Units
         {
             try
             {
+                if (UnitAdd != null && UnitAdd.CourseId != null) id = UnitAdd.CourseId;
                 if (TempData["UnitAdd"] != null) UnitAdd = JsonConvert.DeserializeObject<Unit>(TempData["UnitAdd"].ToString());
                 ViewData["ErrorUpdate"] = updateFailed;
                 ViewData["ErrorAdd"] = addFailed;
                 AllUnitsById = _unitService.GetUnitsByCourseId(id);
-                CourseName = _courseService.GetCourseById(id).Result.Name;
-                CourseId = Convert.ToInt32(id);
+                if (id != null)
+                {
+                    CourseName = _courseService.GetCourseById(id).Result.Name;
+                    CourseId = Convert.ToInt32(id);
+                }
+                TempData["CourseId"] = id;
+                TempData["CourseName"] = CourseName;
             }
             catch (Exception ex)
             {
@@ -71,12 +78,60 @@ namespace Web_Triolingo.Pages.Units
                 throw;
             }
         }
+        public IActionResult OnPostExport()
+        {
+            try
+            {
+                int courId = Convert.ToInt32(TempData["CourseId"]);
+                var listUnits = _unitService.GetUnitsByCourseId(courId);
 
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("Units"); // Tạo sheet "Courses"
+
+                    // Đưa dữ liệu vào sheet "Courses"
+                    worksheet.Cell(1, 1).Value = "Name";
+                    worksheet.Cell(1, 2).Value = "Description";
+                    worksheet.Cell(1, 3).Value = "Note";
+                    worksheet.Cell(1, 4).Value = "Cousrse";
+                    worksheet.Cell(1, 5).Value = "Status";
+                    worksheet.Cell(1, 6).Value = "Order";
+                    worksheet.Column(1).Width = 50;
+                    worksheet.Column(2).Width = 100;
+                    //var descriptionCells = worksheet.Column(2).Cells();
+                    //var style = descriptionCells.Style;
+                    //style.Alignment.WrapText = true;
+                    //descriptionCells.Style = style;
+                    var row = 2;
+                    foreach (var unit in listUnits)
+                    {
+                        string sta = "";
+                        if (unit.Status == 1) sta = "Hoạt động";
+                        else sta = "Đã khóa";
+                        worksheet.Cell(row, 1).Value = unit.Name;
+                        worksheet.Cell(row, 2).Value = unit.Description;
+                        worksheet.Cell(row, 3).Value = unit.Note;
+                        worksheet.Cell(row, 4).Value = TempData["CourseName"].ToString();
+                        worksheet.Cell(row, 5).Value = sta;
+                        worksheet.Cell(row, 6).Value = unit.Order;
+                        row++;
+                    }
+                    var stream = new MemoryStream();
+                    workbook.SaveAs(stream);
+                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Units.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
         public async Task<IActionResult> OnPostEditAsync()
         {
             try
             {
-                if(!_unitService.IsDuplicateUnitEdit(UnitAdd))
+                if (!_unitService.IsDuplicateUnitEdit(UnitAdd))
                 {
                     ViewData["UpdateFail"] = "Học phần của bạn bị trùng lặp! Tên hoặc số thứ tự đã tồn tại!";
                     TempData["UnitAdd"] = JsonConvert.SerializeObject(UnitAdd);
