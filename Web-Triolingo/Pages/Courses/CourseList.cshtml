@@ -5,6 +5,9 @@
     ViewData["Title"] = "Quản lý khóa học";
 }
 <h2 class="text-uppercase">Quản lý khóa học</h2>
+<form method="post" asp-page-handler="export">
+    <input type="submit" value="Xuất ra excel" class="btn btn-primary text-uppercase" />
+</form>
 <div class="row p-0">
     <div class="col-md-4 col-12">
         <div class="card">
@@ -128,9 +131,14 @@
                 <div class="col"><button type="button" class="btn btn-primary px-3" id="fakeSaveBtn">Lưu</button></div>
                 <div class="col"><button type="button" class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
                 @*<div class="col"><button type="button" class="btn btn-primary px-3">Import</button></div>*@
-                <div class="col">
-                    <a asp-page="../Units/ListAll" asp-route-id="@(Model.course!=null&&Model.course.Id!=0?Model.course.Id:0)" class="btn btn-primary px-3" disabled="@Model.course==null">Các học phần</a>
-                </div>
+                @{
+                    if (Model.course != null && Model.course.Id != null)
+                    {
+                        <div class="col">
+                            <a asp-page="../Units/ListAll" asp-route-id="@Model.course.Id" class="btn btn-primary px-3">Các học phần</a>
+                        </div>
+                    }
+                }
             </div>
         </div>
     </div>

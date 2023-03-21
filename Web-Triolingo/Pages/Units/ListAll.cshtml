@@ -4,6 +4,9 @@
 
 <h1>Các học phần của khóa học: @Model.CourseName</h1>
 <div class="">
+    <form method="post" asp-page-handler="export">
+        <input type="submit" value="Xuất ra excel" class="btn btn-primary text-uppercase" />
+    </form>
     <a class="btn btn-primary" data-bs-target="#addNew" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
         Thêm mới
     </a>
