@@ -1,12 +1,124 @@
 ﻿@page
+@using Newtonsoft.Json;
+@using Triolingo.Core.Entity;
+@using Microsoft.AspNetCore.Http;
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+	ViewData["Title"] = "Home page";
 }
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <a asp-page="Settings/SettingList">Sang Setting</a>
-    <a asp-page="Courses/CourseList">Sang Course</a>
+	@{
+		string s = this.HttpContext.Session == null ? null : this.HttpContext.Session.GetString("user");
+		User? user;
+		if (!string.IsNullOrEmpty(s) && (user = JsonConvert.DeserializeObject<User>(s)) != null)
+		{
+			<h2 class="display-4">Welcome, @user.FullName!</h2>
+
+			<div class="row">
+				<div class="col-sm-8 mb-3 mb-sm-0">
+					<div class="card">
+						<div class="card-body">
+							<div id="courseProgress">
+								@{
+									if (ViewData["courseProgress"] != null && int.TryParse(ViewData["courseProgress"].ToString(), out int progress))
+									{
+										<label class="h3"><b>Status on the course:</b></label>
+										<p id="courseProgressName" style="text-align: left">@ViewData["currentCourseName"]</p>
+										<div class="progress" role="progressbar" style="height: 30px" aria-valuemin="0" aria-valuemax="100">
+											<div id="progressBarInside" class="progress-bar progress-bar-striped bg-success progress-bar-animated" style="width: @progress%">@progress%</div>
+										</div>
+									}
+									else
+									{
+										<h2>@ViewData["currentCourseName"]</h2>
+									}
+								}
+							</div>
+
+							<div id="courseMarks" style="text-align: left; padding-top: 20px">
+								@{
+									if (ViewData["chartLabel"] != null && ViewData["chartData"] != null)
+									{
+										<p style="">Previous mark:</p>
+										<canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+										<i>Mark based on scale of 10 of each lesson</i>
+										<script>
+											const xValues = @Html.Raw(ViewData["chartLabel"].ToString());
+											const yValues = @Html.Raw(ViewData["chartData"].ToString());
+
+											new Chart("myChart", {
+												type: "line",
+												data: {
+													labels: xValues,
+													datasets: [{
+														backgroundColor: "rgba(0,128,0,0.5)",
+														borderColor: "rgba(0,128,0,0.1)",
+														data: yValues
+													}]
+												},
+												options: {
+													legend: { display: false },
+													scales: {
+														yAxes: [{ ticks: { min: 0, max: 10 } }]
+													},
+												}
+											});
+										</script>
+									}
+									else
+									{
+										<h3>You haven't finished any lesson with marks!</h3>
+									}
+								}
+
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-4">
+					<div class="card">
+						<div class="card-body">
+							<h4><b>Current Units Progress:</b></h4>
+							<ul class="list-group">
+								@{
+									if (ViewData["recentUnit"] != null && ViewData["recentUnitIndex"] != null)
+									{
+										IEnumerable<string> units = (IEnumerable<string>)ViewData["recentUnit"];
+										int studiedIndex = -1;
+										int.TryParse(ViewData["recentUnitIndex"].ToString(), out studiedIndex);
+										for (int i = 0; units != null && i < units.Count(); i++)
+										{
+											if (i > studiedIndex)
+											{
+												<li class="list-group-item">@units.ElementAt(i)</li>
+											}
+											else
+											{
+												<li class="list-group-item"><b>@units.ElementAt(i)</b></li>
+											}
+										}
+									}
+								}
+							</ul>
+							<a asp-page="Courses/CourseList">Go to Course...</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+		else
+		{
+			<h2 class="display-4">Welcome</h2>
+			<a asp-page="Settings/SettingList">Sang Setting</a>
+			<a asp-page="Courses/CourseList">Sang Course</a>
+		}
+	}
+	@*
+	<p class="mt-5">Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>*@
+	<a asp-page="Settings/SettingList">Sang Setting</a>
+	<a asp-page="Courses/CourseList">Sang Course</a>
 </div>
