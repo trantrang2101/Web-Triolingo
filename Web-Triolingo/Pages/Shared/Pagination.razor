@@ -1,0 +1,23 @@
+﻿<div>
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= TotalPages; i++)
+            {
+                    <li class="@((i == CurrentPage) ? "page-item active" : "page-item")">
+                        <a class="page-link" href="javascript:void(0)" @onclick="(() => OnPageSelected(i))">@i</a>
+                    </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+@code {
+    [Parameter]
+    public int CurrentPage { get; set; }
+
+    [Parameter]
+    public int TotalPages { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnPageSelected { get; set; }
+}

@@ -28,7 +28,7 @@ namespace Web_Triolingo.Pages.Lessons
         public Lesson Lesson { get; set; }
         public Unit Unit { get; set; }
         public List<Unit> ListAllUnit { get; set; }
-        public void OnGet()
+        public void OnGet(int id)
         {
             ViewData["AddAble"] = true;
             //Get session
@@ -40,7 +40,7 @@ namespace Web_Triolingo.Pages.Lessons
             }
             try
             {
-                ListAllLesson = _lessonService.GetAllLesson().Result;
+                ListAllLesson = _lessonService.getAllLessonsByUnitId(id).Result;
                 ListAllUnit = _unitService.GetAll();
             }
             catch (Exception ex)
@@ -70,7 +70,7 @@ namespace Web_Triolingo.Pages.Lessons
             {
                 ViewData["AddAble"] = false;
                 Lesson = _lessonService.GetLessonById(id).Result;
-                ListAllLesson = _lessonService.GetAllLesson().Result;
+                ListAllLesson = _lessonService.getAllLessonsByUnitId(Lesson.UnitId).Result;
                 Unit = _unitService.GetById(Lesson.UnitId);
                 ListAllUnit = _unitService.GetAll();
             }
@@ -87,7 +87,7 @@ namespace Web_Triolingo.Pages.Lessons
                 ViewData["AddAble"] = false;
                 var check = _lessonService.AddLesson(lesson).Result;
                 ListAllUnit = _unitService.GetAll();
-                ListAllLesson = _lessonService.GetAllLesson().Result;
+                ListAllLesson = _lessonService.getAllLessonsByUnitId(lesson.UnitId).Result;
             }
             catch (Exception ex)
             {
@@ -101,7 +101,7 @@ namespace Web_Triolingo.Pages.Lessons
             {
                 ViewData["AddAble"] = false;
                 var check = _lessonService.UpdateLesson(lesson).Result;
-                ListAllLesson = _lessonService.GetAllLesson().Result;
+                ListAllLesson = _lessonService.getAllLessonsByUnitId(lesson.UnitId).Result;
                 ListAllUnit = _unitService.GetAll();
                 Lesson = _lessonService.GetLessonById(lesson.Id).Result;
                 Unit = _unitService.GetById(Lesson.UnitId);
@@ -118,7 +118,7 @@ namespace Web_Triolingo.Pages.Lessons
             {
                 ViewData["AddAble"] = false;
                 var check = _lessonService.DeleteLesson(lesson.Id).Result;
-                ListAllLesson = _lessonService.GetAllLesson().Result;
+                ListAllLesson = _lessonService.getAllLessonsByUnitId(lesson.UnitId).Result;
                 ListAllUnit = _unitService.GetAll();
             }
             catch (Exception ex)

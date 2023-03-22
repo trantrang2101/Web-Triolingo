@@ -148,7 +148,7 @@
                     @{
                         if (Model.UnitAdd != null && Model.UnitAdd.Id != null)
                         {
-                            <a class="btn btn-primary px-3" asp-page="../Lessons/Index/@Model.UnitAdd.Id">Các bài học</a>
+                            <a asp-page="../Lessons/Index" asp-route-id="@Model.UnitAdd.Id" class="btn btn-primary px-3">Các bài học</a>
                         }
                     }
                 </div>

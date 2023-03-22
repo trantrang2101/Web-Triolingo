@@ -128,6 +128,12 @@
                         <div class="col"><button asp-page-handler="Delete" class="btn btn-primary px-3" id="Delete">Xóa</button></div>
                         <div class="col"><button asp-page-handler="Update" class="btn btn-primary px-3" id="Update">Sửa</button></div>
                         <div class="col"><button type="button" class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
+                        @if (Model.Lesson != null)
+                        {
+                            <div class="col">
+                                <a asp-page="../QnA/Index" asp-route-id="@Model.Lesson.Id" class="btn btn-primary px-3">Các bài học</a>
+                            </div>
+                        }
                     </div>
                 }
                 @if (ViewBag.AddAble == true)
@@ -139,6 +145,7 @@
                         <div class="col"><button disabled asp-page-handler="Delete" class="btn btn-primary px-3" id="Delete">Xóa</button></div>
                         <div class="col"><button disabled asp-page-handler="Update" class="btn btn-primary px-3" id="Update">Sửa</button></div>
                         <div class="col"><button type="button" class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
+
                     </div>
                 }
             </form>
