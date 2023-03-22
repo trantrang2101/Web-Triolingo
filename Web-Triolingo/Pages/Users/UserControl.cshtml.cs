@@ -18,6 +18,7 @@ namespace Web_Triolingo.Pages.Users
 		private readonly IUserControlService _service;
 		private readonly IUserRoleService _roleService;
         private readonly IUserService _userService;
+		private const int ADMIN_ROLE_TYPE = 2;
 
         public List<User> _cacheUsers;
 		public List<SelectListItem> _cacheRoles = new List<SelectListItem>();
@@ -43,12 +44,22 @@ namespace Web_Triolingo.Pages.Users
 			}
 		}
 
-		public void OnGet()
+		public IActionResult OnGet()
 		{
+			string s = HttpContext.Session == null ? null : HttpContext.Session.GetString("user");
+			User? login_user;
+			if (string.IsNullOrEmpty(s) ||
+				(login_user = JsonConvert.DeserializeObject<User>(s)) == null ||
+				_roleService.GetRoleOfUser(login_user.Id) == null ||
+				_roleService.GetRoleOfUser(login_user.Id).RoleType != ADMIN_ROLE_TYPE)
+			{
+				return RedirectToPage("/Index");
+			}
 			try
 			{
 				_cacheUsers = _service.GetUsers().Result;
 				RenderRoles();
+				return Page();
 			}
 			catch (Exception ex)
 			{
