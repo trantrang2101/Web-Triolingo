@@ -20,6 +20,7 @@ using Web_Triolingo.Interface.UserRoles;
 using Web_Triolingo.ServiceManager.UserRoles;
 using Web_Triolingo.Interface.Statistics;
 using Web_Triolingo.ServiceManager.Statistic;
+using Web_Triolingo.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,7 @@ builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(60);//You can set Time   
 });
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSignalR();
 var configuration = builder.Configuration;
 string connectionString = configuration.GetConnectionString("TriolingoConStr");
 builder.Services.AddDbContext<TriolingoDbContext>(options =>
@@ -59,6 +61,8 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
 }
 app.UseStaticFiles();
+
+app.MapHub<SignalRServer>("/signalRServer");
 
 app.UseRouting();
 

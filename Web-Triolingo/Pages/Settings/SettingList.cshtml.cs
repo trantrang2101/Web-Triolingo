@@ -6,6 +6,8 @@ using Triolingo.Core.Entity;
 using Newtonsoft.Json;
 using log4net.Repository.Hierarchy;
 using Web_Triolingo.Interface.Users;
+using Microsoft.AspNetCore.SignalR;
+using Web_Triolingo.Hubs;
 
 namespace Web_Triolingo.Pages.Settings
 {
@@ -14,12 +16,17 @@ namespace Web_Triolingo.Pages.Settings
         private readonly ILogger<SettingListModel> _logger;
         private readonly ISettingService _settingService;
         private readonly IUserService _userService;
+        private readonly IHubContext<SignalRServer> _signalRHub;
 
-        public SettingListModel(ILogger<SettingListModel> logger, ISettingService settingService, IUserService userService)
+        public SettingListModel(ILogger<SettingListModel> logger,
+            ISettingService settingService,
+            IUserService userService,
+            IHubContext<SignalRServer> signalRHub)
         {
             _logger = logger;
             _settingService = settingService;
             _userService = userService;
+            _signalRHub = signalRHub;
         }
         public List<Setting> ListAllSettings { get; set; }
         public List<Setting> ParentSetting { get; set; }
@@ -56,6 +63,7 @@ namespace Web_Triolingo.Pages.Settings
                 if (await _settingService.AddNewSetting(SettingAdd))
                 {
                     ListAllSettings = _settingService.GetSettingsNoParentId();
+                    await _signalRHub.Clients.All.SendAsync("LoadSetting");
                     return RedirectToAction("SettingList");
                 }
                 else
@@ -76,7 +84,6 @@ namespace Web_Triolingo.Pages.Settings
                 ListAllSettings = _settingService.OrderSettingsParent();
                 ParentSetting = _settingService.GetSettingsNoParentId();
                 SettingAdd = _settingService.GetSettingById(id).Result;
-
             }
             catch (Exception e)
             {
@@ -95,7 +102,10 @@ namespace Web_Triolingo.Pages.Settings
                     return RedirectToAction("SettingList", new { updateFail = ViewData["ErrorAdd"] });
                 }
                 if (_settingService.EditSetting(SettingAdd).Result)
+                {
+                    await _signalRHub.Clients.All.SendAsync("LoadSetting");
                     return RedirectToAction("SettingList");
+                }
                 return NotFound();
             }
             catch (Exception e)
@@ -115,6 +125,7 @@ namespace Web_Triolingo.Pages.Settings
                     check = _settingService.DeactiveSetting(id).Result;
                     if (check)
                     {
+                        await _signalRHub.Clients.All.SendAsync("LoadSetting");
                         return RedirectToPage("./SettingList");
                     }
                 }
@@ -123,6 +134,7 @@ namespace Web_Triolingo.Pages.Settings
                     check = _settingService.ActiveSetting(id).Result;
                     if (check)
                     {
+                        await _signalRHub.Clients.All.SendAsync("LoadSetting");
                         return RedirectToPage("./SettingList");
                     }
                 }
@@ -187,19 +199,6 @@ namespace Web_Triolingo.Pages.Settings
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Index");
-        }
-        public async Task<IActionResult> OnPostEmail()
-        {
-            try
-            {
-                await _settingService.SendEmailAsync("anhnhthe15026@fpt.edu.vn", "Cai nay de test", "mail den roi ne hihi");
-                return RedirectToPage("./SettingList");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.ToString());
-                throw;
-            }
         }
     }
 }
