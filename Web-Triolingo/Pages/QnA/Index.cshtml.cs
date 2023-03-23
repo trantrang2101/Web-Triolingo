@@ -347,7 +347,7 @@ namespace Web_Triolingo.Pages.QnA
                         Exercise.File=  Convert.ToBase64String(bytes);
                         Exercise.FileName = FileUpload.FileName;
                     }
-                }else if(Exercise.File!=null&&Exercise.File.Length > 0)
+                }else if(Exercise.FileUrl != null&&Exercise.FileUrl.Length > 0)
                 {
                     Exercise.File = Exercise.FileUrl;
                     Exercise.FileName = System.IO.Path.GetFileName(Exercise.File);

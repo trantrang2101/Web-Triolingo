@@ -13,27 +13,39 @@ namespace Web_Triolingo.Pages
     {
         private readonly ILogger<IndexModel> _logger;
         private readonly IUserService _userService;
+		private readonly ICourseService _courseService;
 		private readonly IStatisticService _service;
-
-		public IndexModel(ILogger<IndexModel> logger, IUserService userService, IStatisticService service)
+		[BindProperty]
+        public List<Course> Courses { get; set; }
+        [BindProperty]
+        public Course GetCourse { get; set; }
+		public IndexModel(ILogger<IndexModel> logger, IUserService userService, IStatisticService service, ICourseService courseService)
         {
             _logger = logger;
             _userService = userService;
             _service = service;
+            _courseService = courseService;
         }
 
-        public void OnGet()
+        public void OnGet(int? id)
         {
             User user = null;
             if (HttpContext.Session.GetString("user") != null &&
                 (user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("user"))) != null) {
-                GetCourseProgress(user.Id);
-                GetUserMark(user.Id);
-                
-				ViewData["recentUnit"] = _service.GetUnits(user.Id, out int unitIndex);
-                ViewData["recentUnitIndex"] = unitIndex;
+                Courses = _courseService.GetAllCourse().Result;
+                if(id.HasValue)
+                {
+                    GetCourse=_courseService.GetCourseById(id.Value).Result;
+                }
+                else
+                {
+					GetCourse = Courses.FirstOrDefault();
+				}
+				ViewData["recentUnit"] = _service.GetLesson(user.Id, GetCourse);
+				GetUserMark(user.Id,GetCourse);
+				GetCourseProgress(user.Id,GetCourse);
 			}
-        }
+		}
 
         public ActionResult OnPostLogin(User userLogin)
         {
@@ -88,9 +100,9 @@ namespace Web_Triolingo.Pages
             return RedirectToAction("Index");
         }
 
-        void GetCourseProgress(int userId)
+        void GetCourseProgress(int userId,Course course)
         {
-            int progress = _service.GetCurrentProgress(userId, out Course course);
+            int progress = _service.GetCurrentProgress(userId, course);
             if (course == null)
             {
                 ViewData["currentCourseName"] = "You haven't start any course!";
@@ -100,9 +112,9 @@ namespace Web_Triolingo.Pages
             ViewData["courseProgress"] = progress;
         }
 
-        void GetUserMark(int userId)
+        void GetUserMark(int userId, Course course)
         {
-            var data = _service.GetMarks(userId);
+            var data = _service.GetMarks(userId, course);
             if (data != null && data.Count > 0)
             {
                 ViewData["chartLabel"] = JsonConvert.SerializeObject(data.Keys).Replace('\"', '\'');

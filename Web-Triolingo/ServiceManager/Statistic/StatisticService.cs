@@ -15,10 +15,10 @@ namespace Web_Triolingo.ServiceManager.Statistic
 			_context = context;
 		}
 
-		public int GetCurrentProgress(int userId, out Course course)
+		public int GetCurrentProgress(int userId, Course course)
 		{
 			var courses = from studentCourse in _context.StudentCourses
-						  where studentCourse.StudentId == userId
+						  where studentCourse.StudentId == userId && studentCourse.CourseId == course.Id
 						  select studentCourse;
 			var lesson = from stuLesson in _context.StudentLessons
 						 join stuCourse in courses
@@ -28,14 +28,7 @@ namespace Web_Triolingo.ServiceManager.Statistic
 							 stuLesson.LessionId,
 							 stuCourse.CourseId,
 						 };
-			course = null;
 			if (lesson == null || !lesson.Any()) return 0;
-
-			int lastCourseId = lesson.ToArray()[lesson.Count() - 1].CourseId;
-			course = (from course_ in _context.Courses
-					  where course_.Id == lastCourseId && course_.Status > 0
-					  select course_).FirstOrDefault();
-			if (course == null) return 0;
 
 			int courseId = course.Id;
 			int lessonCount = (from lesson_ in _context.Lessons.Where(l => l.Status > 0)
@@ -46,12 +39,55 @@ namespace Web_Triolingo.ServiceManager.Statistic
 			return lesson.Count() * 100 / lessonCount;
 		}
 
-		public IDictionary<string, double> GetMarks(int userId)
+		public IDictionary<Unit, List<Lesson>> GetLesson(int userId, Course course)
+		{
+			Dictionary<Unit, List<Lesson>> data = new Dictionary<Unit, List<Lesson>>();
+			var lessons = from stuLesson in _context.StudentLessons
+						  join lesson in _context.Lessons.Where(l => l.Status > 0)
+							 on stuLesson.LessionId equals lesson.Id
+						  where stuLesson.StudentCourseId == course.Id
+						  select lesson.Id;
+			var units = (from unit in _context.Units.Where(u => u.Status > 0)
+						 where lessons.Contains(unit.Id)
+						 select unit);
+			foreach(var unit in units)
+			{
+				unit.Status=1;
+			}
+			var notStudyUnit = (from unit in _context.Units.Where(u => u.Status > 0 && u.CourseId == course.Id)
+								where !lessons.Contains(unit.Id)
+								select unit);
+			foreach (var unit in notStudyUnit)
+			{
+				unit.Status = 0;
+			}
+			var listUnit = units.Concat(notStudyUnit).ToList();
+			foreach(var unit in listUnit)
+			{
+				List<Lesson> list = _context.Lessons.Where(x => x.Status > 0 && x.UnitId == unit.Id).ToList();
+				foreach(var lesson in list)
+				{
+					if (lessons.Contains(lesson.Id))
+					{
+						lesson.Status = 1;
+					}
+					else
+					{
+						lesson.Status = 0;
+					}
+				}
+				data.Add(unit,list);
+			}
+			return data;
+
+		}
+
+		public IDictionary<string, double> GetMarks(int userId,Course course)
 		{
 			Dictionary<string, double> data = new Dictionary<string, double>();
 
 			var courses = from studentCourse in _context.StudentCourses
-						  where studentCourse.StudentId == userId
+						  where studentCourse.StudentId == userId && studentCourse.CourseId==course.Id
 						  select studentCourse;
 			var lessons = from stuLesson in _context.StudentLessons
 						 join stuCourse in courses
@@ -74,32 +110,26 @@ namespace Web_Triolingo.ServiceManager.Statistic
 					{
 						data.Add(string.Empty, 0);
 					}
-					data.Add(lesson.lesson.Name, Math.Clamp((int)lesson.Mark * 10 / totalMark, 0, 10));
+					data.Add(lesson.lesson.Name, Math.Clamp((int)lesson.Mark * 100 / totalMark, 0, 100));
 				}
 			}
 
 			return data;
 		}
 
-		public IEnumerable<string> GetUnits(int userId, out int currentIndex)
+		public IEnumerable<Unit> GetUnits(int userId,Course course)
 		{
-			currentIndex = -1;
-			var courses = from studentCourse in _context.StudentCourses
-						  where studentCourse.StudentId == userId
-						  select studentCourse;
 			var lessons = from stuLesson in _context.StudentLessons
-						  join stuCourse in courses
-							on stuLesson.StudentCourseId equals stuCourse.Id
 						  join lesson in _context.Lessons.Where(l => l.Status > 0)
 							 on stuLesson.LessionId equals lesson.Id
+						where stuLesson.StudentCourseId == course.Id
 						  select lesson.UnitId;
 			var units = (from unit in _context.Units.Where(u => u.Status > 0)
 						where lessons.Contains(unit.Id)
-						select unit.Name);
-			currentIndex = units.Any() ? units.Count() - 1 : 0;
-			var notStudyUnit = (from unit in _context.Units.Where(u => u.Status > 0)
+						select unit);
+			var notStudyUnit = (from unit in _context.Units.Where(u => u.Status > 0 && u.CourseId == course.Id)
 							   where !lessons.Contains(unit.Id)
-							   select unit.Name);
+							   select unit);
 			return units.Concat(notStudyUnit).AsEnumerable();
 		}
 
