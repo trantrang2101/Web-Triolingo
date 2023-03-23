@@ -2,8 +2,6 @@
 using Web_Triolingo.Interface.Settings;
 using Triolingo.Core.Entity;
 using Triolingo.Core.DataAccess;
-using MailKit.Net.Smtp;
-using MimeKit;
 
 namespace Web_Triolingo.ServiceManager.Settings
 {
@@ -143,22 +141,5 @@ namespace Web_Triolingo.ServiceManager.Settings
             return true;
         }
 
-        public async Task SendEmailAsync(string email, string subject, string message)
-        {
-            var emailMessage = new MimeMessage();
-
-            emailMessage.From.Add(new MailboxAddress("Nguyen Huu Tien Anh", "tienanh27yp1bn@gmail.com"));
-            emailMessage.To.Add(new MailboxAddress("test", email));
-            emailMessage.Subject = subject;
-            emailMessage.Body = new TextPart("html") { Text = message };
-
-            using (var client = new SmtpClient())
-            {
-                await client.ConnectAsync("smtp.gmail.com", 587, false);
-                await client.AuthenticateAsync("tienanh27yp1bn@gmail.com", "Tienanh2709@");
-                await client.SendAsync(emailMessage);
-                await client.DisconnectAsync(true);
-            }
-        }
     }
 }

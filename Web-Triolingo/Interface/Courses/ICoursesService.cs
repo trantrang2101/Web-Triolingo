@@ -1,5 +1,4 @@
-﻿using Web_Triolingo.Common;
-using Triolingo.Core.Entity;
+﻿using Triolingo.Core.Entity;
 
 namespace Web_Triolingo.Interface.Courses
 {
