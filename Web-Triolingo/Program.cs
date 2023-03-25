@@ -21,6 +21,8 @@ using Web_Triolingo.ServiceManager.UserRoles;
 using Web_Triolingo.Interface.Statistics;
 using Web_Triolingo.ServiceManager.Statistic;
 using Web_Triolingo.Hubs;
+using Web_Triolingo.Interface.UserCourse;
+using Web_Triolingo.ServiceManager.UserCourse;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +45,7 @@ builder.Services.AddTransient<IUserRoleService, UserRoleService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IUnitService, UnitService>();
 builder.Services.AddTransient<IStatisticService, StatisticService>();
+builder.Services.AddTransient<IUserCourse, UserCourseService>();
 builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(60);//You can set Time   
 });

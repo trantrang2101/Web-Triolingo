@@ -13,5 +13,6 @@ namespace Web_Triolingo.Interface.UserRoles
         bool RemoveRole(int id);
         bool RemoveRoleFromUser(int userId);
         Setting GetRoleSetting(int settingId);
+        List<User> GetUsersByRole(String roleName);
     }
 }

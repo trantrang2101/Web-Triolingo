@@ -1,4 +1,5 @@
-﻿using Triolingo.Core.DataAccess;
+﻿using Microsoft.EntityFrameworkCore;
+using Triolingo.Core.DataAccess;
 using Triolingo.Core.Entity;
 using Web_Triolingo.Interface.Settings;
 using Web_Triolingo.Interface.UserRoles;
@@ -19,6 +20,17 @@ namespace Web_Triolingo.ServiceManager.UserRoles
         {
             _dbContext.UserRoles.Add(userRole);
             return _dbContext.SaveChanges() > 0;
+        }
+
+        public List<User> GetUsersByRole(String roleName)
+        {
+            Setting parentSetting = _dbContext.Settings.FirstOrDefault(setting => setting.Name.Contains(roleName) && setting.ParentSetting.Value == SETTING_VALUE);
+            if(parentSetting != null)
+            {
+                List<User> users = _dbContext.UserRoles.Include(x => x.User).Where(x=>x.RoleType==parentSetting.Id).Select(x=>x.User).ToList();
+                return users.Where(x=>x.Status>0).ToList();
+            }
+            return null;
         }
 
         public Dictionary<int, string> GetAllRoles()
