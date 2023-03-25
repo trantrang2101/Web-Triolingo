@@ -75,6 +75,77 @@
 			}
 		});
 	}
+
+	function GetUserRoles(userId) {
+		$('#roleEditBody').empty();
+		$.ajax({
+			url: '?handler=UserRoles&userId=' + userId,
+			success: function (data) {
+				if (data === null) {
+					$('#roleModal').modal('hide');
+					alert('Cannot get user\'s roles data');
+				} else {
+					data.forEach(role => {
+						var str = '<div class="input-group mb-3"><div class="input-group-text"><input class="form-check-input mt-0" type ="checkbox" id="role_' + role.settingId + '" settingId="' + role.settingId + '" ';
+						if (role.isActivated) {
+							str += 'checked ';
+						}
+						str += '></div><span class="input-group-text" id="inputGroup-sizing-sm">' + role.roleName + '</span><input type="text" id="roleNote_' + role.settingId + '" class="form-control" placeholder="Role\'s note"';
+						if (role.roleNote !== null) {
+							str += ' value="' + role.roleNote + '"';
+						}
+						$('#roleEditBody').append(str + '"></div>');
+					});
+					$('#userRoleId').val(userId);
+				}
+			},
+			error: function (error) {
+				alert(error);
+				$('#roleModal').modal('hide');
+			}
+		});
+	}
+
+	function SaveRoleData() {
+		var userId = $('#userRoleId').val();
+		var array = [];
+		var checked = 0
+		$('#roleEditBody input[type=checkbox]').each(function () {
+			var setting = $(this).attr("settingid");
+			var roleNote = $('#roleNote_' + setting).val();
+			if (roleNote === undefined) {
+				roleNote = null;
+			}
+			if ($(this).is(":checked"))
+				checked++;
+			array.push({
+				isActivated: $(this).is(":checked"),
+				settingId: setting,
+				RoleNote: roleNote,
+			});
+		});
+		var roleData = {
+			userId: userId,
+			roles: array,
+		};
+		console.log(JSON.stringify(roleData));
+		$.ajax({
+			type: 'GET',
+			url: "?handler=EditUserRoles&roles=" + JSON.stringify(roleData),
+			success: function (data) {
+				if (data === null) {
+					alert('Cannot save user\'s roles data');
+					return;
+				} else {
+					alert("Save successfully!");
+					$('#roleModal').modal('hide');
+				}
+			},
+			error: function (error) {
+				alert(error);
+			}
+		});
+	}
 </script>
 <h1 class="mb-3">List of Users</h1>
 <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#createNewUser">
@@ -102,6 +173,7 @@
 					<td>@user.Password</td>
 					<td>
 						<button type="button" class="btn btn-outline-info m-2" data-bs-toggle="modal" data-bs-target="#ViewModal" onclick="onSwitchView(@user.Id)">Edit</button>
+						<button type="button" class="btn btn-outline-dark m-2" data-bs-toggle="modal" data-bs-target="#roleModal" onclick="GetUserRoles(@user.Id)">Edit Role</button>
 						@if (user.Status == 1)
 						{
 							<button type="button" class="btn btn-success" onclick="chgStatus(@user.Id, $(this))">Actived</button>
@@ -134,7 +206,7 @@ else
 						<div class="input-group mb-3">
 							<div class="input-group mb-3">
 							<span class="input-group-text" id="inputRoleLbl">Role: </span>
-								<select class="form-select" id="roleSettingId" name="roleSettingId" data-val-required="User's role is required.">
+								<select class="form-select" id="roleSettingId" name="roleSettingId" data-val-required="User's role is required." multiple>
 									@{
 										foreach (var role in (IEnumerable<SelectListItem>)Model._cacheRoles)
 										{
@@ -161,7 +233,7 @@ else
 					</div>
 					<div class="input-group mb-3">
 						<span class="input-group-text" id="inputPassword">Password: </span>
-						<input required type="password" name="user.Password" class="form-control" aria-describedby="inputPassword">
+						<input required type="text" name="user.Password" class="form-control" aria-describedby="inputPassword">
 					</div>
 					<input type="hidden" name="user.Status" value="1" />
 					<div>
@@ -186,24 +258,6 @@ else
 			</div>
 			<div class="modal-body">
 				<form asp-page-handler="editUser" method="post" id="editForm">
-					<div class="input-group mb-3">
-						<div class="input-group mb-3">
-							<span class="input-group-text" id="inputRoleLbl">Role: </span>
-							<select class="form-select" id="roleEditSettingId" name="roleSettingId" data-val-required="User's role is required.">
-								@{
-									foreach (var role in (IEnumerable<SelectListItem>)Model._cacheRoles)
-									{
-										<option value="@role.Value">@role.Text</option>
-									}
-								}
-							</select>
-						</div>
-						<div class="input-group mb-3">
-							<span class="input-group-text ">Role's Note: </span>
-							<textarea class="form-control" id="editRoleNode" name="roleNote"></textarea>
-						</div>
-					</div>
-					<hr class="dropdown-divider mb-3" />
 					<input id="editInfoId" type="hidden" name="user.Id" value="-1" />
 					<div class="input-group mb-3">
 						<span class="input-group-text" id="inputEmail">Email: </span>
@@ -215,7 +269,7 @@ else
 					</div>
 					<div class="input-group mb-3">
 						<span class="input-group-text" id="inputPassword">Password: </span>
-						<input id="editInfoPassword" required type="password" name="user.Password" class="form-control" aria-describedby="inputPassword">
+						<input id="editInfoPassword" required type="text" name="user.Password" class="form-control" aria-describedby="inputPassword">
 					</div>
 					<input id="editInfoStatus" type="hidden" name="user.Status" value="1" />
 					<div>
@@ -227,6 +281,30 @@ else
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 				<button type="submit" form="editForm" class="btn btn-primary" id="editUserAddBtn">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="roleModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="editRoleTitle">Edit role of ...</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<input type="number" hidden id="userRoleId" value="-1" />
+			<div class="modal-body" id="roleEditBody">
+				<div class="input-group mb-3">
+					<div class="input-group-text">
+						<input class="form-check-input mt-0" type="checkbox" value="">
+					</div>
+					<span class="input-group-text" id="inputGroup-sizing-sm">Admin</span>
+					<input type="text" class="form-control" placeholder="Role's note">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" onclick="SaveRoleData()">Save changes</button>
 			</div>
 		</div>
 	</div>
