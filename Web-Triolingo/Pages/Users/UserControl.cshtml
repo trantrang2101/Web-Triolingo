@@ -113,7 +113,7 @@
 		$('#roleEditBody input[type=checkbox]').each(function () {
 			var setting = $(this).attr("settingid");
 			var roleNote = $('#roleNote_' + setting).val();
-			if (roleNote === undefined) {
+			if (!roleNote) {
 				roleNote = null;
 			}
 			if ($(this).is(":checked"))
@@ -128,7 +128,6 @@
 			userId: userId,
 			roles: array,
 		};
-		console.log(JSON.stringify(roleData));
 		$.ajax({
 			type: 'GET',
 			url: "?handler=EditUserRoles&roles=" + JSON.stringify(roleData),

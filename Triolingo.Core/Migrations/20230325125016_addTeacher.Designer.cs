@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Triolingo.Core.DataAccess;
 
@@ -11,9 +12,10 @@ using Triolingo.Core.DataAccess;
 namespace Triolingo.Core.Migrations
 {
     [DbContext(typeof(TriolingoDbContext))]
-    partial class TriolingoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230325125016_addTeacher")]
+    partial class addTeacher
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -12,5 +12,6 @@ namespace Triolingo.Core.Entity
         public int CourseId { get; set; }
         public double? Rate { get; set; }
         public string? Comment { get; set; }
+        public bool IsStudent { get; set; } = true;
     }
 }

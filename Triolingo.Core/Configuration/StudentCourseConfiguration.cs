@@ -17,6 +17,7 @@ namespace Triolingo.Core.Configuration
             builder.HasKey(t => t.Id);
             builder.Property(x => x.Comment);
             builder.Property(x => x.Rate);
+            builder.Property(x=>x.IsStudent).HasDefaultValue(true);
         }
     }
 }

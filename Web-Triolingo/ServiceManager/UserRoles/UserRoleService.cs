@@ -1,4 +1,5 @@
-﻿using Triolingo.Core.DataAccess;
+﻿using Microsoft.EntityFrameworkCore;
+using Triolingo.Core.DataAccess;
 using Triolingo.Core.Entity;
 using Web_Triolingo.Interface.Settings;
 using Web_Triolingo.Interface.UserRoles;
@@ -9,6 +10,7 @@ namespace Web_Triolingo.ServiceManager.UserRoles
 {
     public class UserRoleService : IUserRoleService
     {
+        private const string ADMIN_SETTING_VALUE = "ROLE_ADMIN";
         private const string SETTING_VALUE = "ROLE";
         private readonly TriolingoDbContext _dbContext;
 
@@ -21,6 +23,17 @@ namespace Web_Triolingo.ServiceManager.UserRoles
         {
             _dbContext.UserRoles.Add(userRole);
             return _dbContext.SaveChanges() > 0;
+        }
+
+        public List<User> GetUsersByRole(String roleName)
+        {
+            Setting parentSetting = _dbContext.Settings.FirstOrDefault(setting => setting.Name.Contains(roleName) && setting.ParentSetting.Value == SETTING_VALUE);
+            if(parentSetting != null)
+            {
+                List<User> users = _dbContext.UserRoles.Include(x => x.User).Where(x=>x.RoleType==parentSetting.Id).Select(x=>x.User).ToList();
+                return users.Where(x=>x.Status>0).ToList();
+            }
+            return null;
         }
 
 		public bool DoesUserHaveRole(int userId, int roleSettingId)
@@ -139,7 +152,7 @@ namespace Web_Triolingo.ServiceManager.UserRoles
                         roleEntity.Setting = _dbContext.Settings.Find(role.SettingId);
                         roleEntity.RoleType = role.SettingId;
                     }
-                    if (!(string.IsNullOrEmpty(roleEntity.Note) && string.IsNullOrEmpty(role.RoleNote)) || string.Compare(roleEntity.Note, role.RoleNote) != 0)
+                    if (string.Compare(roleEntity.Note, role.RoleNote) != 0)
                     {
                         roleEntity.Note = role.RoleNote;
                     }
@@ -155,7 +168,16 @@ namespace Web_Triolingo.ServiceManager.UserRoles
             }
             return true;
 		}
-	}
+
+        public Setting GetAdminSetting()
+        {
+            Setting parentSetting = _dbContext.Settings.FirstOrDefault(setting => setting.ParentId == null && setting.Value == SETTING_VALUE);
+            return (from setting in _dbContext.Settings
+                    where setting.ParentId == parentSetting.Id &&
+                        setting.Value == ADMIN_SETTING_VALUE
+                    select setting).FirstOrDefault();
+        }
+    }
 
 	public class UserRoleInfo
 	{
