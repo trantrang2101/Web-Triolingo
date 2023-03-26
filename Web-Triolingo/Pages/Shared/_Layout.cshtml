@@ -1,14 +1,18 @@
 ﻿@using Microsoft.AspNetCore.Http
+@using Triolingo.Core.DataAccess;
 @using Triolingo.Core.Entity;
 @using Newtonsoft.Json
 @inject IHttpContextAccessor HttpContextAccessor
+@inject TriolingoDbContext dbContext;
 @{
     var user = HttpContextAccessor.HttpContext.Session.GetString("user");
 
     User userLogin = new User();
+    UserRole role = new UserRole();
     if (user != null)
     {
         userLogin = JsonConvert.DeserializeObject<User>(user);
+        role = dbContext.UserRoles.Where(x => x.UserId == userLogin.Id).FirstOrDefault();
     }
 
 }
@@ -141,9 +145,19 @@
                 </li>
                 <li data-item="2" class="side-item item2">Cửa hàng</li>
                 <li data-item="3" class="side-item item3">Schools</li>
-                <li data-item="4" class="side-item item4"><a style="text-decoration: none" asp-page="/Settings/SettingList">Quản lý cài đặt</a></li>
+                @{
+                    if (role.RoleType != null && role.RoleType == 2)
+                    {
+                        <li data-item="4" class="side-item item4"><a style="text-decoration: none" asp-page="/Settings/SettingList">Quản lý cài đặt</a></li>
+                    }
+                }
                 <li data-item="5" class="side-item item4"><a style="text-decoration: none" asp-page="/Courses/CourseList">Quản lý khóa học</a></li>
-                <li data-item="6" class="side-item item4"><a style="text-decoration: none" asp-page="/Users/UserControl">Quản lý user</a></li>
+                @{
+                    if (role.RoleType != null && role.RoleType == 2)
+                    {
+                        <li data-item="6" class="side-item item4"><a style="text-decoration: none" asp-page="/Users/UserControl">Quản lý user</a></li>
+                    }
+                }
             </ul>
         </nav>
         <main role="main" class="m-3">
