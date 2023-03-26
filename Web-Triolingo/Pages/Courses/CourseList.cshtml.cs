@@ -8,6 +8,8 @@ using ClosedXML.Excel;
 using Web_Triolingo.Interface.UserRoles;
 using Web_Triolingo.Interface.UserCourse;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.SignalR;
+using Web_Triolingo.Hubs;
 
 namespace Web_Triolingo.Pages.Courses
 {
@@ -18,7 +20,8 @@ namespace Web_Triolingo.Pages.Courses
         private readonly IUserService _userService;
         private readonly IUserCourse _mentorCourseService;
         private readonly IUserRoleService _mentorService;
-        public bool isMentor = true;
+		private readonly IHubContext<SignalRServer> _signalRHub;
+		public bool isMentor = true;
         public List<Course> List { get; set; }
         [BindProperty]
         public Course course { get; set; }
@@ -26,13 +29,18 @@ namespace Web_Triolingo.Pages.Courses
         public List<User> users { get; set; }
         [BindProperty]
         public List<bool> isMentors { get; set; } = new List<bool>();
-        public CourseListModel(ILogger<CourseListModel> _logger, ICourseService _service, IUserService userService, IUserRoleService mentorService, IUserCourse mentorCourseService)
+        public CourseListModel(ILogger<CourseListModel> _logger, 
+            ICourseService _service, IUserService userService, 
+            IUserRoleService mentorService, 
+            IUserCourse mentorCourseService,
+			IHubContext<SignalRServer> signalRHub)
         {
             logger = _logger;
             service = _service;
             _userService = userService;
             _mentorService = mentorService;
             _mentorCourseService = mentorCourseService;
+            _signalRHub = signalRHub;
         }
         private void getCourseMentor(int? id)
         {
@@ -165,7 +173,7 @@ namespace Web_Triolingo.Pages.Courses
             _mentorCourseService.updateMentorAdd(users, isMentors, course.Id);
             OnPostEdit(course.Id);
         }
-        public void OnPostSave()
+        public async Task OnPostSaveAsync()
         {
             try
             {
@@ -175,13 +183,15 @@ namespace Web_Triolingo.Pages.Courses
                     if (id != 0)
                     {
                         OnPostEdit(id);
-                        return;
+						await _signalRHub.Clients.All.SendAsync("LoadCourse");
+						return;
                     }
                 }
                 else
                 {
                     OnPostEdit(course.Id);
-                    return;
+					await _signalRHub.Clients.All.SendAsync("LoadCourse");
+					return;
                 }
             }
             catch (Exception ex)
