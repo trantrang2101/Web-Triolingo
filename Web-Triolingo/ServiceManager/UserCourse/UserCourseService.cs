@@ -18,19 +18,20 @@ namespace Web_Triolingo.ServiceManager.UserCourse
             return _context.StudentCourses.Where(x => x.IsStudent == false && x.CourseId == courseId).Select(x => x.StudentId).ToList();
         }
 
-        public void updateMentorAdd(Dictionary<User, bool> mentors, int courseId)
+        public void updateMentorAdd(List<User> mentors, List<bool> isMentor, int courseId)
         {
-            foreach(var mentor in mentors)
+            for(var i = 0;i <mentors.Count;i++)
             {
-                StudentCourse student = _context.StudentCourses.FirstOrDefault(x => x.CourseId == courseId&&mentor.Key.Id==x.StudentId&&x.IsStudent==false);
-                if (mentor.Value)
+                User mentor = mentors[i];
+                StudentCourse student = _context.StudentCourses.FirstOrDefault(x => x.CourseId == courseId&&mentor.Id==x.StudentId&&x.IsStudent==false);
+                if (isMentor[i])
                 {
                     if (student == null)
                     {
                         student = new StudentCourse()
                         {
                             CourseId = courseId,
-                            StudentId = mentor.Key.Id,
+                            StudentId = mentor.Id,
                             IsStudent = false
                         };
                         _context.StudentCourses.Add(student);

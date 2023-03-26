@@ -5,6 +5,6 @@ namespace Web_Triolingo.Interface.UserCourse
     public interface IUserCourse
     {
         List<int> getUserIdInCourse(int courseId);
-        void updateMentorAdd(Dictionary<User, bool> mentors,int courseId);
+        void updateMentorAdd(List<User> mentors, List<bool> isMentor,int courseId);
     }
 }
