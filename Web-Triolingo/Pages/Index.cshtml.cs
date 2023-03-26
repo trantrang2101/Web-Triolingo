@@ -5,6 +5,8 @@ using Triolingo.Core.Entity;
 using Web_Triolingo.Interface.Courses;
 using Web_Triolingo.Interface.Lessons;
 using Web_Triolingo.Interface.Statistics;
+using Web_Triolingo.Interface.UserCourse;
+using Web_Triolingo.Interface.UserRoles;
 using Web_Triolingo.Interface.Users;
 
 namespace Web_Triolingo.Pages
@@ -15,16 +17,27 @@ namespace Web_Triolingo.Pages
         private readonly IUserService _userService;
 		private readonly ICourseService _courseService;
 		private readonly IStatisticService _service;
-		[BindProperty]
+        private readonly IUserRoleService _userRoleService;
+        private readonly IUserCourse _mentorCourseService;
+        [BindProperty]
         public List<Course> Courses { get; set; }
         [BindProperty]
         public Course GetCourse { get; set; }
-		public IndexModel(ILogger<IndexModel> logger, IUserService userService, IStatisticService service, ICourseService courseService)
+        [BindProperty]
+        public bool IsAdmin { get; set; }
+		public IndexModel(ILogger<IndexModel> logger, 
+            IUserService userService, 
+            IStatisticService service, 
+            ICourseService courseService,
+            IUserRoleService userRoleService,
+            IUserCourse mentorCourseService)
         {
             _logger = logger;
             _userService = userService;
             _service = service;
             _courseService = courseService;
+            _userRoleService = userRoleService;
+            _mentorCourseService = mentorCourseService;
         }
 
         public void OnGet(int? id)
@@ -32,7 +45,13 @@ namespace Web_Triolingo.Pages
             User user = null;
             if (HttpContext.Session.GetString("user") != null &&
                 (user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("user"))) != null) {
+                var userRole = _userRoleService.GetRoleOfUser(user.Id);
+                IsAdmin = userRole.RoleType == 2;
                 Courses = _courseService.GetAllCourse().Result;
+                if (userRole.RoleType == 3)
+                {
+                    Courses = _mentorCourseService.getCourseByMentor(user.Id);
+                }
                 if(id.HasValue)
                 {
                     GetCourse=_courseService.GetCourseById(id.Value).Result;

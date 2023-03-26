@@ -26,10 +26,10 @@ namespace Web_Triolingo.ServiceManager.UserCourse
 
         public void updateMentorAdd(List<User> mentors, List<bool> isMentor, int courseId)
         {
-            for(var i = 0;i <mentors.Count;i++)
+            for (var i = 0; i < mentors.Count; i++)
             {
                 User mentor = mentors[i];
-                StudentCourse student = _context.StudentCourses.FirstOrDefault(x => x.CourseId == courseId&&mentor.Id==x.StudentId&&x.IsStudent==false);
+                StudentCourse student = _context.StudentCourses.FirstOrDefault(x => x.CourseId == courseId && mentor.Id == x.StudentId && x.IsStudent == false);
                 if (isMentor[i])
                 {
                     if (student == null)
@@ -45,10 +45,8 @@ namespace Web_Triolingo.ServiceManager.UserCourse
                 }
                 else
                 {
-                    if(student != null)
-                    {
+                    if (student != null)
                         _context.StudentCourses.Remove(student);
-                    }
                 }
                 _context.SaveChanges();
             }

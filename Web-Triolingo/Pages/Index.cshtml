@@ -4,152 +4,160 @@
 @using Microsoft.AspNetCore.Http;
 @model IndexModel
 @{
-	ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Home page";
 }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
 </script>
 
 <div class="text-center">
-	@{
-		string s = this.HttpContext.Session == null ? null : this.HttpContext.Session.GetString("user");
-		User? user;
-		if (!string.IsNullOrEmpty(s) && (user = JsonConvert.DeserializeObject<User>(s)) != null)
-		{
-			<h2 class="display-4">Welcome, @user.FullName!</h2>
+    @{
+        string s = this.HttpContext.Session == null ? null : this.HttpContext.Session.GetString("user");
+        User? user;
+        if (!string.IsNullOrEmpty(s) && (user = JsonConvert.DeserializeObject<User>(s)) != null)
+        {
+            <h2 class="display-4">Welcome, @user.FullName!</h2>
 
-			<div class="row">
-				<div class="col-sm-8 mb-3 mb-sm-0">
-					<div class="card">
-						<div class="card-body">
-							<div id="courseProgress">
-								@{
-									if (ViewData["courseProgress"] != null && int.TryParse(ViewData["courseProgress"].ToString(), out int progress))
-									{
-										<label class="h3"><b>Quá trình học hiện tại:</b></label>
-										<p id="courseProgressName" style="text-align: left">Khóa: @ViewData["currentCourseName"]</p>
-										<div class="progress" role="progressbar" style="height: 30px" aria-valuemin="0" aria-valuemax="100">
-											<div id="progressBarInside" class="progress-bar progress-bar-striped bg-success progress-bar-animated" style="width: @progress%">@progress%</div>
-										</div>
-									}
-									else
-									{
-										<h2>@ViewData["currentCourseName"]</h2>
-									}
-								}
-							</div>
+            <div class="row">
+                <div class="col-sm-8 mb-3 mb-sm-0">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="courseProgress">
+                                @{
+                                    if (ViewData["courseProgress"] != null && int.TryParse(ViewData["courseProgress"].ToString(), out int progress))
+                                    {
+                                        <label class="h3"><b>Quá trình học hiện tại:</b></label>
+                                        <p id="courseProgressName" style="text-align: left">Khóa: @ViewData["currentCourseName"]</p>
+                                        <div class="progress" role="progressbar" style="height: 30px" aria-valuemin="0" aria-valuemax="100">
+                                            <div id="progressBarInside" class="progress-bar progress-bar-striped bg-success progress-bar-animated" style="width: @progress%">@progress%</div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <h2>@ViewData["currentCourseName"]</h2>
+                                    }
+                                }
+                            </div>
 
-							<div id="courseMarks" style="text-align: left; padding-top: 20px">
-								@{
-									if (ViewData["chartLabel"] != null && ViewData["chartData"] != null)
-									{
-										<p style="">Điểm của các bài tập trước:</p>
-										<canvas id="myChart" style="width:100%;max-width:700px"></canvas>
-										<i>Điểm được tính theo scale 100%</i>
-										<script>
-											const xValues = @Html.Raw(ViewData["chartLabel"].ToString());
-											const yValues = @Html.Raw(ViewData["chartData"].ToString());
+                            <div id="courseMarks" style="text-align: left; padding-top: 20px">
+                                @{
+                                    if (ViewData["chartLabel"] != null && ViewData["chartData"] != null)
+                                    {
+                                        <p style="">Điểm của các bài tập trước:</p>
+                                        <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+                                        <i>Điểm được tính theo scale 100%</i>
+                                        <script>
+                                            const xValues = @Html.Raw(ViewData["chartLabel"].ToString());
+                                            const yValues = @Html.Raw(ViewData["chartData"].ToString());
 
-											new Chart("myChart", {
-												type: "line",
-												data: {
-													labels: xValues,
-													datasets: [{
-														backgroundColor: "rgba(0,128,0,0.5)",
-														borderColor: "rgba(0,128,0,0.1)",
-														data: yValues
-													}]
-												},
-												options: {
-													legend: { display: false },
-													scales: {
-														yAxes: [{ ticks: { min: 0, max: 100 } }]
-													},
-												}
-											});
-										</script>
-									}
-									else
-									{
-										<h3>Bạn chưa được chấm điểm bài nào!</h3>
-									}
-								}
+                                            new Chart("myChart", {
+                                                type: "line",
+                                                data: {
+                                                    labels: xValues,
+                                                    datasets: [{
+                                                        backgroundColor: "rgba(0,128,0,0.5)",
+                                                        borderColor: "rgba(0,128,0,0.1)",
+                                                        data: yValues
+                                                    }]
+                                                },
+                                                options: {
+                                                    legend: { display: false },
+                                                    scales: {
+                                                        yAxes: [{ ticks: { min: 0, max: 100 } }]
+                                                    },
+                                                }
+                                            });
+                                        </script>
+                                    }
+                                    else
+                                    {
+                                        <h3>Bạn chưa được chấm điểm bài nào!</h3>
+                                    }
+                                }
 
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-sm-4">
-					<div class="card">
-						<div class="card-body">
-							<form class="col" method="get" asp-page-handler="course">
-								<h3 for="editor" class="form-label">Khóa học</h3>
-								<select class="form-select" name="id" onchange="$('#saveCourseBtn').click()">
-									@foreach (var cour in Model.Courses)
-									{
-										if (Model.GetCourse != null && Model.GetCourse.Id == cour.Id)
-										{
-											<option value="@cour.Id" selected>@cour.Name</option>
-										}
-										else
-										{
-											<option value="@cour.Id">@cour.Name</option>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <form class="col" method="get" asp-page-handler="course">
+                                <h3 for="editor" class="form-label">Khóa học</h3>
+                                <select class="form-select" name="id" onchange="$('#saveCourseBtn').click()">
+                                    @foreach (var cour in Model.Courses)
+                                    {
+                                        if (Model.GetCourse != null && Model.GetCourse.Id == cour.Id)
+                                        {
+                                            <option value="@cour.Id" selected>@cour.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@cour.Id">@cour.Name</option>
 
-										}
-									}
-								</select>
-								<button type="submit" class="btn btn-primary px-3" hidden id="saveCourseBtn">Lưu</button>
-							</form>
-							<h5><b>Các unit trong khóa:</b></h5>
-							<div class="accordion" id="accordionExample">
-								@{
-									if (ViewData["recentUnit"] != null)
-									{
-										IDictionary<Unit, List<Lesson>> units = (IDictionary< Unit, List < Lesson >>)ViewData["recentUnit"];
-										int studiedIndex = -1;
-										for (int i = 0; units != null && i < units.Count(); i++)
-										{
-											<div class="accordion-item">
-												<h2 class="accordion-header" id="heading@(i)">
-													<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(i)" aria-expanded="false" aria-controls="collapse@(i)">
-														@units.ElementAt(i).Key.Name
-													</button>
-												</h2>
-												<div id="collapse@(i)" class="accordion-collapse collapse" aria-labelledby="heading@(i)" data-bs-parent="#accordionExample">
-													<ul class="list-group">
-														@foreach (var item in units.ElementAt(i).Value)
-														{
-															if (item.Status > 0)
-															{
-																<li class="list-group-item"><b><a asp-page="/QnA/Index" asp-route-id="@item.Id" class="bg-transparent">@item.Name</a></b></li>
-															}
-															else
-															{
-																<li class="list-group-item"><a asp-page="/QnA/Index" asp-route-id="@item.Id" class="bg-transparent">@item.Name</a></li>
-															}
-														}
-													</ul>
-												</div>
-											</div>
-										}
-									}
-								}
-							</div>
-							<a asp-page="Courses/CourseList">Đi tới Course...</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		}
-		else
-		{
-			<h2 class="display-4">Welcome</h2>
-			<a asp-page="Settings/SettingList">Sang Setting</a>
-			<a asp-page="Courses/CourseList">Sang Course</a>
-		}
-	}
-	@*
-	<p class="mt-5">Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>*@
-	<a asp-page="Settings/SettingList">Sang Setting</a>
-	<a asp-page="Courses/CourseList">Sang Course</a>
+                                        }
+                                    }
+                                </select>
+                                <button type="submit" class="btn btn-primary px-3" hidden id="saveCourseBtn">Lưu</button>
+                            </form>
+                            <h5><b>Các unit trong khóa:</b></h5>
+                            <div class="accordion" id="accordionExample">
+                                @{
+                                    if (ViewData["recentUnit"] != null)
+                                    {
+                                        IDictionary<Unit, List<Lesson>> units = (IDictionary<Unit, List<Lesson>>)ViewData["recentUnit"];
+                                        int studiedIndex = -1;
+                                        for (int i = 0; units != null && i < units.Count(); i++)
+                                        {
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id="heading@(i)">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(i)" aria-expanded="false" aria-controls="collapse@(i)">
+                                                        @units.ElementAt(i).Key.Name
+                                                    </button>
+                                                </h2>
+                                                <div id="collapse@(i)" class="accordion-collapse collapse" aria-labelledby="heading@(i)" data-bs-parent="#accordionExample">
+                                                    <ul class="list-group">
+                                                        @foreach (var item in units.ElementAt(i).Value)
+                                                        {
+                                                            if (item.Status > 0)
+                                                            {
+                                                                <li class="list-group-item"><b><a asp-page="/QnA/Index" asp-route-id="@item.Id" class="bg-transparent">@item.Name</a></b></li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li class="list-group-item"><a asp-page="/QnA/Index" asp-route-id="@item.Id" class="bg-transparent">@item.Name</a></li>
+                                                            }
+                                                        }
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                }
+                            </div>
+                            <a asp-page="Courses/CourseList">Đi tới Course...</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <h2 class="display-4">Welcome</h2>
+            if (Model.IsAdmin)
+            {
+                <a asp-page="Settings/SettingList">Sang Setting</a>
+            }
+            <a asp-page="Courses/CourseList">Sang Course</a>
+        }
+    }
+    @*
+    <p class="mt-5">Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>*@
+    @{
+        if (Model.IsAdmin)
+        {
+            <a asp-page="Settings/SettingList">Sang Setting</a>
+        }
+    }
+    <a asp-page="Courses/CourseList">Sang Course</a>
 </div>

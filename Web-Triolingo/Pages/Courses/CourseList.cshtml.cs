@@ -60,6 +60,10 @@ namespace Web_Triolingo.Pages.Courses
             {
                 isMentor = true;
             }
+            else
+            {
+                isMentor = false;
+            }
             if (isMentor)
             {
                 List = _mentorCourseService.getCourseByMentor(userLogin.Id);
