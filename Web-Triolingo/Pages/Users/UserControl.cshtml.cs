@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Web_Triolingo.Interface.UserRoles;
 using Newtonsoft.Json;
 using Web_Triolingo.ServiceManager.Users;
+using Web_Triolingo.ServiceManager.UserRoles;
 
 namespace Web_Triolingo.Pages.Users
 {
@@ -18,7 +19,6 @@ namespace Web_Triolingo.Pages.Users
 		private readonly IUserControlService _service;
 		private readonly IUserRoleService _roleService;
         private readonly IUserService _userService;
-		private const int ADMIN_ROLE_TYPE = 2;
 
         public List<User> _cacheUsers;
 		public List<SelectListItem> _cacheRoles = new List<SelectListItem>();
@@ -47,11 +47,11 @@ namespace Web_Triolingo.Pages.Users
 		public IActionResult OnGet()
 		{
 			string s = HttpContext.Session == null ? null : HttpContext.Session.GetString("user");
+			Setting adminSetting = _roleService.GetAdminSetting();
 			User? login_user;
 			if (string.IsNullOrEmpty(s) ||
 				(login_user = JsonConvert.DeserializeObject<User>(s)) == null ||
-				_roleService.GetRoleOfUser(login_user.Id) == null ||
-				_roleService.GetRoleOfUser(login_user.Id).RoleType != ADMIN_ROLE_TYPE)
+				(adminSetting != null && !_roleService.DoesUserHaveRole(login_user.Id, adminSetting.Id)))
 			{
 				return RedirectToPage("/Index");
 			}
@@ -220,8 +220,16 @@ namespace Web_Triolingo.Pages.Users
 				return BadRequest(ex.ToString());
 			}
 		}
+		public ActionResult OnGetEditUserRoles(string roles)
+		{
+			var obj = JsonConvert.DeserializeObject<EditUserRoleModel>(roles);
+			if (obj != null && _roleService.UpdateRoleOfUser(obj.userId, obj.roles)) {
+				return new JsonResult(true);
+			}
+			return new JsonResult(false);
+		}
 
-        public ActionResult OnPostLogin(User userLogin)
+		public ActionResult OnPostLogin(User userLogin)
         {
             try
             {
@@ -273,5 +281,23 @@ namespace Web_Triolingo.Pages.Users
             HttpContext.Session.Clear();
             return RedirectToAction("Index");
         }
+
+		public IActionResult OnGetUserRoles(int userId)
+		{
+			try
+			{
+				return new JsonResult(_roleService.GetAllRoleOfUser(userId));
+			}
+			catch
+			{
+				return new EmptyResult();
+			}
+		}
+
+		public class EditUserRoleModel
+		{
+			public int userId { get; set; }
+			public IList<UserRoleInfo> roles { get; set; }
+		}
     }
 }
