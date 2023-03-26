@@ -10,6 +10,8 @@ using Web_Triolingo.Interface.UserRoles;
 using Newtonsoft.Json;
 using Web_Triolingo.ServiceManager.Users;
 using Web_Triolingo.ServiceManager.UserRoles;
+using Microsoft.AspNetCore.SignalR;
+using Web_Triolingo.Hubs;
 
 namespace Web_Triolingo.Pages.Users
 {
@@ -19,16 +21,22 @@ namespace Web_Triolingo.Pages.Users
 		private readonly IUserControlService _service;
 		private readonly IUserRoleService _roleService;
         private readonly IUserService _userService;
+		private readonly IHubContext<SignalRServer> _signalRHub;
 
-        public List<User> _cacheUsers;
+		public List<User> _cacheUsers;
 		public List<SelectListItem> _cacheRoles = new List<SelectListItem>();
 
-		public UserControlModel(ILogger<UserControlModel> logger, IUserControlService service, IUserRoleService userRoleService, IUserService userService)
+		public UserControlModel(ILogger<UserControlModel> logger, 
+			IUserControlService service, 
+			IUserRoleService userRoleService, 
+			IUserService userService,
+			IHubContext<SignalRServer> signalRHub)
 		{
 			_logger = logger;
 			_service = service;
 			_roleService = userRoleService;
 			_userService = userService;
+			_signalRHub = signalRHub;
 		}
 
 		public void RenderRoles()
@@ -73,6 +81,7 @@ namespace Web_Triolingo.Pages.Users
 			try
 			{
 				await _service.SwitchStatus(id);
+				await _signalRHub.Clients.All.SendAsync("LoadUser");
 				var user = await _service.GetUser(id);
 				if (user == null)
 				{
@@ -106,7 +115,7 @@ namespace Web_Triolingo.Pages.Users
 		}
 
 
-		public async Task<IActionResult> OnPostNewUser(User user, int roleSettingId, string roleNote)
+		public async Task<IActionResult> OnPostNewUserAsync(User user, int roleSettingId, string roleNote)
 		{
 			try
 			{
@@ -126,6 +135,7 @@ namespace Web_Triolingo.Pages.Users
 					}
 					_cacheUsers = await _service.GetUsers();
 					RenderRoles();
+					await _signalRHub.Clients.All.SendAsync("LoadUser");
 					return Page();
 				}
 				return new EmptyResult();
@@ -137,7 +147,7 @@ namespace Web_Triolingo.Pages.Users
 			}
 		}
 
-		public async Task<IActionResult> OnPostEditUser(User user, int roleSettingId, string roleNote)
+		public async Task<IActionResult> OnPostEditUserAsync(User user, int roleSettingId, string roleNote)
 		{
 			try
 			{
@@ -167,6 +177,7 @@ namespace Web_Triolingo.Pages.Users
 					}
 					_cacheUsers = await _service.GetUsers();
 					RenderRoles();
+					await _signalRHub.Clients.All.SendAsync("LoadUser");
 					return Page();
 				}
 				return new EmptyResult();
@@ -220,10 +231,11 @@ namespace Web_Triolingo.Pages.Users
 				return BadRequest(ex.ToString());
 			}
 		}
-		public ActionResult OnGetEditUserRoles(string roles)
+		public async Task<ActionResult> OnGetEditUserRolesAsync(string roles)
 		{
 			var obj = JsonConvert.DeserializeObject<EditUserRoleModel>(roles);
 			if (obj != null && _roleService.UpdateRoleOfUser(obj.userId, obj.roles)) {
+				await _signalRHub.Clients.All.SendAsync("LoadUser");
 				return new JsonResult(true);
 			}
 			return new JsonResult(false);
