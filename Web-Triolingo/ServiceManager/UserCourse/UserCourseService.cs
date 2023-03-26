@@ -1,4 +1,5 @@
-﻿using Triolingo.Core.DataAccess;
+﻿using Microsoft.EntityFrameworkCore;
+using Triolingo.Core.DataAccess;
 using Triolingo.Core.Entity;
 using Web_Triolingo.Interface.UserCourse;
 
@@ -11,6 +12,11 @@ namespace Web_Triolingo.ServiceManager.UserCourse
         public UserCourseService(TriolingoDbContext context)
         {
             _context = context;
+        }
+
+        public List<Course> getCourseByMentor(int mentorId)
+        {
+            return _context.StudentCourses.Include(x=>x.Course).Where(x => x.IsStudent == false && x.StudentId== mentorId).Select(x => x.Course).ToList();
         }
 
         public List<int> getUserIdInCourse(int courseId)
@@ -39,7 +45,10 @@ namespace Web_Triolingo.ServiceManager.UserCourse
                 }
                 else
                 {
-                    _context.StudentCourses.Remove(student);
+                    if(student != null)
+                    {
+                        _context.StudentCourses.Remove(student);
+                    }
                 }
                 _context.SaveChanges();
             }

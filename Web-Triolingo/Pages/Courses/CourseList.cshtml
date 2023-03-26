@@ -105,52 +105,59 @@
                     <label for="name" class="col-sm-2 col-form-label">Tên<span class="text-danger">*</span></label>
                     <div class="col-sm-10">
                         <input type="number" hidden asp-for="course.Id" />
-                        <input asp-for="course.Name" type="text" class="form-control" id="name">
+                        <input disabled="@Model.isMentor" asp-for="course.Name" type="text" class="form-control" id="name">
                     </div>
                 </div>
                 <div class="mb-3 row">
                     <label for="editor" class="col-sm-2 col-form-label">Mô tả<span class="text-danger">*</span></label>
                     <div class="col-sm-10">
-                        <textarea id="editor" asp-for="course.Description"></textarea>
+                        <textarea disabled="@Model.isMentor" id="editor" asp-for="course.Description"></textarea>
                     </div>
                 </div>
-                <div class="mb-3 row">
-                    <label for="note" class="col-sm-2 col-form-label">Người hướng dẫn</label>
-                    <div class="col-sm-10">
-                        @if (Model.users.Count > 0)
-                        {
+                @if (Model.course != null && Model.course.Id > 0)
+                {
+
+                    <div class="mb-3 row">
+                        <label for="note" class="col-sm-2 col-form-label">Người hướng dẫn</label>
+                        <div class="col-sm-10">
                             <div class="row row-cols-lg-6 row-cols-3 g-2">
-                                @for (var i = 0; i < Model.users.Count; i++)
+                                @if (Model.users.Count > 0)
                                 {
-                                    <div class="col">
-                                        <input asp-for="isMentors[i]" type="checkbox" class="btn-check" name="btnradio" id="btn@(Model.users[i].Id)" autocomplete="off">
-                                        <label class="btn btn-outline-primary" for="btn@(Model.users[i].Id)">@(Model.users[i].FullName)</label>
-                                    </div>
+                                    @for (var i = 0; i < Model.users.Count; i++)
+                                    {
+                                        if (Model.isMentors[i])
+                                        {
+                                            <h5 class="col">@Model.users[i].FullName</h5>
+                                        }
+                                    }
+                                    <button disabled="@Model.isMentor" type="button" class="btn btn-primary col" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        Xem người hướng dẫn
+                                    </button>
+                                }
+                                else
+                                {
+                                    <h5>Không có người hướng dẫn </h5>
                                 }
                             </div>
-                        }
-                        else
-                        {
-                            <h5>Không có người hướng dẫn </h5>
-                        }
+                        </div>
                     </div>
-                </div>
+                }
                 <div class="mb-3 row">
                     <label for="note" class="col-sm-2 col-form-label">Ghi chú</label>
                     <div class="col-sm-10">
-                        <textarea class="form-control w-100" id="note" asp-for="course.Note"></textarea>
+                        <textarea class="form-control w-100" disabled="@Model.isMentor" id="note" asp-for="course.Note"></textarea>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary px-3" hidden id="saveBtn">Lưu</button>
+                <button type="submit" disabled="@Model.isMentor" class="btn btn-primary px-3" hidden id="saveBtn">Lưu</button>
             </form>
             <div class="row card-footer border-0 bg-transparent justify-content-between align-content-center row-cols-md-5 row-cols-3">
                 <div class="col">
                     <form method="post" asp-page-handler="add">
-                        <button type="button" class="btn btn-primary px-3">Thêm</button>
+                        <button type="button" disabled="@Model.isMentor" class="btn btn-primary px-3">Thêm</button>
                     </form>
                 </div>
-                <div class="col"><button type="button" class="btn btn-primary px-3" id="fakeSaveBtn">Lưu</button></div>
-                <div class="col"><button type="button" class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
+                <div class="col"><button disabled="@Model.isMentor" type="button" class="btn btn-primary px-3" id="fakeSaveBtn">Lưu</button></div>
+                <div class="col"><button disabled="@Model.isMentor" type="button" class="btn btn-primary px-3" id="disabledMode">Hủy</button></div>
                 @*<div class="col"><button type="button" class="btn btn-primary px-3">Import</button></div>*@
                 @{
                     if (Model.course != null && Model.course.Id != null)
@@ -164,12 +171,41 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Người hướng dẫn</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-page-handler="mentor">
+                    <input type="number" hidden asp-for="course.Id" />
+                    <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                        @for(int i = 0;i<Model.users.Count;i++){
+                            <input type="checkbox" asp-for="isMentors[i]" class="btn-check" id="@("btn"+Model.users[i].Id)" autocomplete="off">
+                            <label class="btn btn-outline-primary" asp-for="isMentors[i]" for="@("btn"+Model.users[i].Id)">@Model.users[i].FullName</label>
+                        }
+                    </div>
+                    <button type="submit" class="btn btn-primary px-3" hidden id="saveBtnPopUp">Lưu</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" disabled="@Model.isMentor" id="fakeSaveBtnPopUp">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts {
     <script type="text/javascript">
         let isDisabled = true;
         $(document).ready(() => {
             document.getElementById('fakeSaveBtn').addEventListener('click', () => {
                 document.getElementById('saveBtn').click();
+            })
+            document.getElementById('fakeSaveBtnPopUp').addEventListener('click', () => {
+                document.getElementById('saveBtnPopUp').click();
             })
             ClassicEditor.create(document.querySelector("#editor"), {
                 language: 'vi',

@@ -18,6 +18,7 @@ namespace Web_Triolingo.Pages.Courses
         private readonly IUserService _userService;
         private readonly IUserCourse _mentorCourseService;
         private readonly IUserRoleService _mentorService;
+        public bool isMentor = true;
         public List<Course> List { get; set; }
         [BindProperty]
         public Course course { get; set; }
@@ -48,12 +49,30 @@ namespace Web_Triolingo.Pages.Courses
                     isMentors.Add(false);
                 }
             }
+            var json = HttpContext.Session.GetString("user");
+
+            User userLogin = new User();
+            if (json != null)
+            {
+                userLogin = JsonConvert.DeserializeObject<User>(json);
+            }
+            if (users.Select(x => x.Id).Contains(userLogin.Id))
+            {
+                isMentor = true;
+            }
+            if (isMentor)
+            {
+                List = _mentorCourseService.getCourseByMentor(userLogin.Id);
+            }
+            else
+            {
+                List = service.GetAllCourse().Result;
+            }
         }
         public void OnGet()
         {
             try
             {
-                List = service.GetAllCourse().Result;
                 getCourseMentor(0);
             }
             catch (Exception ex)
@@ -136,24 +155,27 @@ namespace Web_Triolingo.Pages.Courses
                 throw;
             }
         }
+        public void OnPostMentor()
+        {
+            users = _mentorService.GetUsersByRole("Người hướng dẫn");
+            _mentorCourseService.updateMentorAdd(users, isMentors, course.Id);
+            OnPostEdit(course.Id);
+        }
         public void OnPostSave()
         {
             try
             {
-                users = _mentorService.GetUsersByRole("Người hướng dẫn");
                 if (course == null || course.Id == null || course.Id == 0)
                 {
                     int id = service.AddNewCourse(course).Result;
                     if (id != 0)
                     {
-                        _mentorCourseService.updateMentorAdd(users,isMentors, id);
                         OnPostEdit(id);
                         return;
                     }
                 }
                 else
                 {
-                    _mentorCourseService.updateMentorAdd(users, isMentors, course.Id);
                     OnPostEdit(course.Id);
                     return;
                 }
