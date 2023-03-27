@@ -159,6 +159,7 @@
 </div>
 
 <script type="text/javascript">
+    var courseId = @ViewData["CourseId"];
     function UpdateUnit(id) {
         $('#update-' + id).submit()
     }
@@ -173,3 +174,5 @@
         </script>
     }
 }
+<script src="~/js/microsoft/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/signalr.js"></script>

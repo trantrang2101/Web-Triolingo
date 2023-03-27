@@ -46,7 +46,7 @@ namespace Web_Triolingo.Pages
             if (HttpContext.Session.GetString("user") != null &&
                 (user = JsonConvert.DeserializeObject<User>(HttpContext.Session.GetString("user"))) != null) {
                 var userRole = _userRoleService.GetRoleOfUser(user.Id);
-                IsAdmin = userRole.RoleType == 2;
+                IsAdmin = userRole.RoleType == 2?true:false;
                 Courses = _courseService.GetAllCourse().Result;
                 if (userRole.RoleType == 3)
                 {

@@ -46,6 +46,7 @@ namespace Web_Triolingo.Pages.Units
                     CourseName = _courseService.GetCourseById(id).Result.Name;
                     CourseId = Convert.ToInt32(id);
                 }
+                ViewData["CourseId"] = id;
                 TempData["CourseId"] = id;
                 TempData["CourseName"] = CourseName;
             }

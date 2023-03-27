@@ -27,3 +27,14 @@ connection.on("LoadUser", function () {
 connection.start().catch(function (err) {
     return console.error(err.toString());
 });
+if (typeof courseId !== 'undefined') {
+    console.log(courseId);
+
+    connection.on("LoadCourse", function () {
+        location.href = '/Units/ListAll?id=' + courseId
+    });
+
+    connection.start().catch(function (err) {
+        return console.error(err.toString());
+    });
+}
